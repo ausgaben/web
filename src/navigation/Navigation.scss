@@ -1,0 +1,11 @@
+.navbar-brand {
+  span {
+    margin-left: 0.5rem;
+  }
+}
+.navbar-nav {
+  flex-direction: row;
+  > * {
+    margin-left: 1rem;
+  }
+}

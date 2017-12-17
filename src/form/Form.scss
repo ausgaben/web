@@ -1,0 +1,23 @@
+form.card {
+  .card-footer {
+    display: flex;
+    justify-content: flex-end;
+    .alert {
+      flex-grow: 1;
+      margin-right: 1rem;
+      margin-bottom: 0;
+    }
+    button {
+      align-self: flex-start;
+    }
+  }
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 200%;
+    .material-icons {
+      font-size: 150%;
+      opacity: 0.5;
+    }
+  }
+}
