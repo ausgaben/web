@@ -6,7 +6,7 @@ import {
   AUTO_LOGIN,
   LOGOUT
 } from '../login/LoginActions';
-import { CognitoAuth } from '../aws/cognito-auth';
+import { CognitoAuth } from '../aws/CognitoAuth';
 import { push } from 'react-router-redux';
 
 export const AuthMiddleware = ({ dispatch, getState }) => next => action => {
