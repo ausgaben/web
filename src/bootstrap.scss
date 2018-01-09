@@ -26,10 +26,16 @@
 @import '~bootstrap/scss/alert';
 // @import "~bootstrap/scss/progress";
 // @import "~bootstrap/scss/media";
-// @import "~bootstrap/scss/list-group";
+@import "~bootstrap/scss/list-group";
 // @import "~bootstrap/scss/close";
 // @import "~bootstrap/scss/modal";
 // @import "~bootstrap/scss/tooltip";
 // @import "~bootstrap/scss/popover";
 // @import "~bootstrap/scss/carousel";
 // @import "~bootstrap/scss/utilities";
+
+.card {
+  .list-group-flush + .card-footer {
+    border-top: 0;
+  }
+}
