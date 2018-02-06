@@ -23,16 +23,18 @@ export class CognitoAuth {
     this.Region = Region;
   }
 
-  login = (Username, Password, newPassword, name, onNewPasswordRequired) =>
-    new Promise((resolve, reject) => {
+  login = (
+    Username,
+    Password,
+    newPassword,
+    name,
+    onNewPasswordRequired,
+    code
+  ) =>
+    new Promise(async (resolve, reject) => {
       const cognitoUser = new CognitoUser({
         Username,
         Pool: this.userPool
-      });
-
-      const authenticationDetails = new AuthenticationDetails({
-        Username,
-        Password
       });
 
       const onSuccess = session => {
@@ -56,30 +58,48 @@ export class CognitoAuth {
         });
       };
 
-      cognitoUser.authenticateUser(authenticationDetails, {
-        onSuccess,
-        onFailure: reject,
-        newPasswordRequired: (userAttributes, requiredAttributes) => {
-          if (newPassword && name) {
-            delete userAttributes.email_verified; // the api doesn't accept this field back
-            delete userAttributes.phone_number_verified; // the api doesn't accept this field back
-            userAttributes.name = name; // set the new name
-            return cognitoUser.completeNewPasswordChallenge(
-              newPassword,
-              userAttributes,
-              {
-                onSuccess: onSuccess,
-                onFailure: reject
+      if (code) {
+        console.log(Username, newPassword, code);
+        try {
+          await new Promise((resolve2, reject2) => {
+            cognitoUser.confirmPassword(code, newPassword, {
+              onSuccess: resolve2,
+              onFailure: reject2
+            });
+          });
+          Password = newPassword;
+        } catch (err) {
+          return reject(err);
+        }
+      }
+
+      cognitoUser.authenticateUser(
+        new AuthenticationDetails({ Username, Password }),
+        {
+          onSuccess,
+          onFailure: reject,
+          newPasswordRequired: (userAttributes, requiredAttributes) => {
+            if (newPassword && name) {
+              delete userAttributes.email_verified; // the api doesn't accept this field back
+              delete userAttributes.phone_number_verified; // the api doesn't accept this field back
+              userAttributes.name = name; // set the new name
+              return cognitoUser.completeNewPasswordChallenge(
+                newPassword,
+                userAttributes,
+                {
+                  onSuccess: onSuccess,
+                  onFailure: reject
+                }
+              );
+            } else {
+              if (onNewPasswordRequired) {
+                onNewPasswordRequired(userAttributes, requiredAttributes);
               }
-            );
-          } else {
-            if (onNewPasswordRequired) {
-              onNewPasswordRequired(userAttributes, requiredAttributes);
+              reject(new Error('New password required!'));
             }
-            reject(new Error('New password required!'));
           }
         }
-      });
+      );
     });
 
   token = () =>
@@ -106,4 +126,15 @@ export class CognitoAuth {
     });
     return AWS.config.credentials.getPromise();
   };
+
+  recoverPassword = username =>
+    new Promise((resolve, reject) => {
+      new CognitoUser({
+        Username: username,
+        Pool: this.userPool
+      }).forgotPassword({
+        onSuccess: resolve,
+        onFailure: reject
+      });
+    });
 }

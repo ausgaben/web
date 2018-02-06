@@ -23,44 +23,49 @@ export class Form extends React.Component {
         </div>
         <div className="card-body">{this.props.children}</div>
         <div className="card-footer">
+          <div className="controls">
+            {!this.props.submitting &&
+              !this.props.error && (
+                <IconButton
+                  icon="send"
+                  disabled={!this.props.valid}
+                  onClick={this.onSubmit}
+                >
+                  Submit
+                </IconButton>
+              )}
+            {this.props.submitting && (
+              <IconButton icon="hourglass_empty" disabled spin>
+                <em>Sending ...</em>
+              </IconButton>
+            )}
+            {!this.props.submitting &&
+              this.props.error && (
+                <IconButton
+                  icon="info"
+                  disabled={!this.props.valid}
+                  onClick={this.onSubmit}
+                >
+                  Submit
+                </IconButton>
+              )}
+            {this.props.controls}
+          </div>
           {this.props.error && (
             <div className="alert alert-danger" role="alert">
               {this.props.error.message}
             </div>
           )}
-          {!this.props.submitting &&
-            !this.props.error && (
-              <IconButton
-                icon="send"
-                disabled={!this.props.valid}
-                onClick={this.onSubmit}
-              >
-                Submit
-              </IconButton>
-            )}
-          {this.props.submitting && (
-            <IconButton icon="hourglass_empty" disabled spin>
-              <em>Sending ...</em>
-            </IconButton>
-          )}
-          {!this.props.submitting &&
-            this.props.error && (
-              <IconButton
-                icon="info"
-                disabled={!this.props.valid}
-                onClick={this.onSubmit}
-              >
-                Submit
-              </IconButton>
-            )}
         </div>
       </form>
     );
   }
 }
+
 Form.propTypes = {
   onSubmit: PropTypes.func.isRequired,
   submitting: PropTypes.bool.isRequired,
+  controls: PropTypes.element,
   valid: PropTypes.bool.isRequired,
   error: PropTypes.instanceOf(Error),
   icon: PropTypes.element

@@ -4,9 +4,9 @@ import { withRouter } from 'react-router-dom';
 import { autoLogin, logout } from '../login/LoginActions';
 import { Navigation } from './Navigation';
 
-const mapStateToProps = ({ login: { userAttributes: user, isLoggingIn } }) => ({
+const mapStateToProps = ({ login: { userAttributes: user, submitting } }) => ({
   user,
-  isLoggingIn
+  submitting
 });
 
 const mapDispatchToProps = dispatch => ({

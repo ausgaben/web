@@ -36,6 +36,9 @@ export class Input extends React.Component {
           type={this.props.type || 'text'}
           disabled={this.props.disabled}
         />
+        {this.props.helpText && (
+          <small className="form-text text-muted">{this.props.helpText}</small>
+        )}
       </div>
     );
   }
@@ -45,7 +48,8 @@ Input.propTypes = {
   id: PropTypes.string.isRequired,
   type: PropTypes.string,
   placeholder: PropTypes.string.isRequired,
-  label: PropTypes.string.isRequired,
+  label: PropTypes.oneOfType([PropTypes.string, PropTypes.element]).isRequired,
+  helpText: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
   isValid: PropTypes.bool.isRequired,
   disabled: PropTypes.bool.isRequired,
   onChange: PropTypes.func.isRequired

@@ -5,11 +5,14 @@ import {
   NEW_PASSWORD_REQUIRED,
   LOGIN_SUCCESS,
   AUTO_LOGIN,
-  LOGOUT
+  LOGOUT,
+  RECOVER_PASSWORD,
+  CODE_REQUIRED,
+  RECOVER_PASSWORD_FAILED
 } from './LoginActions';
 
 const defaultState = () => ({
-  isLoggingIn: false,
+  submitting: false,
   newPasswordRequired: false,
   name: ''
 });
@@ -17,34 +20,57 @@ const defaultState = () => ({
 export const LoginReducer = (state = defaultState(), action) => {
   switch (action.type) {
     case LOGIN:
-      const { username, password, newPassword, name } = action;
+      const { username, password, newPassword, name, code } = action;
       return {
         ...state,
-        isLoggingIn: true,
+        submitting: true,
         username,
         password,
         newPasswordRequired: false,
+        codeRequired: false,
         newPassword,
         name: name || '',
-        error: undefined
+        error: undefined,
+        code
       };
     case LOGIN_FAILED:
       const { error } = action;
       return {
         ...state,
-        isLoggingIn: false,
+        submitting: false,
         error
       };
     case NEW_PASSWORD_REQUIRED:
+      const { codeRequired } = action;
       return {
         ...state,
         newPasswordRequired: true,
+        codeRequired,
         name: action.name
+      };
+    case RECOVER_PASSWORD:
+      return {
+        ...state,
+        submitting: true,
+        error: undefined,
+        username: action.username
+      };
+    case RECOVER_PASSWORD_FAILED:
+      return {
+        ...state,
+        submitting: false,
+        error: action.error
+      };
+    case CODE_REQUIRED:
+      return {
+        ...state,
+        submitting: false,
+        recoverPasswordResult: action.result
       };
     case LOGIN_SUCCESS:
       return {
         ...state,
-        isLoggingIn: false,
+        submitting: false,
         token: action.token,
         userAttributes: action.userAttributes
       };

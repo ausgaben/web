@@ -4,7 +4,9 @@ import {
   newPasswordRequired,
   loginSuccess,
   AUTO_LOGIN,
-  LOGOUT
+  LOGOUT,
+  codeRequired,
+  RECOVER_PASSWORD
 } from '../login/LoginActions';
 import { CognitoAuth } from '../aws/CognitoAuth';
 import { push } from 'react-router-redux';
@@ -19,10 +21,17 @@ export const AuthMiddleware = ({ dispatch, getState }) => next => action => {
         dispatch(newPasswordRequired(name));
       };
 
-      const { username, password, newPassword, name } = state.login;
+      const { username, password, newPassword, name, code } = state.login;
 
       new CognitoAuth()
-        .login(username, password, newPassword, name, onNewPasswordRequired)
+        .login(
+          username,
+          password,
+          newPassword,
+          name,
+          onNewPasswordRequired,
+          code
+        )
         .then(({ token, userAttributes }) => {
           window.localStorage.setItem('token', token);
           window.localStorage.setItem(
@@ -33,6 +42,18 @@ export const AuthMiddleware = ({ dispatch, getState }) => next => action => {
           dispatch(push('/'));
         })
         .catch(err => dispatch(loginFailed(err)));
+      break;
+    case RECOVER_PASSWORD:
+      new CognitoAuth()
+        .recoverPassword(state.login.username)
+        .then(res => {
+          if (res.CodeDeliveryDetails) {
+            dispatch(codeRequired(res.CodeDeliveryDetails));
+          } else {
+            throw new Error(`Unexpected result: "${JSON.stringify(res)}"!`);
+          }
+        })
+        .catch(err => dispatch(recoverPasswordFailed(err)));
       break;
     case AUTO_LOGIN:
       const token = window.localStorage.getItem('token');
