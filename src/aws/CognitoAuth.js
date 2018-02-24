@@ -7,6 +7,9 @@ import {
 
 import { AccessDeniedError } from '@rheactorjs/errors';
 
+const rejectAsError = reject => ({ message, code, name }) =>
+  reject(new Error(message));
+
 export class CognitoAuth {
   constructor(
     UserPoolId = process.env.AWS_COGNITO_USERPOOL_ID,
@@ -40,36 +43,30 @@ export class CognitoAuth {
       const onSuccess = session => {
         const token = session.getAccessToken().getJwtToken();
 
-        this.setCredentials(session);
-
-        AWS.config.credentials.refresh(error => {
-          if (error) return reject(error);
-          cognitoUser.getUserAttributes((err, result) => {
-            if (err) return reject(err);
-            const userAttributes = result.reduce(
-              (attributes, { Name, Value }) => {
-                attributes[Name] = Value;
-                return attributes;
-              },
-              {}
-            );
-            return resolve({ token, userAttributes });
-          });
+        cognitoUser.getUserAttributes((err, result) => {
+          if (err) return rejectAsError(reject)(err);
+          const userAttributes = result.reduce(
+            (attributes, { Name, Value }) => {
+              attributes[Name] = Value;
+              return attributes;
+            },
+            {}
+          );
+          return resolve({ token, userAttributes });
         });
       };
 
       if (code) {
-        console.log(Username, newPassword, code);
         try {
           await new Promise((resolve2, reject2) => {
             cognitoUser.confirmPassword(code, newPassword, {
               onSuccess: resolve2,
-              onFailure: reject2
+              onFailure: rejectAsError(reject2)
             });
           });
           Password = newPassword;
         } catch (err) {
-          return reject(err);
+          return rejectAsError(reject)(err);
         }
       }
 
@@ -77,7 +74,7 @@ export class CognitoAuth {
         new AuthenticationDetails({ Username, Password }),
         {
           onSuccess,
-          onFailure: reject,
+          onFailure: rejectAsError(reject),
           newPasswordRequired: (userAttributes, requiredAttributes) => {
             if (newPassword && name) {
               delete userAttributes.email_verified; // the api doesn't accept this field back
@@ -88,7 +85,7 @@ export class CognitoAuth {
                 userAttributes,
                 {
                   onSuccess: onSuccess,
-                  onFailure: reject
+                  onFailure: rejectAsError(reject)
                 }
               );
             } else {
@@ -114,19 +111,6 @@ export class CognitoAuth {
       });
     });
 
-  setCredentials = session => {
-    AWS.config.region = this.Region;
-    AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-      IdentityPoolId: this.IdentityPoolId,
-      Logins: {
-        [`cognito-idp.${this.Region}.amazonaws.com/${
-          this.UserPoolId
-        }`]: session.getIdToken().getJwtToken()
-      }
-    });
-    return AWS.config.credentials.getPromise();
-  };
-
   recoverPassword = username =>
     new Promise((resolve, reject) => {
       new CognitoUser({
@@ -134,7 +118,7 @@ export class CognitoAuth {
         Pool: this.userPool
       }).forgotPassword({
         onSuccess: resolve,
-        onFailure: reject
+        onFailure: rejectAsError(reject)
       });
     });
 }
