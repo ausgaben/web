@@ -16,14 +16,17 @@ import { LoginContainer } from './login/LoginContainer';
 import { AppContainer } from './AppContainer';
 import { AuthMiddleware } from './middleware/auth';
 import { LoginReducer } from './login/LoginReducer';
-import { CheckingAccountReducer } from './dashboard/CheckingAccountReducer';
+import { CheckingAccountsReducer } from './dashboard/CheckingAccountsReducer';
 import { DashboardContainer } from './dashboard/DashboardContainer';
-import { CheckingAccountMiddleware } from './middleware/checkingAccount';
+import { CheckingAccountMiddleware } from './middleware/checkingAccounts';
+import { CheckingAccountContainer } from './checking-account/Container';
+import { CheckingAccountReducer } from './checking-account/Reducer';
 
 const browserHistory = createHistory();
 const store = createStore(
   combineReducers({
     login: LoginReducer,
+    checkingAccounts: CheckingAccountsReducer,
     checkingAccount: CheckingAccountReducer,
     routing: routerReducer
   }),
@@ -39,6 +42,11 @@ ReactDOM.render(
     <ConnectedRouter history={browserHistory}>
       <AppContainer>
         <Route exact path="/" component={DashboardContainer} />
+        <Route
+          exact
+          path="/checking-account"
+          component={CheckingAccountContainer}
+        />
         <Route path="/login" component={LoginContainer} />
       </AppContainer>
     </ConnectedRouter>

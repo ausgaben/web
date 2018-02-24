@@ -1,0 +1,8 @@
+main.checking-account {
+  > .alert {
+    grid-column-end: span 8;
+  }
+  .card {
+    grid-column-end: span 4;
+  }
+}

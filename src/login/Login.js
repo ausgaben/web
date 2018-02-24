@@ -2,7 +2,6 @@ import * as React from 'react';
 import { Form } from '../form/Form';
 import PropTypes from 'prop-types';
 import { Input } from '../form/Input';
-import { Link } from 'react-router-dom';
 
 import styles from './Login.scss';
 import { Icon } from '../button/Icon';

@@ -5,7 +5,7 @@ import { withRouter } from 'react-router-dom';
 import { ListCheckingAccounts } from './ListCheckingAccounts';
 
 const mapStateToProps = ({
-  checkingAccount: { list, isFetching, reports, total }
+  checkingAccounts: { list, isFetching, reports, total }
 }) => ({
   list,
   reports,
@@ -14,7 +14,7 @@ const mapStateToProps = ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  onFetchCheckingAccounts: () => dispatch(fetchCheckingAccounts())
+  onFetchs: () => dispatch(fetchCheckingAccounts())
 });
 
 export const ListCheckingAccountContainer = withRouter(

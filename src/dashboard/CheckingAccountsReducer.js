@@ -15,7 +15,7 @@ const defaultState = () => ({
   total: 0
 });
 
-export const CheckingAccountReducer = (state = defaultState(), action) => {
+export const CheckingAccountsReducer = (state = defaultState(), action) => {
   switch (action.type) {
     case ADD_CHECKING_ACCOUNT:
       const { name } = action;

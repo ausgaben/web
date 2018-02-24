@@ -38,7 +38,7 @@
     "webpack-dev-server": "^2.11.1"
   },
   "dependencies": {
-    "@ausgaben/models": "^2.0.2",
+    "@ausgaben/models": "^2.1.0",
     "@rheactorjs/errors": "^1.0.2",
     "@rheactorjs/models": "^3.0.1",
     "amazon-cognito-identity-js": "^2.0.1",

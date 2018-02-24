@@ -12,6 +12,10 @@ export class ApiGatewayClient {
     return this.request('POST', resource, body);
   };
 
+  get = resource => {
+    return this.request('GET', resource);
+  };
+
   postLink = ({ $links }, rel, body) => {
     return this.post(
       $links.find(({ rel: linkRel }) => linkRel === rel).href,

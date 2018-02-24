@@ -1,6 +1,7 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import { CheckingAccount, Report } from '@ausgaben/models';
+import { Link } from 'react-router-dom';
 
 import styles from './ListCheckingAccounts.scss';
 import { Icon } from '../button/Icon';
@@ -10,7 +11,7 @@ const Money = ({ value }) => <span className="money">{`${value} €`}</span>;
 
 export class ListCheckingAccounts extends React.Component {
   componentDidMount = () => {
-    this.props.onFetchCheckingAccounts();
+    this.props.onFetchs();
   };
 
   render() {
@@ -33,7 +34,12 @@ export class ListCheckingAccounts extends React.Component {
               <div className="card-body">These are your checking accounts:</div>
               <ul className="list-group list-group-flush">
                 {this.props.list.map(checkingAccount => (
-                  <a href="#" key={checkingAccount.$id}>
+                  <Link
+                    to={`/checking-account?id=${encodeURIComponent(
+                      checkingAccount.$id
+                    )}`}
+                    key={checkingAccount.$id}
+                  >
                     <li className="list-group-item sum">
                       <span>{checkingAccount.name}</span>
                       {this.props.reports[checkingAccount.$id.toString()] && (
@@ -45,7 +51,7 @@ export class ListCheckingAccounts extends React.Component {
                         />
                       )}
                     </li>
-                  </a>
+                  </Link>
                 ))}
               </ul>
               <div className="card-footer sum">
@@ -60,7 +66,7 @@ export class ListCheckingAccounts extends React.Component {
 }
 
 ListCheckingAccounts.propTypes = {
-  onFetchCheckingAccounts: PropTypes.func.isRequired,
+  onFetchs: PropTypes.func.isRequired,
   list: PropTypes.arrayOf(PropTypes.instanceOf(CheckingAccount)).isRequired,
   reports: PropTypes.objectOf(PropTypes.instanceOf(Report)),
   isFetching: PropTypes.bool.isRequired,

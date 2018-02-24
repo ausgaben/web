@@ -8,6 +8,12 @@ import {
   fetchCheckingAccountReport,
   fetchCheckingAccounts
 } from '../dashboard/CheckingAccountActions';
+import {
+  FETCH as FETCH_CHECKING_ACCOUNT,
+  fetched,
+  fetchFailed,
+  fetching
+} from '../checking-account/Actions';
 import { ApiGatewayClient } from '../aws/ApiGatewayClient';
 import { CognitoAuth } from '../aws/CognitoAuth';
 
@@ -48,6 +54,16 @@ export const CheckingAccountMiddleware = ({
         'report'
       );
       dispatch(checkingAccountReport(report));
+      break;
+    case FETCH_CHECKING_ACCOUNT:
+      dispatch(fetching());
+      await client(await cognitoAuth.token())
+        .get(action.id)
+        .then(res => {
+          dispatch(fetched(res));
+          dispatch(checkingAccountList([res]));
+        })
+        .catch(err => dispatch(fetchFailed(err)));
       break;
   }
 };

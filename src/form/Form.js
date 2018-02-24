@@ -21,7 +21,11 @@ export class Form extends React.Component {
           <span className="title">{this.props.title}</span>
           {this.props.icon}
         </div>
-        <div className="card-body">{this.props.children}</div>
+        <ul className="list-group list-group-flush">
+          {React.Children.map(this.props.children, child => (
+            <li className="list-group-item">{child}</li>
+          ))}
+        </ul>
         <div className="card-footer">
           <div className="controls">
             {!this.props.submitting &&
@@ -68,5 +72,6 @@ Form.propTypes = {
   controls: PropTypes.element,
   valid: PropTypes.bool.isRequired,
   error: PropTypes.instanceOf(Error),
+  title: PropTypes.string.isRequired,
   icon: PropTypes.element
 };

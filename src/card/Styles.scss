@@ -1,0 +1,11 @@
+div.card {
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 200%;
+    .material-icons {
+      font-size: 150%;
+      opacity: 0.5;
+    }
+  }
+}
