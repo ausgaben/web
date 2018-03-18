@@ -24,6 +24,25 @@ export class Navigation extends React.Component {
         />
         <span>Ausgaben</span>
       </a>
+      <nav className="navbar-nav">
+        {(page => {
+          switch (page) {
+            case 'checking-account':
+              return (
+                <a className="btn btn-light" href="/">
+                  <IconWithText icon={<Icon>add_circle_outline</Icon>}>
+                    Add spending
+                  </IconWithText>
+                </a>
+              );
+          }
+        })(this.props.page)}
+        <a className="btn btn-light" href="/">
+          <IconWithText icon={<Icon>account_balance_wallet</Icon>}>
+            Accounts
+          </IconWithText>
+        </a>
+      </nav>
       {this.props.user && (
         <nav className="navbar-nav">
           <button type="button" className="btn btn-light">

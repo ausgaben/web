@@ -2,7 +2,7 @@ import * as React from 'react';
 import PropTypes from 'prop-types';
 import styles from './Styles.scss';
 
-export class Card extends React.Component {
+export class BaseCard extends React.Component {
   render = () => (
     <div className="card">
       <div className="card-header">
@@ -19,17 +19,29 @@ export class Card extends React.Component {
             ))}
           </div>
         )}
-      <ul className="list-group list-group-flush">
-        {React.Children.map(this.props.children, child => (
-          <li className="list-group-item">{child}</li>
-        ))}
-      </ul>
+      {this.props.children}
     </div>
   );
 }
 
-Card.propTypes = {
+BaseCard.propTypes = {
   errors: PropTypes.arrayOf(PropTypes.instanceOf(Error)),
   icon: PropTypes.element,
   title: PropTypes.string.isRequired
 };
+
+export const ListCard = props => (
+  <BaseCard {...props}>
+    <ul className="list-group list-group-flush">
+      {React.Children.map(props.children, child => (
+        <li className="list-group-item">{child}</li>
+      ))}
+    </ul>
+  </BaseCard>
+);
+
+export const Card = props => (
+  <BaseCard {...props}>
+    <div className="card-body">{props.children}</div>
+  </BaseCard>
+);

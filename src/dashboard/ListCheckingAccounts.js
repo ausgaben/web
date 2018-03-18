@@ -1,13 +1,11 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import { CheckingAccount, Report } from '@ausgaben/models';
-import { Link } from 'react-router-dom';
 
 import styles from './ListCheckingAccounts.scss';
 import { Icon } from '../button/Icon';
 import { IconWithText } from '../button/IconWithText';
-
-const Money = ({ value }) => <span className="money">{`${value} €`}</span>;
+import { Money } from '../money/Element';
 
 export class ListCheckingAccounts extends React.Component {
   componentDidMount = () => {
@@ -34,30 +32,41 @@ export class ListCheckingAccounts extends React.Component {
               <div className="card-body">These are your checking accounts:</div>
               <ul className="list-group list-group-flush">
                 {this.props.list.map(checkingAccount => (
-                  <Link
-                    to={`/checking-account?id=${encodeURIComponent(
-                      checkingAccount.$id
-                    )}`}
+                  <li
+                    className="list-group-item sum clickable"
                     key={checkingAccount.$id}
+                    onClick={() => {
+                      this.props.history.push(
+                        `/checking-account?id=${encodeURIComponent(
+                          checkingAccount.$id
+                        )}`
+                      );
+                    }}
                   >
-                    <li className="list-group-item sum">
-                      <span>{checkingAccount.name}</span>
-                      {this.props.reports[checkingAccount.$id.toString()] && (
-                        <Money
-                          value={
-                            this.props.reports[checkingAccount.$id.toString()]
-                              .balance
-                          }
-                        />
-                      )}
-                    </li>
-                  </Link>
+                    <span>{checkingAccount.name}</span>
+                    {this.props.reports[checkingAccount.$id.toString()] && (
+                      <Money symbol={checkingAccount.currency}>
+                        {
+                          this.props.reports[checkingAccount.$id.toString()]
+                            .balance
+                        }
+                      </Money>
+                    )}
+                  </li>
                 ))}
               </ul>
-              <div className="card-footer sum">
-                <span>Total</span>
-                <Money value={this.props.total} />
-              </div>
+              <table className="table card-footer">
+                <tbody>
+                  {Object.entries(this.props.total).map(([currency, total]) => (
+                    <tr key={currency}>
+                      <td>Total ({currency})</td>
+                      <td className="money">
+                        <Money symbol={currency}>{total}</Money>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </>
           )}
       </form>
@@ -70,5 +79,5 @@ ListCheckingAccounts.propTypes = {
   list: PropTypes.arrayOf(PropTypes.instanceOf(CheckingAccount)).isRequired,
   reports: PropTypes.objectOf(PropTypes.instanceOf(Report)),
   isFetching: PropTypes.bool.isRequired,
-  total: PropTypes.number.isRequired
+  total: PropTypes.objectOf(PropTypes.number).isRequired
 };

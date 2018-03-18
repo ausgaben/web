@@ -8,7 +8,7 @@
 // @import "~bootstrap/scss/images";
 // @import "~bootstrap/scss/code";
 // @import "~bootstrap/scss/grid";
-// @import "~bootstrap/scss/tables";
+@import "~bootstrap/scss/tables";
 @import '~bootstrap/scss/forms';
 @import '~bootstrap/scss/buttons';
 // @import "~bootstrap/scss/transitions";
@@ -35,7 +35,46 @@
 // @import "~bootstrap/scss/utilities";
 
 .card {
-  .list-group-flush + .card-footer {
-    border-top: 0;
+  .list-group-flush {
+    flex-grow: 1;
+  }
+
+  .list-group-item {
+    &.clickable {
+      cursor: pointer;
+      &:hover {
+        background: darken($white, 5%);
+      }
+    }
+    &:last-child {
+      border-bottom: 0;
+    }
+  }
+
+  table.table  {
+    margin-bottom: 0;
+    th {
+      border-top: 0;
+      border-bottom: 1px;
+    }
+    th, td {
+      &:first-child {
+        padding-left:1.5rem;
+      }
+      &:last-child {
+        padding-right:1.5rem;
+      }
+    }
+    &.card-footer {
+      padding: 0;
+      display: table;
+      tbody {
+        tr:first-child {
+          td {
+            border-top: 0;
+          }
+        }
+      }
+    }
   }
 }

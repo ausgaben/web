@@ -1,9 +1,8 @@
-import PropTypes from 'prop-types';
-import {} from './Actions';
-import { FETCHING, SELECT, ERROR } from './Actions';
-import { UPDATE_SETTING } from './Actions';
+import { SELECT, ERROR } from './Actions';
 
-const defaultState = () => ({});
+const defaultState = () => ({
+  pending: 0
+});
 
 export const CheckingAccountReducer = (state = defaultState(), action) => {
   switch (action.type) {

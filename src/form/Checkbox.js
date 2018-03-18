@@ -19,7 +19,7 @@ export class Checkbox extends React.Component {
           id={this.props.id}
           disabled={this.props.disabled}
           checked={this.state.checked}
-          onClick={() =>
+          onChange={() =>
             this.setState({ checked: !this.state.checked }, () =>
               this.props.onChange(this.state.checked)
             )

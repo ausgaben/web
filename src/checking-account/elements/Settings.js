@@ -1,11 +1,10 @@
 import * as React from 'react';
-import { Card } from '../../card/Element';
+import { ListCard as Card } from '../../card/Element';
 import PropTypes from 'prop-types';
 import { Checkbox } from '../../form/Checkbox';
 import { Input } from '../../form/Input';
 import { CheckingAccount } from '@ausgaben/models';
 
-import styles from './Styles.scss';
 import { Icon } from '../../button/Icon';
 
 export class CheckingAccountSettings extends React.Component {
@@ -18,9 +17,6 @@ export class CheckingAccountSettings extends React.Component {
   }
 
   isCurrencyValid = () => this.state.currency.length >= 1;
-  isValid = () => {
-    return this.isCurrencyValid();
-  };
 
   render () {
     const {currency, savings} = this.props.checkingAccount
@@ -43,7 +39,7 @@ export class CheckingAccountSettings extends React.Component {
           value={currency}
           isValid={this.isCurrencyValid()}
           onChange={currency => this.setState({currency})}
-          onBlur={() => this.props.onUpdate('currency', this.state.currency)}
+          onBlur={() => this.isCurrencyValid() && this.props.onUpdate('currency', this.state.currency)}
         />
       </Card>
     );

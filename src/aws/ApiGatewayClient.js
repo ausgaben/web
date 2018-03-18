@@ -28,6 +28,10 @@ export class ApiGatewayClient {
     return this.methodLink('put', ...args);
   };
 
+  getLink = (...args) => {
+    return this.methodLink('get', ...args);
+  };
+
   methodLink = async (method, { $links }, rel, body, headers) => {
     return this[method](
       $links.find(({ rel: linkRel }) => linkRel === rel).href,

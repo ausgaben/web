@@ -23,6 +23,11 @@ const client = token => {
   return apiClients[token];
 };
 
+const getCurrentCheckingAccount = getState => {
+  const id = getState().checkingAccount.selected;
+  return getState().checkingAccounts.list.find(({ $id }) => $id.equals(id));
+};
+
 export const CheckingAccountMiddleware = ({
   dispatch,
   getState
@@ -59,20 +64,17 @@ export const CheckingAccountMiddleware = ({
         .then(res => {
           dispatch(CheckingAccountActions.select(res.$id));
           dispatch(checkingAccountList([res]));
+          dispatch(fetchCheckingAccountReport(res));
         })
         .catch(err => dispatch(CheckingAccountActions.error(err)));
       break;
     case CheckingAccountActions.UPDATE_SETTING:
-      const id = getState().checkingAccount.selected;
-      const account = getState().checkingAccounts.list.find(({ $id }) =>
-        $id.equals(id)
-      );
-      const { $version } = account;
+      const account = getCurrentCheckingAccount(getState);
       dispatch(
         checkingAccountList([
           account.updated({ [action.setting]: action.value }),
           ...getState().checkingAccounts.list.filter(
-            ({ $id }) => !$id.equals(id)
+            ({ $id }) => !$id.equals(account.$id)
           )
         ])
       );
@@ -81,7 +83,7 @@ export const CheckingAccountMiddleware = ({
         account,
         `update-${action.setting}`,
         { value: action.value },
-        { ['IF-Match']: $version }
+        { ['IF-Match']: account.$version }
       );
 
       break;

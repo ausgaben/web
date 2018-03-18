@@ -1,7 +1,8 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
-import { CheckingAccount } from '@ausgaben/models';
+import { CheckingAccount, Report } from '@ausgaben/models';
 import { CheckingAccountSettings } from './Settings';
+import { CheckingAccountSummary } from './Summary';
 import { URIValue } from '@rheactorjs/value-objects';
 
 import styles from './Styles.scss';
@@ -21,7 +22,8 @@ export class CheckingAccountPage extends React.Component {
     if (!this.props.checkingAccount) return null;
     return (
       <>
-        <CheckingAccountSettings checkingAccount={this.props.checkingAccount} onUpdate={this.props.onUpdate}/>
+        <CheckingAccountSummary {...this.props} />
+        <CheckingAccountSettings {...this.props}/>
       </>
     );
   };
@@ -30,6 +32,8 @@ export class CheckingAccountPage extends React.Component {
 CheckingAccountPage.propTypes = {
   onFetch: PropTypes.func.isRequired,
   checkingAccount: PropTypes.instanceOf(CheckingAccount),
+  report: PropTypes.instanceOf(Report),
   onUpdate: PropTypes.func.isRequired,
   error: PropTypes.instanceOf(Error),
+  pending: PropTypes.number.isRequired
 };

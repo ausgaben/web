@@ -12,7 +12,7 @@ const defaultState = () => ({
   isFetching: false,
   list: [],
   reports: {},
-  total: 0
+  total: {}
 });
 
 export const CheckingAccountsReducer = (state = defaultState(), action) => {
@@ -49,10 +49,17 @@ export const CheckingAccountsReducer = (state = defaultState(), action) => {
       return {
         ...state,
         reports,
-        total: Object.keys(reports).reduce(
-          (total, k) => total + reports[k].balance,
-          0
-        )
+        total: Object.keys(reports).reduce((total, k) => {
+          const { currency } = state.list.find(
+            ({ $id }) => $id.toString() === k
+          );
+          if (!total[currency]) {
+            total[currency] = reports[k].balance;
+          } else {
+            total[currency] += reports[k].balance;
+          }
+          return total;
+        }, {})
       };
     default:
       return state;
