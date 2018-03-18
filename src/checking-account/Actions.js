@@ -1,31 +1,26 @@
 const PREFIX = 'CHECKING_ACCOUNT';
 export const FETCH = `${PREFIX}_FETCH`;
 export const FETCHING = `${PREFIX}_FETCHING`;
-export const FETCH_FAILED = `${PREFIX}_FETCH_FAILED`;
-export const FETCHED = `${PREFIX}_FETCHED`;
-export const UPDATE_SETTINGS = `${PREFIX}_UPDATE_SETTINGS`;
+export const ERROR = `${PREFIX}_ERROR`;
+export const SELECT = `${PREFIX}_SELECT`;
+export const UPDATE_SETTING = `${PREFIX}_UPDATE_SETTINGS`;
 
-export const fetch = id => ({
-  type: FETCH,
-  id
+export const fetch = () => ({
+  type: FETCH
 });
 
-export const fetchFailed = error => ({
-  type: FETCH_FAILED,
+export const error = error => ({
+  type: ERROR,
   error
 });
 
-export const fetched = item => ({
-  type: FETCHED,
-  item
+export const select = id => ({
+  type: SELECT,
+  id
 });
 
-export const fetching = () => ({
-  type: FETCHING
-});
-
-export const updateSettings = (item, settings) => ({
-  type: UPDATE_SETTINGS,
-  item,
-  settings
+export const updateSetting = (setting, value) => ({
+  type: UPDATE_SETTING,
+  setting,
+  value
 });

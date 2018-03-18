@@ -1,45 +1,22 @@
 import PropTypes from 'prop-types';
 import {} from './Actions';
-import { FETCHING, FETCHED, FETCH_FAILED } from './Actions';
-import { UPDATE_SETTINGS } from './Actions';
+import { FETCHING, SELECT, ERROR } from './Actions';
+import { UPDATE_SETTING } from './Actions';
 
-const defaultState = () => ({
-  fetching: false,
-  updatingSettings: {}
-});
+const defaultState = () => ({});
 
 export const CheckingAccountReducer = (state = defaultState(), action) => {
   switch (action.type) {
-    case FETCHING:
+    case SELECT:
       return {
         ...state,
-        fetching: true
+        selected: action.id
       };
-    case FETCHED:
+    case ERROR:
       return {
         ...state,
-        fetching: false,
-        item: action.item
-      };
-    case FETCH_FAILED:
-      return {
-        ...state,
-        fetching: false,
         error: action.error
       };
-    case UPDATE_SETTINGS:
-      const s = {
-        ...state,
-        updatingSettings: {
-          ...state.updatingSettings,
-          ...Object.keys(action.settings).reduce(
-            (keys, key) => ({ ...keys, [key]: true }),
-            {}
-          )
-        }
-      };
-      console.log(s);
-      return s;
     default:
       return state;
   }

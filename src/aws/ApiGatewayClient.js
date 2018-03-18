@@ -8,28 +8,42 @@ export class ApiGatewayClient {
     this.endpoint = endpoint;
   }
 
-  post = (resource, body) => {
-    return this.request('POST', resource, body);
+  post = (...args) => {
+    return this.request('POST', ...args);
+  };
+
+  put = (...args) => {
+    return this.request('PUT', ...args);
   };
 
   get = resource => {
     return this.request('GET', resource);
   };
 
-  postLink = ({ $links }, rel, body) => {
-    return this.post(
+  postLink = (...args) => {
+    return this.methodLink('post', ...args);
+  };
+
+  putLink = (...args) => {
+    return this.methodLink('put', ...args);
+  };
+
+  methodLink = async (method, { $links }, rel, body, headers) => {
+    return this[method](
       $links.find(({ rel: linkRel }) => linkRel === rel).href,
-      body
+      body,
+      headers
     );
   };
 
-  request = async (method, resource, body) => {
+  request = async (method, resource, body, headers) => {
     const url = /^http/.test(resource)
       ? resource
       : `${this.endpoint}/${resource}`;
     const res = await fetch(url, {
       method,
       headers: {
+        ...headers,
         Authorization: this.token
       },
       body: body ? JSON.stringify(body) : undefined

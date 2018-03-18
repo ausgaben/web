@@ -12,8 +12,8 @@ export class CheckingAccountSettings extends React.Component {
   constructor (props) {
     super(props);
     this.state = {
-      currency: props.item.currency,
-      savings: props.item.savings
+      currency: props.checkingAccount.currency,
+      savings: props.checkingAccount.savings
     };
   }
 
@@ -23,6 +23,7 @@ export class CheckingAccountSettings extends React.Component {
   };
 
   render () {
+    const {currency, savings} = this.props.checkingAccount
     return (
       <Card
         title="Settings"
@@ -32,18 +33,17 @@ export class CheckingAccountSettings extends React.Component {
         <Checkbox
           id="savings"
           label="This is a savings account"
-          onChange={savings => this.props.onUpdate(this.props.item, {savings})}
-          disabled={this.props.updating.savings}
+          onChange={savings => this.props.onUpdate('savings', savings)}
+          checked={savings}
         />
         <Input
           id="currency"
           label="Currency for this checking account"
           placeholder="e.g. '€'"
-          value={this.props.item.currency}
+          value={currency}
           isValid={this.isCurrencyValid()}
           onChange={currency => this.setState({currency})}
-          onBlur={() => this.props.onUpdate(this.props.item, {currency: this.state.currency})}
-          disabled={this.props.updating.currency}
+          onBlur={() => this.props.onUpdate('currency', this.state.currency)}
         />
       </Card>
     );
@@ -51,8 +51,7 @@ export class CheckingAccountSettings extends React.Component {
 }
 
 CheckingAccountSettings.propTypes = {
-  item: PropTypes.instanceOf(CheckingAccount).isRequired,
-  updating: PropTypes.objectOf(PropTypes.bool).isRequired,
+  checkingAccount: PropTypes.instanceOf(CheckingAccount).isRequired,
   onUpdate: PropTypes.func.isRequired,
   errors: PropTypes.arrayOf(PropTypes.instanceOf(Error)),
 };

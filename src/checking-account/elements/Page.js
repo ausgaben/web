@@ -9,8 +9,8 @@ import styles from './Styles.scss';
 export class CheckingAccountPage extends React.Component {
 
   componentWillMount = () => {
-    if (!this.props.item) {
-      this.props.onFetch(this.props.id)
+    if (!this.props.checkingAccount) {
+      this.props.onFetch()
     }
   }
 
@@ -18,10 +18,10 @@ export class CheckingAccountPage extends React.Component {
     if (this.props.error) return <div className="alert alert-danger" role="alert">
       {this.props.error.message}
     </div>
-    if (!this.props.item) return null;
+    if (!this.props.checkingAccount) return null;
     return (
       <>
-        <CheckingAccountSettings item={this.props.item} updating={this.props.updatingSettings} onUpdate={this.props.onUpdate}/>
+        <CheckingAccountSettings checkingAccount={this.props.checkingAccount} onUpdate={this.props.onUpdate}/>
       </>
     );
   };
@@ -29,9 +29,7 @@ export class CheckingAccountPage extends React.Component {
 
 CheckingAccountPage.propTypes = {
   onFetch: PropTypes.func.isRequired,
-  item: PropTypes.instanceOf(CheckingAccount),
-  id: PropTypes.instanceOf(URIValue).isRequired,
-  updatingSettings: PropTypes.objectOf(PropTypes.bool).isRequired,
+  checkingAccount: PropTypes.instanceOf(CheckingAccount),
   onUpdate: PropTypes.func.isRequired,
   error: PropTypes.instanceOf(Error),
 };

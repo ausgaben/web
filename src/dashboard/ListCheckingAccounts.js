@@ -11,7 +11,7 @@ const Money = ({ value }) => <span className="money">{`${value} €`}</span>;
 
 export class ListCheckingAccounts extends React.Component {
   componentDidMount = () => {
-    this.props.onFetchs();
+    this.props.onFetch();
   };
 
   render() {
@@ -66,7 +66,7 @@ export class ListCheckingAccounts extends React.Component {
 }
 
 ListCheckingAccounts.propTypes = {
-  onFetchs: PropTypes.func.isRequired,
+  onFetch: PropTypes.func.isRequired,
   list: PropTypes.arrayOf(PropTypes.instanceOf(CheckingAccount)).isRequired,
   reports: PropTypes.objectOf(PropTypes.instanceOf(Report)),
   isFetching: PropTypes.bool.isRequired,

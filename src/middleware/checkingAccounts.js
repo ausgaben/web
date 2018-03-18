@@ -8,14 +8,11 @@ import {
   fetchCheckingAccountReport,
   fetchCheckingAccounts
 } from '../dashboard/CheckingAccountActions';
-import {
-  FETCH as FETCH_CHECKING_ACCOUNT,
-  fetched,
-  fetchFailed,
-  fetching
-} from '../checking-account/Actions';
+import * as CheckingAccountActions from '../checking-account/Actions';
 import { ApiGatewayClient } from '../aws/ApiGatewayClient';
 import { CognitoAuth } from '../aws/CognitoAuth';
+import { LOCATION_CHANGE } from 'react-router-redux';
+import { URIValue } from '@rheactorjs/value-objects';
 
 const cognitoAuth = new CognitoAuth();
 const apiClients = {};
@@ -27,7 +24,8 @@ const client = token => {
 };
 
 export const CheckingAccountMiddleware = ({
-  dispatch
+  dispatch,
+  getState
 }) => next => async action => {
   next(action); // we don't intercept actions here
   const { type } = action;
@@ -55,15 +53,47 @@ export const CheckingAccountMiddleware = ({
       );
       dispatch(checkingAccountReport(report));
       break;
-    case FETCH_CHECKING_ACCOUNT:
-      dispatch(fetching());
+    case CheckingAccountActions.FETCH:
       await client(await cognitoAuth.token())
-        .get(action.id)
+        .get(getState().checkingAccount.selected)
         .then(res => {
-          dispatch(fetched(res));
+          dispatch(CheckingAccountActions.select(res.$id));
           dispatch(checkingAccountList([res]));
         })
-        .catch(err => dispatch(fetchFailed(err)));
+        .catch(err => dispatch(CheckingAccountActions.error(err)));
+      break;
+    case CheckingAccountActions.UPDATE_SETTING:
+      const id = getState().checkingAccount.selected;
+      const account = getState().checkingAccounts.list.find(({ $id }) =>
+        $id.equals(id)
+      );
+      const { $version } = account;
+      dispatch(
+        checkingAccountList([
+          account.updated({ [action.setting]: action.value }),
+          ...getState().checkingAccounts.list.filter(
+            ({ $id }) => !$id.equals(id)
+          )
+        ])
+      );
+
+      await client(await cognitoAuth.token()).putLink(
+        account,
+        `update-${action.setting}`,
+        { value: action.value },
+        { ['IF-Match']: $version }
+      );
+
+      break;
+    case LOCATION_CHANGE:
+      const { pathname, search } = action.payload;
+      if (pathname === '/checking-account') {
+        dispatch(
+          CheckingAccountActions.select(
+            new URIValue(new URLSearchParams(search).get('id'))
+          )
+        );
+      }
       break;
   }
 };

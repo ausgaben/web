@@ -22,9 +22,11 @@ export class Form extends React.Component {
           {this.props.icon}
         </div>
         <ul className="list-group list-group-flush">
-          {React.Children.map(this.props.children, child => (
-            child ? <li className="list-group-item">{child}</li> : null
-          ))}
+          {React.Children.map(
+            this.props.children,
+            child =>
+              child ? <li className="list-group-item">{child}</li> : null
+          )}
         </ul>
         <div className="card-footer">
           <div className="controls">
