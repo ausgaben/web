@@ -29,5 +29,8 @@ const mapDispatchToProps = dispatch => ({
 });
 
 export const LoginContainer = withRouter(
-  connect(mapStateToProps, mapDispatchToProps)(Login)
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )(Login)
 );

@@ -6,7 +6,11 @@ import classNames from 'classnames';
 
 import styles from './AppContainer.scss';
 
-const mapStateToProps = ({ routing: { location: { pathname } } }) => {
+const mapStateToProps = ({
+  routing: {
+    location: { pathname }
+  }
+}) => {
   let parts = pathname.split('/').filter(s => s.length);
   if (!parts.length) {
     parts.push('dashboard');

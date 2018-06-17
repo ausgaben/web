@@ -14,5 +14,8 @@ const mapDispatchToProps = dispatch => ({
 });
 
 export const AddCheckingAccountContainer = withRouter(
-  connect(mapStateToProps, mapDispatchToProps)(AddCheckingAccount)
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )(AddCheckingAccount)
 );

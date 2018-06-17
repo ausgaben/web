@@ -21,6 +21,8 @@ import { DashboardContainer } from './dashboard/DashboardContainer';
 import { CheckingAccountMiddleware } from './middleware/checkingAccounts';
 import { CheckingAccountContainer } from './checking-account/Container';
 import { CheckingAccountReducer } from './checking-account/Reducer';
+import { Container } from './spending/Container';
+import { SpendingReducer } from './spending/Reducer';
 
 const browserHistory = createHistory();
 const store = createStore(
@@ -28,6 +30,7 @@ const store = createStore(
     login: LoginReducer,
     checkingAccounts: CheckingAccountsReducer,
     checkingAccount: CheckingAccountReducer,
+    spending: SpendingReducer,
     routing: routerReducer
   }),
   applyMiddleware(
@@ -47,6 +50,7 @@ ReactDOM.render(
           path="/checking-account"
           component={CheckingAccountContainer}
         />
+        <Route exact path="/spending/add" component={Container} />
         <Route path="/login" component={LoginContainer} />
       </AppContainer>
     </ConnectedRouter>

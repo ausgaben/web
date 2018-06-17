@@ -18,5 +18,8 @@ const mapDispatchToProps = dispatch => ({
 });
 
 export const ListCheckingAccountContainer = withRouter(
-  connect(mapStateToProps, mapDispatchToProps)(ListCheckingAccounts)
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )(ListCheckingAccounts)
 );

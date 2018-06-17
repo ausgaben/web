@@ -15,31 +15,47 @@ export class Input extends React.Component {
     return (
       <div className="form-group">
         <label htmlFor={this.props.id}>{this.props.label}</label>
-        <input
-          className={classNames({
-            'form-control': true,
-            'is-invalid':
-              !this.props.disabled &&
-              this.state.hasInput &&
-              !this.props.isValid,
-            'is-valid':
-              !this.props.disabled && this.state.hasInput && this.props.isValid
-          })}
-          value={this.state.value}
-          onChange={({ target: { value } }) =>
-            this.setState({ value, hasInput: true }, () =>
-              this.props.onChange(this.state.value)
-            )
-          }
-          id={this.props.id}
-          placeholder={this.props.placeholder}
-          type={this.props.type || 'text'}
-          disabled={this.props.disabled}
-          onBlur={this.props.onBlur}
-        />
-        {this.props.helpText && (
-          <small className="form-text text-muted">{this.props.helpText}</small>
-        )}
+        <div className="input-group">
+          {this.props.prepend ? (
+            <div className="input-group-prepend">
+              <span className="input-group-text">{this.props.prepend}</span>
+            </div>
+          ) : null}
+          <input
+            className={classNames({
+              'form-control': true,
+              'is-invalid':
+                !this.props.disabled &&
+                this.state.hasInput &&
+                !this.props.isValid,
+              'is-valid':
+                !this.props.disabled &&
+                this.state.hasInput &&
+                this.props.isValid
+            })}
+            value={this.state.value}
+            onChange={({ target: { value } }) =>
+              this.setState({ value, hasInput: true }, () =>
+                this.props.onChange(this.state.value)
+              )
+            }
+            id={this.props.id}
+            placeholder={this.props.placeholder}
+            type={this.props.type || 'text'}
+            disabled={this.props.disabled}
+            onBlur={this.props.onBlur}
+          />
+          {this.props.append ? (
+            <div className="append">
+              <span className="input-group-text">{this.props.append}</span>
+            </div>
+          ) : null}
+          {this.props.helpText && (
+            <small className="form-text text-muted">
+              {this.props.helpText}
+            </small>
+          )}
+        </div>
       </div>
     );
   }
@@ -49,6 +65,8 @@ Input.propTypes = {
   id: PropTypes.string.isRequired,
   type: PropTypes.string,
   placeholder: PropTypes.string.isRequired,
+  prepend: PropTypes.string,
+  append: PropTypes.string,
   label: PropTypes.oneOfType([PropTypes.string, PropTypes.element]).isRequired,
   helpText: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
   isValid: PropTypes.bool.isRequired,
