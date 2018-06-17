@@ -6,7 +6,7 @@ export class Input extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      value: props.value,
+      value: props.value || '',
       hasInput: false
     };
   }
