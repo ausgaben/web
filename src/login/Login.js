@@ -185,7 +185,6 @@ export class Login extends React.Component {
         {this.isNewPassword() && (
           <Input
             id="name"
-            type="text"
             label="Enter your name"
             placeholder="e.g. 'Tanja'"
             isValid={this.isNameValid()}
