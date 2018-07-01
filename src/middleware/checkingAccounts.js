@@ -8,6 +8,7 @@ import {
   fetchCheckingAccountReport,
   fetchCheckingAccounts
 } from '../dashboard/CheckingAccountActions';
+import { ADD_SPENDING } from '../spending/Actions';
 import * as CheckingAccountActions from '../checking-account/Actions';
 import { ApiGatewayClient } from '../aws/ApiGatewayClient';
 import { CognitoAuth } from '../aws/CognitoAuth';
@@ -86,5 +87,11 @@ export const CheckingAccountMiddleware = ({
       );
 
       break;
+    case ADD_SPENDING:
+      await client(await cognitoAuth.token()).postLink(
+        action.checkingAccount,
+        `create-spending`,
+        action.spending
+      );
   }
 };

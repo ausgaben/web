@@ -7,14 +7,8 @@ export const error = error => ({
   error
 });
 
-export const addSpending = (
-  category,
-  title,
-  amount,
-  booked,
-  type,
-  bookedAt
-) => ({
+export const addSpending = (checkingAccount, spending) => ({
   type: ADD_SPENDING,
-  name
+  checkingAccount,
+  spending
 });

@@ -1,54 +1,53 @@
-import * as React from 'react';
-import { Form } from '../../form/Form';
-import PropTypes from 'prop-types';
-import { Input } from '../../form/Input';
-import { NavigationContainer } from '../../navigation/NavigationContainer';
-import { MainContainer } from '../../main/MainContainer';
+import * as React from "react";
+import { Form } from "../../form/Form";
+import PropTypes from "prop-types";
+import { Input } from "../../form/Input";
+import { NavigationContainer } from "../../navigation/NavigationContainer";
+import { MainContainer } from "../../main/MainContainer";
 import { IconWithText } from "../../button/IconWithText";
-import { CheckingAccount } from '@ausgaben/models';
+import { CheckingAccount } from "@ausgaben/models";
 
-import styles from './Add.scss';
-import { Icon } from '../../button/Icon';
-import { Toggle } from '../../form/Toggle'
+import styles from "./Add.scss";
+import { Icon } from "../../button/Icon";
+import { Toggle } from "../../form/Toggle";
 
 export class Add extends React.Component {
-  constructor (props) {
+  constructor(props) {
     super(props);
     this.state = {
-      category: '',
-      title: '',
-      amount: '',
+      category: "",
+      title: "",
+      amount: 0,
       saving: false,
-      type: 'spending',
       bookedAt: new Date(),
-      booked: false,
+      booked: true
     };
   }
 
   isCategoryValid = () => this.state.category.length >= 1;
   isTitleValid = () => this.state.title.length >= 1;
-  isAmountValid = () => this.state.amount.length >= 1;
+  isAmountValid = () => `${this.state.amount}`.length >= 1;
   isValid = () => {
-    return this.isCategoryValid()
-      && this.isTitleValid()
-      && this.isAmountValid()
+    return (
+      this.isCategoryValid() && this.isTitleValid() && this.isAmountValid()
+    );
   };
 
   componentWillMount = () => {
     if (!this.props.list.length) {
-      this.props.onFetchList()
+      this.props.onFetchList();
     } else {
       if (!this.props.checkingAccount) {
-        this.props.onFetch()
+        this.props.onFetch();
       }
     }
-  }
+  };
 
-  render () {
+  render() {
     if (!this.props.checkingAccount) {
       return (
         <>
-          <NavigationContainer/>
+          <NavigationContainer />
           <MainContainer>
             <div className="card">
               <div className="card-body">
@@ -59,7 +58,7 @@ export class Add extends React.Component {
             </div>
           </MainContainer>
         </>
-      )
+      );
     }
     return (
       <>
@@ -82,70 +81,119 @@ export class Add extends React.Component {
         <MainContainer>
           <Form
             title="add spending"
-            onSubmit={() => this.props.onAddSpending(this.state.name)}
+            onSubmit={() => this.props.onAddSpending(this.props.checkingAccount, this.state)}
             submitting={this.props.submitting}
             valid={this.isValid()}
             error={this.props.error}
             icon={<Icon>add_circle_outline</Icon>}
           >
-            <div className='description'>
+            <div className="description">
               <div className="input-with-toggle">
                 <Input
                   id="category"
                   label="Category"
                   placeholder="e.g. 'Groceries'"
                   isValid={this.isCategoryValid()}
-                  onChange={category => this.setState({category})}
+                  onChange={category => this.setState({ category })}
                   disabled={this.props.submitting}
+                  tabindex={1}
+                  autofocus
                 />
                 <Toggle
                   id="saving"
                   value={this.state.saving}
-                  states={{'Saving': true, 'No saving': false}}
+                  states={[
+                    {
+                      label: "Saving",
+                      value: true,
+                      style: "success",
+                      icon: "trending_up"
+                    },
+                    { label: "No saving", value: false, icon: "clear" }
+                  ]}
                   disabled={this.props.submitting}
-                  onChange={saving => this.setState({saving})}/>
+                  onChange={saving => this.setState({ saving })}
+                />
               </div>
               <Input
                 id="title"
                 label="Title"
                 placeholder="e.g. 'Whole Foods'"
                 isValid={this.isTitleValid()}
-                onChange={title => this.setState({title})}
+                onChange={title => this.setState({ title })}
                 disabled={this.props.submitting}
+                tabindex={2}
               />
             </div>
-            <div className='input-with-toggle'>
+            <div className="input-with-toggle">
               <Input
                 id="amount"
                 label="Amount"
+                type="number"
                 placeholder="e.g. '1,234.56'"
                 prepend={this.props.checkingAccount.currency}
                 isValid={this.isAmountValid()}
-                onChange={amount => this.setState({amount})}
+                value={this.state.amount}
+                onChange={amount => this.setState({ amount: +amount })}
                 disabled={this.props.submitting}
+                tabindex={3}
               />
               <Toggle
-                id="type"
-                value={this.state.type}
-                states={{'Spending': 'spending', 'Income': 'income'}}
+                id="isSpending"
+                value={this.state.amount >= 0}
+                states={[
+                  {
+                    label: "Spending",
+                    value: true,
+                    style: "danger",
+                    icon: "unarchive"
+                  },
+                  {
+                    label: "Income",
+                    value: false,
+                    style: "success",
+                    icon: "archive"
+                  }
+                ]}
                 disabled={this.props.submitting}
-                onChange={type => this.setState({type})}/>
+                onClick={isSpending =>
+                  this.setState({
+                    amount: isSpending
+                      ? Math.abs(this.state.amount)
+                      : -Math.abs(this.state.amount)
+                  })
+                }
+              />
             </div>
-            <div className='booked'>
-              <Input
-                id="bookedAt"
-                label="Booked At"
-                type="date"
-                value={this.state.bookedAt}
-                onChange={bookedAt => this.setState({bookedAt})}
-                disabled={this.props.submitting}
-              />
-              <Toggle
-                id="booked"
-                value={this.state.booked}
-                states={{'Booked': true, 'Pending': false}}
-                disabled={this.props.submitting}
-                onChange={booked => this.setState({booked})}/>
+            <div className="booked">
+              <div className="input-with-toggle">
+                <Input
+                  id="bookedAt"
+                  label="Booked At"
+                  type="date"
+                  value={this.state.bookedAt.toISOString().substr(0, 10)}
+                  onChange={bookedAt =>
+                    this.setState({ bookedAt: new Date(bookedAt) })
+                  }
+                  disabled={this.props.submitting}
+                  tabindex={4}
+                />
+                <Toggle
+                  id="booked"
+                  value={this.state.booked}
+                  states={[
+                    { label: "Booked", value: true, style: "success" },
+                    {
+                      label: "Pending",
+                      value: false,
+                      style: "danger",
+                      icon: "hourglass_empty"
+                    }
+                  ]}
+                  disabled={this.props.submitting}
+                  onChange={booked => this.setState({ booked })}
+                />
+              </div>
             </div>
           </Form>
         </MainContainer>

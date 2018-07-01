@@ -24,7 +24,8 @@ const mapStateToProps = (
 const mapDispatchToProps = dispatch => ({
   onFetchList: () => dispatch(fetchCheckingAccounts()),
   onFetch: () => dispatch(fetch()),
-  onAddSpending: name => dispatch(addSpending(name))
+  onAddSpending: (checkingAccount, spending) =>
+    dispatch(addSpending(checkingAccount, spending))
 });
 
 export const Container = withRouter(

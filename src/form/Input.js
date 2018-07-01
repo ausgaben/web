@@ -6,7 +6,6 @@ export class Input extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      value: props.value || '',
       hasInput: false
     };
   }
@@ -29,7 +28,7 @@ export class Input extends React.Component {
                 !this.props.disabled && this.state.hasInput && !isValid,
               'is-valid': !this.props.disabled && this.state.hasInput && isValid
             })}
-            value={this.state.value}
+            value={this.props.value}
             onChange={({ target: { value } }) =>
               this.setState({ value, hasInput: true }, () =>
                 this.props.onChange(this.state.value)

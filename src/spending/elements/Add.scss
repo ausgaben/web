@@ -2,5 +2,17 @@ main.spending {
   .card {
     grid-column-end: span 6;
     grid-column-start: 2;
+
+    .input-with-toggle {
+      display: flex;
+      align-items: center;
+      & >:first-child {
+        flex-grow: 1;
+        margin-right: 25px;
+      }
+      & >:last-child {
+        margin-top: 15px;
+      }
+    }
   }
 }
