@@ -1,10 +1,9 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import { NavigationContainer } from './navigation/NavigationContainer';
 import classNames from 'classnames';
 
-import styles from './AppContainer.scss';
+import styles from './MainContainer.scss';
 
 const mapStateToProps = ({
   routing: {
@@ -25,13 +24,8 @@ const mapStateToProps = ({
   };
 };
 
-export const AppContainer = withRouter(
+export const MainContainer = withRouter(
   connect(mapStateToProps)(({ classNames, children }) => {
-    return (
-      <>
-        <NavigationContainer />
-        <main className={classNames}>{children}</main>
-      </>
-    );
+    return <main className={classNames}>{children}</main>;
   })
 );

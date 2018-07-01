@@ -60,9 +60,8 @@ export const CheckingAccountMiddleware = ({
       break;
     case CheckingAccountActions.FETCH:
       await client(await cognitoAuth.token())
-        .get(getState().checkingAccount.selected)
+        .get(action.url)
         .then(res => {
-          dispatch(CheckingAccountActions.select(res.$id));
           dispatch(checkingAccountList([res]));
           dispatch(fetchCheckingAccountReport(res));
         })
@@ -86,16 +85,6 @@ export const CheckingAccountMiddleware = ({
         { ['IF-Match']: account.$version }
       );
 
-      break;
-    case LOCATION_CHANGE:
-      const { pathname, search } = action.payload;
-      if (pathname === '/checking-account') {
-        dispatch(
-          CheckingAccountActions.select(
-            new URIValue(new URLSearchParams(search).get('id'))
-          )
-        );
-      }
       break;
   }
 };

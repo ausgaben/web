@@ -34,21 +34,24 @@ export class ListCheckingAccounts extends React.Component {
                 {this.props.list.map(checkingAccount => (
                   <li
                     className="list-group-item sum clickable"
-                    key={checkingAccount.$id}
+                    key={checkingAccount.$id.uuid.toString()}
                     onClick={() => {
                       this.props.history.push(
-                        `/checking-account?id=${encodeURIComponent(
-                          checkingAccount.$id
+                        `/checking-account/${encodeURIComponent(
+                          checkingAccount.$id.uuid.toString()
                         )}`
                       );
                     }}
                   >
                     <span>{checkingAccount.name}</span>
-                    {this.props.reports[checkingAccount.$id.toString()] && (
+                    {this.props.reports[
+                      checkingAccount.$id.uuid.toString()
+                    ] && (
                       <Money symbol={checkingAccount.currency}>
                         {
-                          this.props.reports[checkingAccount.$id.toString()]
-                            .balance
+                          this.props.reports[
+                            checkingAccount.$id.uuid.toString()
+                          ].balance
                         }
                       </Money>
                     )}

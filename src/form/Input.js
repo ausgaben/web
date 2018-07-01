@@ -12,6 +12,7 @@ export class Input extends React.Component {
   }
 
   render() {
+    const isValid = this.props.isValid || true;
     return (
       <div className="form-group">
         <label htmlFor={this.props.id}>{this.props.label}</label>
@@ -25,13 +26,8 @@ export class Input extends React.Component {
             className={classNames({
               'form-control': true,
               'is-invalid':
-                !this.props.disabled &&
-                this.state.hasInput &&
-                !this.props.isValid,
-              'is-valid':
-                !this.props.disabled &&
-                this.state.hasInput &&
-                this.props.isValid
+                !this.props.disabled && this.state.hasInput && !isValid,
+              'is-valid': !this.props.disabled && this.state.hasInput && isValid
             })}
             value={this.state.value}
             onChange={({ target: { value } }) =>
@@ -64,12 +60,12 @@ export class Input extends React.Component {
 Input.propTypes = {
   id: PropTypes.string.isRequired,
   type: PropTypes.string,
-  placeholder: PropTypes.string.isRequired,
+  placeholder: PropTypes.string,
   prepend: PropTypes.string,
   append: PropTypes.string,
   label: PropTypes.oneOfType([PropTypes.string, PropTypes.element]).isRequired,
   helpText: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
-  isValid: PropTypes.bool.isRequired,
+  isValid: PropTypes.bool,
   disabled: PropTypes.bool,
   onChange: PropTypes.func.isRequired,
   onBlur: PropTypes.func

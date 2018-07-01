@@ -1,4 +1,4 @@
-import { SELECT, ERROR } from './Actions';
+import { ERROR } from './Actions';
 
 const defaultState = () => ({
   pending: 0
@@ -6,11 +6,6 @@ const defaultState = () => ({
 
 export const CheckingAccountReducer = (state = defaultState(), action) => {
   switch (action.type) {
-    case SELECT:
-      return {
-        ...state,
-        selected: action.id
-      };
     case ERROR:
       return {
         ...state,

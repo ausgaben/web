@@ -44,14 +44,14 @@ export const CheckingAccountsReducer = (state = defaultState(), action) => {
     case CHECKING_ACCOUNT_REPORT:
       const reports = {
         ...state.reports,
-        [action.report.checkingAccount.$id.toString()]: action.report
+        [action.report.checkingAccount.$id.uuid.toString()]: action.report
       };
       return {
         ...state,
         reports,
         total: Object.keys(reports).reduce((total, k) => {
           const { currency } = state.list.find(
-            ({ $id }) => $id.toString() === k
+            ({ $id: { uuid } }) => uuid.toString() === k
           );
           if (!total[currency]) {
             total[currency] = reports[k].balance;

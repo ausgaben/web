@@ -25,40 +25,21 @@ export class Navigation extends React.Component {
         <span>Ausgaben</span>
       </a>
       <nav className="navbar-nav">
+        {this.props.children}
+        {/*
         {((page, checkingAccount) => {
-          switch (page) {
-            case 'checking-account':
-              return (
-                <a
-                  className="btn btn-light"
-                  onClick={() => {
-                    this.props.history.push('/spending/add');
-                  }}
-                >
-                  <IconWithText icon={<Icon>add_circle_outline</Icon>}>
-                    Add spending
-                  </IconWithText>
-                </a>
-              );
-            case 'spending/add':
-              return (
-                <a
-                  className="btn btn-light"
-                  onClick={() => {
-                    this.props.history.push(
-                      `/checking-account?id=${encodeURIComponent(
-                        checkingAccount.$id
-                      )}`
-                    );
-                  }}
-                >
-                  <IconWithText icon={<Icon>account_balance_wallet</Icon>}>
-                    <span>{checkingAccount.name}</span>
-                  </IconWithText>
-                </a>
-              );
+          if (page[0] === "checking-account") {
+            return (
+
+            );
+          }
+          if (page.join("/") === "spending/add") {
+            return (
+
+            );
           }
         })(this.props.page, this.props.checkingAccount)}
+        */}
         <a className="btn btn-light" href="/">
           <IconWithText icon={<Icon>account_balance_wallet</Icon>}>
             Accounts
@@ -89,8 +70,6 @@ export class Navigation extends React.Component {
 
 Navigation.propTypes = {
   user: userType,
-  page: PropTypes.string.isRequired,
-  checkingAccount: PropTypes.object,
   autoLogin: PropTypes.func.isRequired,
   logout: PropTypes.func.isRequired
 };

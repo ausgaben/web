@@ -3,22 +3,12 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { autoLogin, logout } from '../login/LoginActions';
 import { Navigation } from './Navigation';
+import { matchPath } from 'react-router';
 
-const mapStateToProps = (
-  {
-    login: { userAttributes: user, submitting },
-    checkingAccounts: { list, reports },
-    checkingAccount: { selected }
-  },
-  { location: { pathname } }
-) => {
-  const checkingAccount =
-    selected && list.find(({ $id }) => $id.equals(selected));
+const mapStateToProps = ({ login: { userAttributes: user, submitting } }) => {
   return {
     user,
-    submitting,
-    page: pathname.substr(1),
-    checkingAccount
+    submitting
   };
 };
 

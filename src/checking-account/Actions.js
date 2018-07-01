@@ -5,18 +5,14 @@ export const ERROR = `${PREFIX}_ERROR`;
 export const SELECT = `${PREFIX}_SELECT`;
 export const UPDATE_SETTING = `${PREFIX}_UPDATE_SETTINGS`;
 
-export const fetch = () => ({
-  type: FETCH
+export const fetch = url => ({
+  type: FETCH,
+  url
 });
 
 export const error = error => ({
   type: ERROR,
   error
-});
-
-export const select = id => ({
-  type: SELECT,
-  id
 });
 
 export const updateSetting = (setting, value) => ({

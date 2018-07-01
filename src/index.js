@@ -13,7 +13,6 @@ import {
 import bootstrap from './bootstrap.scss';
 import materialDesignIcons from 'material-design-icons/iconfont/material-icons.css';
 import { LoginContainer } from './login/LoginContainer';
-import { AppContainer } from './AppContainer';
 import { AuthMiddleware } from './middleware/auth';
 import { LoginReducer } from './login/LoginReducer';
 import { CheckingAccountsReducer } from './dashboard/CheckingAccountsReducer';
@@ -43,16 +42,15 @@ const store = createStore(
 ReactDOM.render(
   <Provider store={store}>
     <ConnectedRouter history={browserHistory}>
-      <AppContainer>
+      <>
         <Route exact path="/" component={DashboardContainer} />
         <Route
-          exact
-          path="/checking-account"
+          path="/checking-account/:id"
           component={CheckingAccountContainer}
         />
-        <Route exact path="/spending/add" component={Container} />
+        <Route path="/new/spending/for/:id" component={Container} />
         <Route path="/login" component={LoginContainer} />
-      </AppContainer>
+      </>
     </ConnectedRouter>
   </Provider>,
   document.getElementById('root')
