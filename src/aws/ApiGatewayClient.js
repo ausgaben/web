@@ -1,6 +1,6 @@
 import { AccessDeniedError } from '@rheactorjs/errors';
 import { HttpProblem, List } from '@rheactorjs/models';
-import { CheckingAccount, Report } from '@ausgaben/models';
+import { CheckingAccount, Report, Spending } from '@ausgaben/models';
 
 export class ApiGatewayClient {
   constructor(token, endpoint = process.env.API_ENDPOINT) {
@@ -71,6 +71,8 @@ const present = data => {
       return CheckingAccount.fromJSON(data);
     case Report.$context.toString():
       return Report.fromJSON(data);
+    case Spending.$context.toString():
+      return Spending.fromJSON(data);
     default:
       throw new Error(`Unhandled context ${$context}!`);
   }

@@ -12,9 +12,12 @@ import { ADD_SPENDING, success } from '../spending/Actions';
 import * as CheckingAccountActions from '../checking-account/Actions';
 import { ApiGatewayClient } from '../aws/ApiGatewayClient';
 import { CognitoAuth, NotAuthenticatedError } from '../aws/CognitoAuth';
-import { LOCATION_CHANGE } from 'react-router-redux';
 import { URIValue } from '@rheactorjs/value-objects';
+import { ID } from '@rheactorjs/models';
 import { logout } from '../login/LoginActions';
+import { LIST_SPENDINGS } from '../checking-account/Actions';
+import { addSpendings } from '../checking-account/Actions';
+import { listSpendings } from '../checking-account/Actions';
 
 const cognitoAuth = new CognitoAuth();
 const apiClients = {};
@@ -28,6 +31,18 @@ const client = token => {
 const getCurrentCheckingAccount = getState => {
   const id = getState().checkingAccount.selected;
   return getState().checkingAccounts.list.find(({ $id }) => $id.equals(id));
+};
+
+const fetchAllSpendings = async (dispatch, checkingAccount, fetchPromise) => {
+  const res = await fetchPromise;
+  dispatch(addSpendings(checkingAccount, res.items));
+  if (res.hasNext) {
+    return fetchAllSpendings(
+      dispatch,
+      checkingAccount,
+      client(await cognitoAuth.token()).postLink(res, 'next')
+    );
+  }
 };
 
 export const CheckingAccountMiddleware = ({
@@ -96,6 +111,18 @@ export const CheckingAccountMiddleware = ({
           action.spending
         );
         dispatch(success());
+        dispatch(listSpendings(action.checkingAccount, true));
+        dispatch(fetchCheckingAccountReport(action.checkingAccount));
+        break;
+      case LIST_SPENDINGS:
+        fetchAllSpendings(
+          dispatch,
+          action.checkingAccount,
+          client(await cognitoAuth.token()).postLink(
+            action.checkingAccount,
+            `spendings`
+          )
+        );
     }
   } catch (err) {
     if (err instanceof NotAuthenticatedError) {

@@ -143,8 +143,8 @@ export class Add extends React.Component {
                 placeholder="e.g. '1,234.56'"
                 prepend={this.props.checkingAccount.currency}
                 isValid={this.isAmountValid()}
-                value={this.state.amount}
-                onChange={amount => this.setState({ amount: +amount })}
+                value={this.state.amount / 100}
+                onChange={amount => this.setState({ amount: +amount * 100})}
                 disabled={this.props.isAdding}
                 tabindex={3}
               />

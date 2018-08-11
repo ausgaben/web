@@ -8,4 +8,7 @@
       opacity: 0.5;
     }
   }
+  .card-header + table {
+    margin-top: -1px;
+  }
 }

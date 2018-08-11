@@ -1,8 +1,9 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
-import { CheckingAccount, Report } from '@ausgaben/models';
+import { CheckingAccount, Report, Spending } from '@ausgaben/models';
 import { CheckingAccountSettings } from './Settings';
 import { CheckingAccountSummary } from './Summary';
+import { SpendingsTable } from './SpendingsTable';
 import { URIValue } from '@rheactorjs/value-objects';
 import { NavigationContainer } from '../../navigation/NavigationContainer';
 import { MainContainer } from '../../main/MainContainer';
@@ -10,6 +11,7 @@ import { Icon } from "../../button/Icon";
 import { IconWithText } from "../../button/IconWithText";
 
 import styles from './Styles.scss';
+import { BaseCard } from '../../card/Element'
 
 export class CheckingAccountPage extends React.Component {
 
@@ -19,7 +21,17 @@ export class CheckingAccountPage extends React.Component {
     } else {
       if (!this.props.checkingAccount) {
         this.props.onFetch()
+      } else {
+        if (!this.props.spendings) {
+          this.props.onFetchSpendings(this.props.checkingAccount)
+        }
       }
+    }
+  }
+
+  componentWillReceiveProps ({checkingAccount}) {
+    if (checkingAccount !== this.props.checkingAccount) {
+      this.props.onFetchSpendings(checkingAccount)
     }
   }
 
@@ -27,7 +39,14 @@ export class CheckingAccountPage extends React.Component {
     if (this.props.error) return <div className="alert alert-danger" role="alert">
       {this.props.error.message}
     </div>
-    if (!this.props.checkingAccount) return null;
+    const {spendings, checkingAccount} = this.props;
+    if (!checkingAccount) return null;
+
+    const bookedSpendings = spendings && spendings.filter(({booked}) => booked)
+    const pendingSpendings = spendings && spendings.filter(({booked}) => !booked)
+
+    console.log(bookedSpendings);
+
     return (
       <>
         <NavigationContainer>
@@ -35,7 +54,7 @@ export class CheckingAccountPage extends React.Component {
             className="btn btn-light"
             onClick={() => {
               this.props.history.push(`/new/spending/for/${encodeURIComponent(
-                this.props.checkingAccount.$id.uuid.toString()
+                checkingAccount.$id.uuid.toString()
               )}`);
             }}
           >
@@ -47,6 +66,19 @@ export class CheckingAccountPage extends React.Component {
         <MainContainer>
           <CheckingAccountSummary {...this.props} />
           <CheckingAccountSettings {...this.props}/>
+
+          {bookedSpendings && <BaseCard
+            title="Booked"
+            icon={<Icon>check</Icon>}
+          >
+            <SpendingsTable spendings={bookedSpendings} checkingAccount={checkingAccount}/>
+          </BaseCard>}
+          {pendingSpendings && <BaseCard
+            title="Pending"
+            icon={<Icon>hourglass_empty</Icon>}
+          >
+            <SpendingsTable spendings={pendingSpendings} checkingAccount={checkingAccount}/>
+          </BaseCard>}
         </MainContainer>
       </>
     );
@@ -56,10 +88,12 @@ export class CheckingAccountPage extends React.Component {
 CheckingAccountPage.propTypes = {
   onFetchList: PropTypes.func.isRequired,
   onFetch: PropTypes.func.isRequired,
+  onFetchSpendings: PropTypes.func.isRequired,
   list: PropTypes.arrayOf(PropTypes.instanceOf(CheckingAccount)).isRequired,
   checkingAccount: PropTypes.instanceOf(CheckingAccount),
   report: PropTypes.instanceOf(Report),
   onUpdate: PropTypes.func.isRequired,
   error: PropTypes.instanceOf(Error),
-  pending: PropTypes.number.isRequired
+  pending: PropTypes.number.isRequired,
+  spendings: PropTypes.arrayOf(PropTypes.instanceOf(Spending)),
 };

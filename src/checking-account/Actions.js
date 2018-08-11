@@ -4,6 +4,8 @@ export const FETCHING = `${PREFIX}_FETCHING`;
 export const ERROR = `${PREFIX}_ERROR`;
 export const SELECT = `${PREFIX}_SELECT`;
 export const UPDATE_SETTING = `${PREFIX}_UPDATE_SETTINGS`;
+export const LIST_SPENDINGS = `${PREFIX}_LIST_SPENDINGS`;
+export const ADD_SPENDINGS = `${PREFIX}_ADD_SPENDINGS`;
 
 export const fetch = url => ({
   type: FETCH,
@@ -19,4 +21,16 @@ export const updateSetting = (setting, value) => ({
   type: UPDATE_SETTING,
   setting,
   value
+});
+
+export const listSpendings = (checkingAccount, refresh = false) => ({
+  type: LIST_SPENDINGS,
+  checkingAccount,
+  refresh
+});
+
+export const addSpendings = (checkingAccount, spendings) => ({
+  type: ADD_SPENDINGS,
+  checkingAccount,
+  spendings
 });

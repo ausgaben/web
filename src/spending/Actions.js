@@ -1,7 +1,10 @@
+import { FETCH_CHECKING_ACCOUNTS } from '../dashboard/CheckingAccountActions';
+
 const PREFIX = 'SPENDING';
 export const ERROR = `${PREFIX}_ERROR`;
 export const SUCCESS = `${PREFIX}_SUCCESS`;
 export const ADD_SPENDING = `${PREFIX}_ADD`;
+export const LIST = `${PREFIX}_LIST`;
 
 export const error = error => ({
   type: ERROR,
