@@ -7,7 +7,7 @@ import { fetchCheckingAccounts } from '../dashboard/CheckingAccountActions';
 import { fetch } from '../checking-account/Actions';
 
 const mapStateToProps = (
-  { spending: { isAdding, error }, checkingAccounts: { list } },
+  { spending: { error, success, isAdding }, checkingAccounts: { list } },
   { match: { params } }
 ) => {
   const checkingAccount = list.find(
@@ -16,8 +16,9 @@ const mapStateToProps = (
   return {
     list,
     checkingAccount,
-    submitting: false,
-    error
+    error,
+    success,
+    isAdding
   };
 };
 

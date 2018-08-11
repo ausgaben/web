@@ -7,6 +7,15 @@ import {
 
 import { AccessDeniedError } from '@rheactorjs/errors';
 
+export class NotAuthenticatedError extends Error {
+  constructor(...params) {
+    super(...params);
+    this.name = NotAuthenticatedError.name;
+    Error.captureStackTrace(this, NotAuthenticatedError);
+    Object.setPrototypeOf(this, NotAuthenticatedError.prototype);
+  }
+}
+
 const rejectAsError = reject => ({ message, code, name }) =>
   reject(new Error(message));
 
@@ -102,7 +111,8 @@ export class CognitoAuth {
   token = () =>
     new Promise((resolve, reject) => {
       const cognitoUser = this.userPool.getCurrentUser();
-      if (!cognitoUser) return reject(new Error('User not authenticated.'));
+      if (!cognitoUser)
+        return reject(new NotAuthenticatedError('User not authenticated.'));
       cognitoUser.getSession((err, session) => {
         if (err) {
           throw new AccessDeniedError(`User not logged in! "${err}"`);

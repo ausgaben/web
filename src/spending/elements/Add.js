@@ -11,17 +11,19 @@ import styles from "./Add.scss";
 import { Icon } from "../../button/Icon";
 import { Toggle } from "../../form/Toggle";
 
+const defaultState = () => ({
+  category: "",
+  title: "",
+  amount: 0,
+  saving: false,
+  bookedAt: new Date(),
+  booked: true,
+})
+
 export class Add extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      category: "",
-      title: "",
-      amount: 0,
-      saving: false,
-      bookedAt: new Date(),
-      booked: true
-    };
+    this.state = defaultState();
   }
 
   isCategoryValid = () => this.state.category.length >= 1;
@@ -42,6 +44,12 @@ export class Add extends React.Component {
       }
     }
   };
+
+  componentWillReceiveProps({success}) {
+    if (success === true) {
+      this.setState(defaultState())
+    }
+  }
 
   render() {
     if (!this.props.checkingAccount) {
@@ -82,7 +90,7 @@ export class Add extends React.Component {
           <Form
             title="add spending"
             onSubmit={() => this.props.onAddSpending(this.props.checkingAccount, this.state)}
-            submitting={this.props.submitting}
+            submitting={this.props.isAdding}
             valid={this.isValid()}
             error={this.props.error}
             icon={<Icon>add_circle_outline</Icon>}
@@ -93,9 +101,10 @@ export class Add extends React.Component {
                   id="category"
                   label="Category"
                   placeholder="e.g. 'Groceries'"
+                  value={this.state.category}
                   isValid={this.isCategoryValid()}
                   onChange={category => this.setState({ category })}
-                  disabled={this.props.submitting}
+                  disabled={this.props.isAdding}
                   tabindex={1}
                   autofocus
                 />
@@ -111,7 +120,7 @@ export class Add extends React.Component {
                     },
                     { label: "No saving", value: false, icon: "clear" }
                   ]}
-                  disabled={this.props.submitting}
+                  disabled={this.props.isAdding}
                   onChange={saving => this.setState({ saving })}
                 />
               </div>
@@ -119,9 +128,10 @@ export class Add extends React.Component {
                 id="title"
                 label="Title"
                 placeholder="e.g. 'Whole Foods'"
+                value={this.state.title}
                 isValid={this.isTitleValid()}
                 onChange={title => this.setState({ title })}
-                disabled={this.props.submitting}
+                disabled={this.props.isAdding}
                 tabindex={2}
               />
             </div>
@@ -135,7 +145,7 @@ export class Add extends React.Component {
                 isValid={this.isAmountValid()}
                 value={this.state.amount}
                 onChange={amount => this.setState({ amount: +amount })}
-                disabled={this.props.submitting}
+                disabled={this.props.isAdding}
                 tabindex={3}
               />
               <Toggle
@@ -155,7 +165,7 @@ export class Add extends React.Component {
                     icon: "archive"
                   }
                 ]}
-                disabled={this.props.submitting}
+                disabled={this.props.isAdding}
                 onClick={isSpending =>
                   this.setState({
                     amount: isSpending
@@ -175,7 +185,7 @@ export class Add extends React.Component {
                   onChange={bookedAt =>
                     this.setState({ bookedAt: new Date(bookedAt) })
                   }
-                  disabled={this.props.submitting}
+                  disabled={this.props.isAdding}
                   tabindex={4}
                 />
                 <Toggle
@@ -190,7 +200,7 @@ export class Add extends React.Component {
                       icon: "hourglass_empty"
                     }
                   ]}
-                  disabled={this.props.submitting}
+                  disabled={this.props.isAdding}
                   onChange={booked => this.setState({ booked })}
                 />
               </div>
@@ -206,6 +216,7 @@ Add.propTypes = {
   checkingAccount: PropTypes.instanceOf(CheckingAccount),
   list: PropTypes.arrayOf(PropTypes.instanceOf(CheckingAccount)).isRequired,
   onAddSpending: PropTypes.func.isRequired,
-  submitting: PropTypes.bool.isRequired,
-  error: PropTypes.instanceOf(Error)
+  error: PropTypes.instanceOf(Error),
+  success: PropTypes.bool.isRequired,
+  isAdding: PropTypes.bool.isRequired
 };

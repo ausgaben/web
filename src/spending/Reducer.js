@@ -1,7 +1,8 @@
-import { ERROR } from './Actions';
+import { ADD_SPENDING, ERROR, SUCCESS } from './Actions';
 
 const defaultState = () => ({
-  isAdding: false
+  isAdding: false,
+  success: false
 });
 
 export const SpendingReducer = (state = defaultState(), action) => {
@@ -9,7 +10,21 @@ export const SpendingReducer = (state = defaultState(), action) => {
     case ERROR:
       return {
         ...state,
-        error: action.error
+        error: action.error,
+        isAdding: false
+      };
+    case ADD_SPENDING:
+      return {
+        ...state,
+        isAdding: true,
+        error: undefined,
+        success: false
+      };
+    case SUCCESS:
+      return {
+        ...state,
+        isAdding: false,
+        success: true
       };
     default:
       return state;
