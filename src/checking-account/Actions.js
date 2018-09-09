@@ -1,5 +1,6 @@
 const PREFIX = 'CHECKING_ACCOUNT';
 export const FETCH = `${PREFIX}_FETCH`;
+export const FETCH_BY_ID = `${PREFIX}_FETCH_BY_ID`;
 export const FETCHING = `${PREFIX}_FETCHING`;
 export const ERROR = `${PREFIX}_ERROR`;
 export const SELECT = `${PREFIX}_SELECT`;
@@ -10,6 +11,11 @@ export const ADD_SPENDINGS = `${PREFIX}_ADD_SPENDINGS`;
 export const fetch = url => ({
   type: FETCH,
   url
+});
+
+export const fetchById = id => ({
+  type: FETCH_BY_ID,
+  id
 });
 
 export const error = error => ({

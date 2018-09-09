@@ -1,8 +1,10 @@
-import { ADD_SPENDING, ERROR, SUCCESS } from './Actions';
+import { ADD, ERROR, SUCCESS, EDIT, EDIT_SUCCESS } from './Actions';
+import { ADD_SPENDINGS, LIST_SPENDINGS } from '../checking-account/Actions';
 
 const defaultState = () => ({
-  isAdding: false,
-  success: false
+  isSubmitting: false,
+  success: false,
+  byId: {}
 });
 
 export const SpendingReducer = (state = defaultState(), action) => {
@@ -11,21 +13,48 @@ export const SpendingReducer = (state = defaultState(), action) => {
       return {
         ...state,
         error: action.error,
-        isAdding: false
+        isSubmitting: false
       };
-    case ADD_SPENDING:
+    case ADD:
       return {
         ...state,
-        isAdding: true,
+        isSubmitting: true,
         error: undefined,
         success: false
+      };
+    case EDIT:
+      return {
+        ...state,
+        isSubmitting: true,
+        error: undefined,
+        success: false
+      };
+    case EDIT_SUCCESS:
+      return {
+        ...state,
+        isSubmitting: false,
+        error: undefined,
+        success: true,
+        byId: {
+          ...state.byId,
+          [action.spending.$id.uuid.toString()]: action.spending
+        }
       };
     case SUCCESS:
       return {
         ...state,
-        isAdding: false,
+        isSubmitting: false,
+        error: undefined,
         success: true
       };
+    case ADD_SPENDINGS:
+      return {
+        ...state,
+        byId: action.spendings.reduce((spendings, spending) => {
+          spendings[spending.$id.uuid.toString()] = spending;
+          return spendings;
+        }, {})
+      }
     default:
       return state;
   }

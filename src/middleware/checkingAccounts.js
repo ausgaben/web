@@ -8,7 +8,7 @@ import {
   fetchCheckingAccountReport,
   fetchCheckingAccounts
 } from '../dashboard/CheckingAccountActions';
-import { ADD_SPENDING, success } from '../spending/Actions';
+import { ADD, success } from '../spending/Actions';
 import * as CheckingAccountActions from '../checking-account/Actions';
 import { ApiGatewayClient } from '../aws/ApiGatewayClient';
 import { CognitoAuth, NotAuthenticatedError } from '../aws/CognitoAuth';
@@ -30,7 +30,7 @@ const client = token => {
 
 const getCurrentCheckingAccount = getState => {
   const id = getState().checkingAccount.selected;
-  return getState().checkingAccounts.list.find(({ $id }) => $id.equals(id));
+  return getState().checkingAccounts.list.find(({$id}) => $id.equals(id));
 };
 
 const fetchAllSpendings = async (dispatch, checkingAccount, fetchPromise) => {
@@ -45,22 +45,26 @@ const fetchAllSpendings = async (dispatch, checkingAccount, fetchPromise) => {
   }
 };
 
+const listCheckingAccounts = async (dispatch) => client(await cognitoAuth.token()).post(
+  'checking-account/search'
+).then(({items}) => {
+  dispatch(checkingAccountList(items));
+  items.forEach(checkingAccount =>
+    dispatch(fetchCheckingAccountReport(checkingAccount))
+  );
+  return items;
+})
+
 export const CheckingAccountMiddleware = ({
-  dispatch,
-  getState
-}) => next => async action => {
+                                            dispatch,
+                                            getState
+                                          }) => next => async action => {
   next(action); // we don't intercept actions here
-  const { type } = action;
+  const {type} = action;
   try {
     switch (type) {
       case FETCH_CHECKING_ACCOUNTS:
-        const res = await client(await cognitoAuth.token()).post(
-          'checking-account/search'
-        );
-        dispatch(checkingAccountList(res.items));
-        res.items.forEach(checkingAccount =>
-          dispatch(fetchCheckingAccountReport(checkingAccount))
-        );
+        listCheckingAccounts(dispatch);
         break;
       case ADD_CHECKING_ACCOUNT:
         await client(await cognitoAuth.token()).post('checking-account', {
@@ -85,13 +89,16 @@ export const CheckingAccountMiddleware = ({
           })
           .catch(err => dispatch(CheckingAccountActions.error(err)));
         break;
+      case CheckingAccountActions.FETCH_BY_ID:
+        await listCheckingAccounts(dispatch)
+        break;
       case CheckingAccountActions.UPDATE_SETTING:
         const account = getCurrentCheckingAccount(getState);
         dispatch(
           checkingAccountList([
-            account.updated({ [action.setting]: action.value }),
+            account.updated({[action.setting]: action.value}),
             ...getState().checkingAccounts.list.filter(
-              ({ $id }) => !$id.equals(account.$id)
+              ({$id}) => !$id.equals(account.$id)
             )
           ])
         );
@@ -99,12 +106,12 @@ export const CheckingAccountMiddleware = ({
         await client(await cognitoAuth.token()).putLink(
           account,
           `update-${action.setting}`,
-          { value: action.value },
-          { ['IF-Match']: account.$version }
+          {value: action.value},
+          {['IF-Match']: account.$version}
         );
 
         break;
-      case ADD_SPENDING:
+      case ADD:
         await client(await cognitoAuth.token()).postLink(
           action.checkingAccount,
           `create-spending`,

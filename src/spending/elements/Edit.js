@@ -3,19 +3,19 @@ import PropTypes from "prop-types";
 import { NavigationContainer } from "../../navigation/NavigationContainer";
 import { MainContainer } from "../../main/MainContainer";
 import { IconWithText } from "../../button/IconWithText";
-import { CheckingAccount } from "@ausgaben/models";
+import { CheckingAccount, Spending } from "@ausgaben/models";
 import { Icon } from "../../button/Icon";
 import { SpendingForm } from './SpendingForm'
 
-export class Add extends React.Component {
+export class Edit extends React.Component {
   componentWillMount = () => {
-    if (!this.props.checkingAccount) {
-      this.props.onFetchCheckingAccount();
+    if (!this.props.spending) {
+      this.props.onFetchSpending();
     }
   };
 
   render () {
-    if (!this.props.checkingAccount) {
+    if (!this.props.spending || !this.props.checkingAccount) {
       return (
         <>
           <NavigationContainer/>
@@ -31,6 +31,18 @@ export class Add extends React.Component {
         </>
       );
     }
+
+    const {
+      spending: {
+        category,
+        title,
+        amount,
+        saving,
+        bookedAt,
+        booked,
+      }
+    } = this.props;
+
     return (
       <>
         <NavigationContainer>
@@ -52,19 +64,19 @@ export class Add extends React.Component {
         <MainContainer>
           <SpendingForm
             checkingAccount={this.props.checkingAccount}
-            onSubmit={this.props.onAdd.bind(undefined, this.props.checkingAccount)}
+            onSubmit={data => this.props.onEdit(this.props.spending, data)}
             error={this.props.error}
             success={this.props.success}
             isSubmitting={this.props.isSubmitting}
-            icon={<Icon>add_circle_outline</Icon>}
-            title={"add spending"}
+            icon={<Icon>create</Icon>}
+            title={"edit spending"}
             defaultState={({
-              category: "",
-              title: "",
-              amount: 0,
-              saving: false,
-              bookedAt: new Date(),
-              booked: true,
+              category,
+              title,
+              amount,
+              saving,
+              bookedAt,
+              booked,
             })}
           />
         </MainContainer>
@@ -73,11 +85,12 @@ export class Add extends React.Component {
   }
 }
 
-Add.propTypes = {
+Edit.propTypes = {
+  spending: PropTypes.instanceOf(Spending),
   checkingAccount: PropTypes.instanceOf(CheckingAccount),
-  onFetchCheckingAccount: PropTypes.func.isRequired,
-  onAdd: PropTypes.func.isRequired,
+  onFetchSpending: PropTypes.func.isRequired,
+  onEdit: PropTypes.func.isRequired,
   error: PropTypes.instanceOf(Error),
   success: PropTypes.bool.isRequired,
-  isAdding: PropTypes.bool.isRequired
+  isSubmitting: PropTypes.bool.isRequired
 };

@@ -44,8 +44,7 @@ export class CheckingAccountPage extends React.Component {
 
     const bookedSpendings = spendings && spendings.filter(({booked}) => booked)
     const pendingSpendings = spendings && spendings.filter(({booked}) => !booked)
-
-    console.log(bookedSpendings);
+    const onEdit = spending => this.props.onEditSpending(checkingAccount, spending)
 
     return (
       <>
@@ -71,13 +70,13 @@ export class CheckingAccountPage extends React.Component {
             title="Booked"
             icon={<Icon>check</Icon>}
           >
-            <SpendingsTable spendings={bookedSpendings} checkingAccount={checkingAccount}/>
+            <SpendingsTable spendings={bookedSpendings} checkingAccount={checkingAccount} onEdit={onEdit}/>
           </BaseCard>}
           {pendingSpendings && <BaseCard
             title="Pending"
             icon={<Icon>hourglass_empty</Icon>}
           >
-            <SpendingsTable spendings={pendingSpendings} checkingAccount={checkingAccount}/>
+            <SpendingsTable spendings={pendingSpendings} checkingAccount={checkingAccount} onEdit={onEdit}/>
           </BaseCard>}
         </MainContainer>
       </>
@@ -89,6 +88,7 @@ CheckingAccountPage.propTypes = {
   onFetchList: PropTypes.func.isRequired,
   onFetch: PropTypes.func.isRequired,
   onFetchSpendings: PropTypes.func.isRequired,
+  onEditSpending: PropTypes.func.isRequired,
   list: PropTypes.arrayOf(PropTypes.instanceOf(CheckingAccount)).isRequired,
   checkingAccount: PropTypes.instanceOf(CheckingAccount),
   report: PropTypes.instanceOf(Report),

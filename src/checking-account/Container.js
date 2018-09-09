@@ -8,13 +8,13 @@ import { fetchCheckingAccounts } from '../dashboard/CheckingAccountActions';
 
 const mapStateToProps = (
   {
-    checkingAccounts: { list, reports },
-    checkingAccount: { error, pending, spendings }
+    checkingAccounts: {list, reports},
+    checkingAccount: {error, pending, spendings}
   },
-  { match: { params } }
+  {match: {params}}
 ) => {
   const checkingAccount = list.find(
-    ({ $id: { uuid } }) => uuid.toString() === params.id
+    ({$id: {uuid}}) => uuid.toString() === params.id
   );
   return {
     list,
@@ -26,11 +26,16 @@ const mapStateToProps = (
   };
 };
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch, {history}) => ({
   onFetchList: () => dispatch(fetchCheckingAccounts()),
   onFetch: () => dispatch(fetch()),
   onUpdate: (setting, value) => dispatch(updateSetting(setting, value)),
-  onFetchSpendings: checkingAccount => dispatch(listSpendings(checkingAccount))
+  onFetchSpendings: checkingAccount => dispatch(listSpendings(checkingAccount)),
+  onEditSpending: (checkingAccount, spending) => {
+    history.push(`/spending/${encodeURIComponent(
+      spending.$id.uuid.toString()
+    )}/in/${checkingAccount.$id.uuid.toString()}`);
+  }
 });
 
 export const CheckingAccountContainer = withRouter(

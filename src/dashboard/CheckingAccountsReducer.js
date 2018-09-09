@@ -11,6 +11,7 @@ const defaultState = () => ({
   isAdding: false,
   isFetching: false,
   list: [],
+  byId: {},
   reports: {},
   total: {}
 });
@@ -18,7 +19,7 @@ const defaultState = () => ({
 export const CheckingAccountsReducer = (state = defaultState(), action) => {
   switch (action.type) {
     case ADD_CHECKING_ACCOUNT:
-      const { name } = action;
+      const {name} = action;
       return {
         ...state,
         isAdding: true,
@@ -39,7 +40,11 @@ export const CheckingAccountsReducer = (state = defaultState(), action) => {
       return {
         ...state,
         isFetching: false,
-        list: action.list
+        list: action.list,
+        byId: action.list.reduce((accounts, account) => {
+          accounts[account.$id.uuid.toString()] = account;
+          return accounts;
+        }, {})
       };
     case CHECKING_ACCOUNT_REPORT:
       const reports = {
@@ -50,8 +55,8 @@ export const CheckingAccountsReducer = (state = defaultState(), action) => {
         ...state,
         reports,
         total: Object.keys(reports).reduce((total, k) => {
-          const { currency } = state.list.find(
-            ({ $id: { uuid } }) => uuid.toString() === k
+          const {currency} = state.list.find(
+            ({$id: {uuid}}) => uuid.toString() === k
           );
           if (!total[currency]) {
             total[currency] = reports[k].balance;
