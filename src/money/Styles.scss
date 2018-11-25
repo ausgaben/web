@@ -1,4 +1,9 @@
-.money {
+span.money {
   white-space: nowrap;
-  text-align: right;
+}
+
+th, td {
+  &.money {
+    text-align: right;
+  }
 }

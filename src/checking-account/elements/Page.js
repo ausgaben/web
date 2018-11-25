@@ -12,8 +12,13 @@ import { IconWithText } from "../../button/IconWithText";
 
 import styles from './Styles.scss';
 import { BaseCard } from '../../card/Element'
+import { SpendingsNavigation } from './SpendingsNavigation'
 
 export class CheckingAccountPage extends React.Component {
+
+  constructor (props) {
+    super(props)
+  }
 
   componentWillMount = () => {
     if (!this.props.list.length) {
@@ -66,6 +71,9 @@ export class CheckingAccountPage extends React.Component {
           <CheckingAccountSummary {...this.props} />
           <CheckingAccountSettings {...this.props}/>
 
+          {(bookedSpendings || pendingSpendings) && <SpendingsNavigation {...this.props} onDateChange={(year, month) => {
+            this.props.onFetchSpendings(checkingAccount, year, month)
+          }}/>}
           {bookedSpendings && <BaseCard
             title="Booked"
             icon={<Icon>check</Icon>}

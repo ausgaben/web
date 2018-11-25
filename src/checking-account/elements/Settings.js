@@ -12,11 +12,13 @@ export class CheckingAccountSettings extends React.Component {
     super(props);
     this.state = {
       currency: props.checkingAccount.currency,
+      name: props.checkingAccount.name,
       savings: props.checkingAccount.savings
     };
   }
 
   isCurrencyValid = () => this.state.currency.length >= 1;
+  isNameValid = () => this.state.name.length >= 1;
 
   render () {
     return (
@@ -39,6 +41,15 @@ export class CheckingAccountSettings extends React.Component {
           isValid={this.isCurrencyValid()}
           onChange={currency => this.setState({currency})}
           onBlur={() => this.isCurrencyValid() && this.props.onUpdate(this.props.checkingAccount, 'currency', this.state.currency)}
+        />
+        <Input
+          id="name"
+          label="Name for this checking account"
+          placeholder="e.g. 'Salary'"
+          value={this.state.name}
+          isValid={this.isNameValid()}
+          onChange={name => this.setState({name})}
+          onBlur={() => this.isNameValid() && this.props.onUpdate(this.props.checkingAccount, 'name', this.state.name)}
         />
       </Card>
     );

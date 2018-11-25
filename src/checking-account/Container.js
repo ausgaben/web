@@ -31,7 +31,8 @@ const mapDispatchToProps = (dispatch, { history }) => ({
   onFetch: () => dispatch(fetch()),
   onUpdate: (checkingAccount, setting, value) =>
     dispatch(updateSetting(checkingAccount, setting, value)),
-  onFetchSpendings: checkingAccount => dispatch(listSpendings(checkingAccount)),
+  onFetchSpendings: (checkingAccount, year, month) =>
+    dispatch(listSpendings(checkingAccount, false, year, month)),
   onEditSpending: (checkingAccount, spending) => {
     history.push(
       `/spending/${encodeURIComponent(

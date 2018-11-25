@@ -30,10 +30,17 @@ export const updateSetting = (checkingAccount, setting, value) => ({
   value
 });
 
-export const listSpendings = (checkingAccount, refresh = false) => ({
+export const listSpendings = (
+  checkingAccount,
+  refresh = false,
+  year,
+  month
+) => ({
   type: LIST_SPENDINGS,
   checkingAccount,
-  refresh
+  refresh,
+  year,
+  month
 });
 
 export const addSpendings = (checkingAccount, spendings) => ({

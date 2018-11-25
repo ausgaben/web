@@ -40,7 +40,6 @@ export class ListCheckingAccounts extends React.Component {
         )}
         {!this.props.isFetching && this.props.list && (
           <>
-            <div className="card-body">These are your checking accounts:</div>
             <ul className="list-group list-group-flush">
               {this.props.list.map(checkingAccount => (
                 <li
@@ -127,18 +126,12 @@ export class ListCheckingAccounts extends React.Component {
                 </IconButton>
               </div>
             )}
-            <table className="table card-footer">
-              <tbody>
-                {Object.entries(this.props.total).map(([currency, total]) => (
-                  <tr key={currency}>
-                    <td>Total ({currency})</td>
-                    <td className="money">
-                      <Money symbol={currency}>{total}</Money>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            {Object.entries(this.props.total).map(([currency, total]) => (
+              <div className="card-footer" key={currency}>
+                <span>Total ({currency})</span>
+                <Money symbol={currency}>{total}</Money>
+              </div>
+            ))}
           </>
         )}
       </form>

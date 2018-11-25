@@ -14,7 +14,9 @@ export class Input extends React.Component {
     const isValid = this.props.isValid || true;
     return (
       <div className="form-group">
-        <label htmlFor={this.props.id}>{this.props.label}</label>
+        {this.props.label && (
+          <label htmlFor={this.props.id}>{this.props.label}</label>
+        )}
         <div className="input-group">
           {this.props.prepend ? (
             <div className="input-group-prepend">
@@ -38,6 +40,8 @@ export class Input extends React.Component {
             placeholder={this.props.placeholder}
             type={this.props.type || 'text'}
             disabled={this.props.disabled}
+            min={this.props.min}
+            max={this.props.max}
             onBlur={this.props.onBlur}
           />
           {this.props.append ? (
@@ -62,10 +66,12 @@ Input.propTypes = {
   placeholder: PropTypes.string,
   prepend: PropTypes.string,
   append: PropTypes.string,
-  label: PropTypes.oneOfType([PropTypes.string, PropTypes.element]).isRequired,
+  label: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
   helpText: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
   isValid: PropTypes.bool,
   disabled: PropTypes.bool,
+  min: PropTypes.number,
+  max: PropTypes.number,
   onChange: PropTypes.func.isRequired,
   onBlur: PropTypes.func
 };

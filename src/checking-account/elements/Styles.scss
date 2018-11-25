@@ -5,6 +5,15 @@ main.checking-account {
   .card {
     grid-column-end: span 4;
   }
+  nav#spendingsNavigation {
+    grid-column-end: span 8;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    .form-group {
+      margin-bottom: 0;
+    }
+  }
 
   table.spendings {
     td:first-child {

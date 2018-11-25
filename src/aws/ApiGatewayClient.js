@@ -40,18 +40,22 @@ export class ApiGatewayClient {
     return this.methodLink('get', ...args);
   };
 
-  methodLink = async (method, { $links }, rel, body, headers) => {
+  methodLink = async (method, { $links }, rel, body, headers, queryString) => {
     return this[method](
       $links.find(({ rel: linkRel }) => linkRel === rel).href,
       body,
-      headers
+      headers,
+      queryString
     );
   };
 
-  request = async (method, resource, body, headers) => {
+  request = async (method, resource, body, headers, queryString) => {
     const url = /^http/.test(resource)
       ? resource
       : `${this.endpoint}/${resource}`;
+    if (queryString) {
+      // FIXME: Implement QueryString
+    }
     const res = await fetch(url, {
       method,
       headers: {

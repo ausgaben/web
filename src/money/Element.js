@@ -4,6 +4,8 @@ import { percent } from './util/percent';
 import styles from './Styles.scss';
 
 export const Money = props => (
-  <>{money(props.children, { symbol: ` ${props.symbol || '€'}` })}</>
+  <span className="money">
+    {money(props.children, { symbol: ` ${props.symbol || '€'}` })}
+  </span>
 );
 export const Percent = props => <>{percent(props.children)}</>;
