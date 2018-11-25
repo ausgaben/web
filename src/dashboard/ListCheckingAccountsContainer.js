@@ -1,6 +1,9 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { fetchCheckingAccounts } from './CheckingAccountActions';
+import {
+  fetchCheckingAccounts,
+  deleteCheckingAccount
+} from './CheckingAccountActions';
 import { withRouter } from 'react-router-dom';
 import { ListCheckingAccounts } from './ListCheckingAccounts';
 
@@ -14,7 +17,8 @@ const mapStateToProps = ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  onFetch: () => dispatch(fetchCheckingAccounts())
+  onFetch: () => dispatch(fetchCheckingAccounts()),
+  onDelete: checkingAccount => dispatch(deleteCheckingAccount(checkingAccount))
 });
 
 export const ListCheckingAccountContainer = withRouter(

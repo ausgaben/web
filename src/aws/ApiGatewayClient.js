@@ -16,12 +16,20 @@ export class ApiGatewayClient {
     return this.request('PUT', ...args);
   };
 
+  delete = (...args) => {
+    return this.request('DELETE', ...args);
+  };
+
   get = resource => {
     return this.request('GET', resource);
   };
 
   postLink = (...args) => {
     return this.methodLink('post', ...args);
+  };
+
+  deleteLink = (...args) => {
+    return this.methodLink('delete', ...args);
   };
 
   putLink = (...args) => {

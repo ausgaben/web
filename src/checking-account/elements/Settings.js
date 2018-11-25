@@ -19,7 +19,6 @@ export class CheckingAccountSettings extends React.Component {
   isCurrencyValid = () => this.state.currency.length >= 1;
 
   render () {
-    const {currency, savings} = this.props.checkingAccount
     return (
       <Card
         title="Settings"
@@ -29,17 +28,17 @@ export class CheckingAccountSettings extends React.Component {
         <Checkbox
           id="savings"
           label="This is a savings account"
-          onChange={savings => this.props.onUpdate('savings', savings)}
-          checked={savings}
+          onChange={savings => this.setState({savings}, () => this.props.onUpdate(this.props.checkingAccount, 'savings', this.state.savings))}
+          checked={this.state.savings}
         />
         <Input
           id="currency"
           label="Currency for this checking account"
           placeholder="e.g. '€'"
-          value={currency}
+          value={this.state.currency}
           isValid={this.isCurrencyValid()}
           onChange={currency => this.setState({currency})}
-          onBlur={() => this.isCurrencyValid() && this.props.onUpdate('currency', this.state.currency)}
+          onBlur={() => this.isCurrencyValid() && this.props.onUpdate(this.props.checkingAccount, 'currency', this.state.currency)}
         />
       </Card>
     );

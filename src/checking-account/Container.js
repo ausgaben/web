@@ -29,7 +29,8 @@ const mapStateToProps = (
 const mapDispatchToProps = (dispatch, { history }) => ({
   onFetchList: () => dispatch(fetchCheckingAccounts()),
   onFetch: () => dispatch(fetch()),
-  onUpdate: (setting, value) => dispatch(updateSetting(setting, value)),
+  onUpdate: (checkingAccount, setting, value) =>
+    dispatch(updateSetting(checkingAccount, setting, value)),
   onFetchSpendings: checkingAccount => dispatch(listSpendings(checkingAccount)),
   onEditSpending: (checkingAccount, spending) => {
     history.push(

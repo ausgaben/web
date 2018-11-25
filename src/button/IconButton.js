@@ -8,11 +8,13 @@ export const IconButton = ({
   disabled,
   icon,
   spin = false,
-  children
+  children,
+  color = 'primary',
+  type = 'submit'
 }) => (
   <button
-    type="submit"
-    className="btn btn-primary withIcon"
+    type={type}
+    className={`btn btn-${color} withIcon`}
     onClick={onClick}
     disabled={disabled}
   >

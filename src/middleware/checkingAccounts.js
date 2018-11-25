@@ -5,6 +5,7 @@ import {
   checkingAccountReport,
   FETCH_CHECKING_ACCOUNT_REPORT,
   FETCH_CHECKING_ACCOUNTS,
+  DELETE_CHECKING_ACCOUNT,
   fetchCheckingAccountReport,
   fetchCheckingAccounts
 } from '../dashboard/CheckingAccountActions';
@@ -74,6 +75,16 @@ export const CheckingAccountMiddleware = ({
         dispatch(fetchCheckingAccounts());
         dispatch(addedCheckingAccount());
         break;
+      case DELETE_CHECKING_ACCOUNT:
+        await client(await cognitoAuth.token()).deleteLink(
+          action.checkingAccount,
+          'delete',
+          undefined,
+          {
+            'If-Match': action.checkingAccount.$version
+          }
+        );
+        break;
       case FETCH_CHECKING_ACCOUNT_REPORT:
         const report = await client(await cognitoAuth.token()).postLink(
           action.checkingAccount,
@@ -94,21 +105,20 @@ export const CheckingAccountMiddleware = ({
         await listCheckingAccounts(dispatch);
         break;
       case CheckingAccountActions.UPDATE_SETTING:
-        const account = getCurrentCheckingAccount(getState);
         dispatch(
           checkingAccountList([
-            account.updated({ [action.setting]: action.value }),
+            action.checkingAccount.updated({ [action.setting]: action.value }),
             ...getState().checkingAccounts.list.filter(
-              ({ $id }) => !$id.equals(account.$id)
+              ({ $id }) => !$id.equals(action.checkingAccount.$id)
             )
           ])
         );
 
         await client(await cognitoAuth.token()).putLink(
-          account,
+          action.checkingAccount,
           `update-${action.setting}`,
           { value: action.value },
-          { ['IF-Match']: account.$version }
+          { ['IF-Match']: action.checkingAccount.$version }
         );
 
         break;

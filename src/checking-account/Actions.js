@@ -23,8 +23,9 @@ export const error = error => ({
   error
 });
 
-export const updateSetting = (setting, value) => ({
+export const updateSetting = (checkingAccount, setting, value) => ({
   type: UPDATE_SETTING,
+  checkingAccount,
   setting,
   value
 });
