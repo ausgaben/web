@@ -40,11 +40,13 @@ export class Navigation extends React.Component {
           }
         })(this.props.page, this.props.checkingAccount)}
         */}
-        <a className="btn btn-light" href="/">
-          <IconWithText icon={<Icon>account_balance_wallet</Icon>}>
-            Accounts
-          </IconWithText>
-        </a>
+        {this.props.user && (
+          <a className="btn btn-light" href="/">
+            <IconWithText icon={<Icon>account_balance_wallet</Icon>}>
+              Accounts
+            </IconWithText>
+          </a>
+        )}
       </nav>
       {this.props.user && (
         <nav className="navbar-nav">

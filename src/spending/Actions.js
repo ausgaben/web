@@ -25,13 +25,13 @@ export const fetchById = (spendingUUID, checkingAccountUUID) => ({
   type: FETCH_BY_UUID,
   spendingUUID,
   checkingAccountUUID
-})
+});
 
 export const edit = (spending, updates) => ({
   type: EDIT,
   spending,
   updates
-})
+});
 
 export const add = (checkingAccount, spending) => ({
   type: ADD,

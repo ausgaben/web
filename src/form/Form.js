@@ -22,39 +22,35 @@ export class Form extends React.Component {
           {this.props.icon}
         </div>
         <ul className="list-group list-group-flush">
-          {React.Children.map(
-            this.props.children,
-            child =>
-              child ? <li className="list-group-item">{child}</li> : null
+          {React.Children.map(this.props.children, child =>
+            child ? <li className="list-group-item">{child}</li> : null
           )}
         </ul>
         <div className="card-footer">
           <div className="controls">
-            {!this.props.submitting &&
-              !this.props.error && (
-                <IconButton
-                  icon="send"
-                  disabled={!this.props.valid}
-                  onClick={this.onSubmit}
-                >
-                  Submit
-                </IconButton>
-              )}
+            {!this.props.submitting && !this.props.error && (
+              <IconButton
+                icon="send"
+                disabled={!this.props.valid}
+                onClick={this.onSubmit}
+              >
+                Submit
+              </IconButton>
+            )}
             {this.props.submitting && (
               <IconButton icon="hourglass_empty" disabled spin>
                 <em>Sending ...</em>
               </IconButton>
             )}
-            {!this.props.submitting &&
-              this.props.error && (
-                <IconButton
-                  icon="info"
-                  disabled={!this.props.valid}
-                  onClick={this.onSubmit}
-                >
-                  Submit
-                </IconButton>
-              )}
+            {!this.props.submitting && this.props.error && (
+              <IconButton
+                icon="info"
+                disabled={!this.props.valid}
+                onClick={this.onSubmit}
+              >
+                Submit
+              </IconButton>
+            )}
             {this.props.controls}
           </div>
           {this.props.error && (

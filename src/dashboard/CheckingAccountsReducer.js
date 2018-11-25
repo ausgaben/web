@@ -19,7 +19,7 @@ const defaultState = () => ({
 export const CheckingAccountsReducer = (state = defaultState(), action) => {
   switch (action.type) {
     case ADD_CHECKING_ACCOUNT:
-      const {name} = action;
+      const { name } = action;
       return {
         ...state,
         isAdding: true,
@@ -55,8 +55,8 @@ export const CheckingAccountsReducer = (state = defaultState(), action) => {
         ...state,
         reports,
         total: Object.keys(reports).reduce((total, k) => {
-          const {currency} = state.list.find(
-            ({$id: {uuid}}) => uuid.toString() === k
+          const { currency } = state.list.find(
+            ({ $id: { uuid } }) => uuid.toString() === k
           );
           if (!total[currency]) {
             total[currency] = reports[k].balance;

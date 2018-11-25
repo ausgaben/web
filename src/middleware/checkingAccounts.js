@@ -30,7 +30,7 @@ const client = token => {
 
 const getCurrentCheckingAccount = getState => {
   const id = getState().checkingAccount.selected;
-  return getState().checkingAccounts.list.find(({$id}) => $id.equals(id));
+  return getState().checkingAccounts.list.find(({ $id }) => $id.equals(id));
 };
 
 const fetchAllSpendings = async (dispatch, checkingAccount, fetchPromise) => {
@@ -45,22 +45,23 @@ const fetchAllSpendings = async (dispatch, checkingAccount, fetchPromise) => {
   }
 };
 
-const listCheckingAccounts = async (dispatch) => client(await cognitoAuth.token()).post(
-  'checking-account/search'
-).then(({items}) => {
-  dispatch(checkingAccountList(items));
-  items.forEach(checkingAccount =>
-    dispatch(fetchCheckingAccountReport(checkingAccount))
-  );
-  return items;
-})
+const listCheckingAccounts = async dispatch =>
+  client(await cognitoAuth.token())
+    .post('checking-account/search')
+    .then(({ items }) => {
+      dispatch(checkingAccountList(items));
+      items.forEach(checkingAccount =>
+        dispatch(fetchCheckingAccountReport(checkingAccount))
+      );
+      return items;
+    });
 
 export const CheckingAccountMiddleware = ({
-                                            dispatch,
-                                            getState
-                                          }) => next => async action => {
+  dispatch,
+  getState
+}) => next => async action => {
   next(action); // we don't intercept actions here
-  const {type} = action;
+  const { type } = action;
   try {
     switch (type) {
       case FETCH_CHECKING_ACCOUNTS:
@@ -90,15 +91,15 @@ export const CheckingAccountMiddleware = ({
           .catch(err => dispatch(CheckingAccountActions.error(err)));
         break;
       case CheckingAccountActions.FETCH_BY_ID:
-        await listCheckingAccounts(dispatch)
+        await listCheckingAccounts(dispatch);
         break;
       case CheckingAccountActions.UPDATE_SETTING:
         const account = getCurrentCheckingAccount(getState);
         dispatch(
           checkingAccountList([
-            account.updated({[action.setting]: action.value}),
+            account.updated({ [action.setting]: action.value }),
             ...getState().checkingAccounts.list.filter(
-              ({$id}) => !$id.equals(account.$id)
+              ({ $id }) => !$id.equals(account.$id)
             )
           ])
         );
@@ -106,8 +107,8 @@ export const CheckingAccountMiddleware = ({
         await client(await cognitoAuth.token()).putLink(
           account,
           `update-${action.setting}`,
-          {value: action.value},
-          {['IF-Match']: account.$version}
+          { value: action.value },
+          { ['IF-Match']: account.$version }
         );
 
         break;

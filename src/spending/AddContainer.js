@@ -6,8 +6,12 @@ import { withRouter } from 'react-router-dom';
 import { fetchById } from '../checking-account/Actions';
 
 const mapStateToProps = (
-  {spending: {error, success, isSubmitting}, checkingAccounts: {byId}},
-  {match: {params: {checkingAccountId}}}
+  { spending: { error, success, isSubmitting }, checkingAccounts: { byId } },
+  {
+    match: {
+      params: { checkingAccountId }
+    }
+  }
 ) => {
   return {
     checkingAccount: byId[checkingAccountId],
@@ -17,10 +21,16 @@ const mapStateToProps = (
   };
 };
 
-const mapDispatchToProps = (dispatch, {match: {params: {checkingAccountId}}}) => ({
+const mapDispatchToProps = (
+  dispatch,
+  {
+    match: {
+      params: { checkingAccountId }
+    }
+  }
+) => ({
   onFetchCheckingAccount: () => dispatch(fetchById(checkingAccountId)),
-  onAdd: (checkingAccount, spending) =>
-    dispatch(add(checkingAccount, spending))
+  onAdd: (checkingAccount, spending) => dispatch(add(checkingAccount, spending))
 });
 
 export const AddContainer = withRouter(

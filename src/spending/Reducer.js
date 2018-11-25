@@ -54,7 +54,7 @@ export const SpendingReducer = (state = defaultState(), action) => {
           spendings[spending.$id.uuid.toString()] = spending;
           return spendings;
         }, {})
-      }
+      };
     default:
       return state;
   }
