@@ -9,8 +9,7 @@ import {
   NavItem,
   Button,
   NavbarToggler,
-  Collapse,
-  NavLink
+  Collapse
 } from 'reactstrap';
 import {
   BrowserRouter as Router,
@@ -19,6 +18,8 @@ import {
   Redirect
 } from 'react-router-dom';
 import { AccountsPage } from './Accounts/Page';
+import { CreateAccountsPage } from './CreateAccount/Page';
+import { AccountPage } from './Account/Page';
 
 Amplify.configure({
   Auth: {
@@ -32,15 +33,6 @@ Amplify.configure({
   aws_appsync_region: process.env.REACT_APP_AWS_REGION,
   aws_appsync_authenticationType: 'AWS_IAM'
 });
-
-type authState =
-  | 'signIn'
-  | 'signUp'
-  | 'confirmSignIn'
-  | 'confirmSignUp'
-  | 'forgotPassword'
-  | 'verifyContact'
-  | 'signedIn';
 
 class App extends Component<{}, { navigationVisible: boolean }> {
   constructor(props: any) {
@@ -85,6 +77,8 @@ class App extends Component<{}, { navigationVisible: boolean }> {
         <main>
           <Route exact path="/" render={() => <Redirect to="/accounts" />} />
           <Route exact path="/accounts" component={AccountsPage} />
+          <Route exact path="/account/new" component={CreateAccountsPage} />
+          <Route path="/account/:uuid" component={AccountPage} />
         </main>
       </Router>
     );
