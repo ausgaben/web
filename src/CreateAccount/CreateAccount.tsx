@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { graphqlOperation } from 'aws-amplify';
 import {
   Button,
   Card,

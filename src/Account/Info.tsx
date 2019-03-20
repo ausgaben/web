@@ -1,5 +1,4 @@
 import React from 'react';
-import { graphqlOperation } from 'aws-amplify';
 import { Connect } from 'aws-amplify-react';
 import {
   Card,
@@ -16,26 +15,21 @@ import { Link } from 'react-router-dom';
 import './Info.scss';
 import { Account } from '../schema';
 
-export const accountQuery = `
-  query account($uuid: ID!) {
-    account(uuid: $uuid) {
-      items {
-        name
-        isSavingsAccount
-      }
-    }
-  }
-`;
-
 export const Info = (props: { account: Account }) => {
   const {
-    account: { name }
+    account: {
+      name,
+      _meta: { uuid }
+    }
   } = props;
   return (
     <Card>
       <CardHeader>
         <CardTitle>{name}</CardTitle>
       </CardHeader>
+      <CardFooter>
+        <Link to={`/account/${uuid}/settings`}>Settings</Link>
+      </CardFooter>
     </Card>
   );
 };

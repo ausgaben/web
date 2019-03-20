@@ -1,23 +1,12 @@
-import React from 'react';
-import { Info } from './Info';
+import React, { ReactNode } from 'react';
 import { Account } from '../schema';
 import { Loading } from '../Loading/Loading';
 import { Note } from '../Note/Note';
-import gql from 'graphql-tag';
 import { Query } from 'react-apollo';
+import { accountQuery } from '../graphql/queries/accountQuery';
+import { Info } from './Info';
 
-export const accountQuery = gql`
-  query accounts($uuid: ID!) {
-    accounts(filter: { uuid: $uuid }) {
-      items {
-        name
-        isSavingsAccount
-      }
-    }
-  }
-`;
-
-export const AccountPage = ({
+export const Page = (children: (account: Account) => ReactNode) => ({
   match: {
     params: { uuid }
   }
@@ -37,13 +26,11 @@ export const AccountPage = ({
       if (loading || !data) return <Loading text={'Loading account ...'} />;
       if (data.accounts.items.length) {
         const account = data.accounts.items[0] as Account;
-        return (
-          <>
-            <Info account={account} />
-          </>
-        );
+        return <>{children(account)}</>;
       }
       return <Note>Account {uuid} not found.</Note>;
     }}
   </Query>
 );
+
+export const AccountPage = Page(account => <Info account={account} />);

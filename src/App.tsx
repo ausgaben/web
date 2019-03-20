@@ -20,6 +20,7 @@ import {
 import { AccountsPage } from './Accounts/Page';
 import { CreateAccountsPage } from './CreateAccount/Page';
 import { AccountPage } from './Account/Page';
+import { AccountSettingsPage } from './Account/SettingsPage';
 import { ApolloProvider } from 'react-apollo';
 import { client } from './Apollo/client';
 
@@ -80,7 +81,12 @@ class App extends Component<{}, { navigationVisible: boolean }> {
             <Route exact path="/" render={() => <Redirect to="/accounts" />} />
             <Route exact path="/accounts" component={AccountsPage} />
             <Route exact path="/new/account" component={CreateAccountsPage} />
-            <Route path="/account/:uuid" component={AccountPage} />
+            <Route exact path="/account/:uuid" component={AccountPage} />
+            <Route
+              exact
+              path="/account/:uuid/settings"
+              component={AccountSettingsPage}
+            />
           </ApolloProvider>
         </main>
       </Router>
