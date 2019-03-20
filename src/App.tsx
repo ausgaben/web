@@ -20,6 +20,8 @@ import {
 import { AccountsPage } from './Accounts/Page';
 import { CreateAccountsPage } from './CreateAccount/Page';
 import { AccountPage } from './Account/Page';
+import { ApolloProvider } from 'react-apollo';
+import { client } from './Apollo/client';
 
 Amplify.configure({
   Auth: {
@@ -28,11 +30,10 @@ Amplify.configure({
     userPoolId: process.env.REACT_APP_AWS_COGNITO_USERPOOL_ID,
     userPoolWebClientId: process.env.REACT_APP_AWS_USERPOOL_WEBCLIENT_ID,
     mandatorySignIn: true
-  },
-  aws_appsync_graphqlEndpoint: process.env.REACT_APP_API_ENDPOINT,
-  aws_appsync_region: process.env.REACT_APP_AWS_REGION,
-  aws_appsync_authenticationType: 'AWS_IAM'
+  }
 });
+
+const c = client();
 
 class App extends Component<{}, { navigationVisible: boolean }> {
   constructor(props: any) {
@@ -75,10 +76,12 @@ class App extends Component<{}, { navigationVisible: boolean }> {
           </Navbar>
         </header>
         <main>
-          <Route exact path="/" render={() => <Redirect to="/accounts" />} />
-          <Route exact path="/accounts" component={AccountsPage} />
-          <Route exact path="/account/new" component={CreateAccountsPage} />
-          <Route path="/account/:uuid" component={AccountPage} />
+          <ApolloProvider client={c}>
+            <Route exact path="/" render={() => <Redirect to="/accounts" />} />
+            <Route exact path="/accounts" component={AccountsPage} />
+            <Route exact path="/new/account" component={CreateAccountsPage} />
+            <Route path="/account/:uuid" component={AccountPage} />
+          </ApolloProvider>
         </main>
       </Router>
     );

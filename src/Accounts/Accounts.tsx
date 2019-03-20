@@ -1,6 +1,4 @@
 import React from 'react';
-import { graphqlOperation } from 'aws-amplify';
-import { Connect } from 'aws-amplify-react';
 import {
   Card,
   CardHeader,
@@ -15,33 +13,21 @@ import { Note } from '../Note/Note';
 import { Link } from 'react-router-dom';
 import './Accounts.scss';
 import { Account } from '../schema';
-
-export const accountsQuery = `
-  query accounts {
-    accounts {
-      items {
-        _meta {
-          uuid
-        }
-        name
-        isSavingsAccount
-      }
-    }
-  }
-`;
+import { Query } from 'react-apollo';
+import { accountsQuery } from '../graphql/queries/accountsQuery';
 
 export const Accounts = () => (
   <Card>
     <CardHeader>
       <CardTitle>Accounts</CardTitle>
     </CardHeader>
-    <Connect query={graphqlOperation(accountsQuery)}>
-      {({ data, loading, errors }: any) => {
-        if (errors.length) {
+    <Query query={accountsQuery}>
+      {({ data, loading, error }: any) => {
+        if (error) {
           return (
             <>
               <h3>Error</h3>
-              {JSON.stringify(errors)}
+              {JSON.stringify(error)}
             </>
           );
         }
@@ -64,9 +50,9 @@ export const Accounts = () => (
           </CardBody>
         );
       }}
-    </Connect>
+    </Query>
     <CardFooter>
-      <Link to="/account/new">Add a new account</Link>
+      <Link to="/new/account">Add a new account</Link>
     </CardFooter>
   </Card>
 );

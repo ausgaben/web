@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Connect } from 'aws-amplify-react';
 import { graphqlOperation } from 'aws-amplify';
 import {
   Button,
@@ -13,13 +12,13 @@ import {
   Label,
   CardFooter
 } from 'reactstrap';
+import gql from 'graphql-tag';
+import { Mutation } from 'react-apollo';
+import { accountsQuery } from '../graphql/queries/accountsQuery';
 
-export const createAccountQuery = `
+export const createAccountQuery = gql`
   mutation createAccount($name: String!, $isSavingsAccount: Boolean!) {
-    createAccount(
-        name: $name,
-        isSavingsAccount: $isSavingsAccount
-    )
+    createAccount(name: $name, isSavingsAccount: $isSavingsAccount)
   }
 `;
 
@@ -36,12 +35,14 @@ export const CreateAccount = () => {
 
   const isValid = name.length;
   return (
-    <Connect mutation={graphqlOperation(createAccountQuery)}>
-      {({
-        mutation: createAccountMutation
-      }: {
-        mutation: (args: object) => Promise<void>;
-      }) => (
+    <Mutation
+      mutation={createAccountQuery}
+      refetchQueries={[{ query: accountsQuery }]}
+      onCompleted={() => {
+        reset();
+      }}
+    >
+      {createAccountMutation => (
         <Form>
           <Card>
             <CardHeader>
@@ -78,11 +79,12 @@ export const CreateAccount = () => {
                 disabled={!isValid || submitting}
                 onClick={async () => {
                   setSubmitting(true);
-                  const res = await createAccountMutation({
-                    name,
-                    isSavingsAccount
+                  await createAccountMutation({
+                    variables: {
+                      name,
+                      isSavingsAccount
+                    }
                   });
-                  reset();
                 }}
               >
                 {(() => {
@@ -95,6 +97,6 @@ export const CreateAccount = () => {
           </Card>
         </Form>
       )}
-    </Connect>
+    </Mutation>
   );
 };

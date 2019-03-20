@@ -1,14 +1,14 @@
 import React from 'react';
 import { Info } from './Info';
-import { graphqlOperation } from 'aws-amplify';
-import { Connect } from 'aws-amplify-react';
 import { Account } from '../schema';
 import { Loading } from '../Loading/Loading';
 import { Note } from '../Note/Note';
+import gql from 'graphql-tag';
+import { Query } from 'react-apollo';
 
-export const accountsQuery = `
+export const accountQuery = gql`
   query accounts($uuid: ID!) {
-    accounts(filter: {uuid: $uuid}) {
+    accounts(filter: { uuid: $uuid }) {
       items {
         name
         isSavingsAccount
@@ -24,13 +24,13 @@ export const AccountPage = ({
 }: {
   match: { params: { uuid: string } };
 }) => (
-  <Connect query={graphqlOperation(accountsQuery, { uuid })}>
-    {({ data, loading, errors }: any) => {
-      if (errors.length) {
+  <Query query={accountQuery} variables={{ uuid }}>
+    {({ data, loading, error }: any) => {
+      if (error) {
         return (
           <>
             <h3>Error</h3>
-            {JSON.stringify(errors)}
+            {JSON.stringify(error)}
           </>
         );
       }
@@ -45,5 +45,5 @@ export const AccountPage = ({
       }
       return <Note>Account {uuid} not found.</Note>;
     }}
-  </Connect>
+  </Query>
 );
