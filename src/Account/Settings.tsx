@@ -55,7 +55,34 @@ export const Settings = (props: { account: Account }) => {
         {!deleted && (
           <Mutation
             mutation={deleteAccountQuery}
-            refetchQueries={[{ query: accountsQuery }]}
+            update={cache => {
+              const res = cache.readQuery<{
+                accounts: {
+                  items: Account[];
+                };
+              }>({ query: accountsQuery });
+              if (res) {
+                const {
+                  accounts: { items: accounts }
+                } = res;
+                const accountToDelete = accounts.find(
+                  ({ _meta: { uuid: u } }) => uuid === u
+                );
+                if (accountToDelete) {
+                  accounts.splice(accounts.indexOf(accountToDelete), 1);
+                  cache.writeQuery({
+                    query: accountsQuery,
+                    data: {
+                      ...res,
+                      accounts: {
+                        ...res.accounts,
+                        items: accounts
+                      }
+                    }
+                  });
+                }
+              }
+            }}
           >
             {deleteAccountMutation => (
               <CardFooter>
@@ -63,10 +90,9 @@ export const Settings = (props: { account: Account }) => {
                   disabled={deleting}
                   onClick={async () => {
                     setDeleting(true);
-                    deleteAccountMutation().then(
-                      ({ errors }: { errors: GraphQLError[] } | any) => {
-                        if (errors.length) {
-                          console.log(errors);
+                    deleteAccountMutation({ variables: { uuid } }).then(
+                      async ({ errors }: { errors?: GraphQLError[] } | any) => {
+                        if (errors) {
                           setError(true);
                           setDeleting(false);
                         } else {

@@ -6,7 +6,8 @@ import {
   CardBody,
   ListGroup,
   ListGroupItem,
-  CardFooter
+  CardFooter,
+  Button
 } from 'reactstrap';
 import { Loading } from '../Loading/Loading';
 import { Note } from '../Note/Note';
@@ -22,7 +23,7 @@ export const Accounts = () => (
       <CardTitle>Accounts</CardTitle>
     </CardHeader>
     <Query query={accountsQuery}>
-      {({ data, loading, error }: any) => {
+      {({ data, loading, error, refetch }: any) => {
         if (error) {
           return (
             <>
@@ -36,6 +37,17 @@ export const Accounts = () => (
           const accounts = data.accounts.items as Account[];
           return (
             <ListGroup flush>
+              <ListGroupItem>
+                <Button
+                  outline
+                  color={'secondary'}
+                  onClick={() => {
+                    refetch();
+                  }}
+                >
+                  reload
+                </Button>
+              </ListGroupItem>
               {accounts.map(({ name, _meta: { uuid } }) => (
                 <ListGroupItem key={uuid}>
                   <Link to={`/account/${uuid}`}>{name}</Link>

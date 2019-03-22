@@ -14,10 +14,13 @@ import {
 import gql from 'graphql-tag';
 import { Mutation } from 'react-apollo';
 import { accountsQuery } from '../graphql/queries/accountsQuery';
+import { Account } from '../schema';
 
 export const createAccountQuery = gql`
   mutation createAccount($name: String!, $isSavingsAccount: Boolean!) {
-    createAccount(name: $name, isSavingsAccount: $isSavingsAccount)
+    createAccount(name: $name, isSavingsAccount: $isSavingsAccount) {
+      uuid
+    }
   }
 `;
 
@@ -36,8 +39,45 @@ export const CreateAccount = () => {
   return (
     <Mutation
       mutation={createAccountQuery}
-      refetchQueries={[{ query: accountsQuery }]}
-      onCompleted={() => {
+      update={(
+        cache,
+        {
+          data: {
+            createAccount: { uuid }
+          }
+        }
+      ) => {
+        const res = cache.readQuery<{
+          accounts: {
+            items: Account[];
+          };
+        }>({ query: accountsQuery });
+        if (res) {
+          const {
+            accounts: { items: accounts }
+          } = res;
+          cache.writeQuery({
+            query: accountsQuery,
+            data: {
+              ...res,
+              accounts: {
+                ...res.accounts,
+                items: [
+                  ...accounts,
+                  {
+                    name,
+                    isSavingsAccount,
+                    _meta: {
+                      uuid,
+                      __typename: 'EntityMeta'
+                    },
+                    __typename: 'Account'
+                  }
+                ]
+              }
+            }
+          });
+        }
         reset();
       }}
     >

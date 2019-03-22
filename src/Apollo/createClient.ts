@@ -46,7 +46,7 @@ const errorLink = onError(({ networkError }) => {
   }
 });
 
-export const client = () =>
+export const createClient = () =>
   new ApolloClient<NormalizedCacheObject>({
     defaultOptions: {
       query: {
