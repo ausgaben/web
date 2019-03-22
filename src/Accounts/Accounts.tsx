@@ -7,7 +7,8 @@ import {
   ListGroup,
   ListGroupItem,
   CardFooter,
-  Button
+  Button,
+  Form
 } from 'reactstrap';
 import { Loading } from '../Loading/Loading';
 import { Note } from '../Note/Note';
@@ -17,54 +18,89 @@ import { Account } from '../schema';
 import { Query } from 'react-apollo';
 import { accountsQuery } from '../graphql/queries/accountsQuery';
 
+const Header = ({
+  refetch,
+  nextStartKey
+}: {
+  refetch: (variables?: object) => void;
+  nextStartKey?: string;
+}) => (
+  <CardHeader>
+    <CardTitle>Accounts</CardTitle>
+    <nav>
+      {nextStartKey && (
+        <Button
+          outline
+          color={'secondary'}
+          onClick={() => {
+            refetch({
+              startKey: nextStartKey
+            });
+          }}
+        >
+          next
+        </Button>
+      )}
+      <Button
+        outline
+        color={'secondary'}
+        onClick={() => {
+          refetch({
+            startKey: undefined
+          });
+        }}
+      >
+        reload
+      </Button>
+    </nav>
+  </CardHeader>
+);
+
 export const Accounts = () => (
-  <Card>
-    <CardHeader>
-      <CardTitle>Accounts</CardTitle>
-    </CardHeader>
-    <Query query={accountsQuery}>
-      {({ data, loading, error, refetch }: any) => {
-        if (error) {
+  <Form>
+    <Card>
+      <Query query={accountsQuery}>
+        {({ data, loading, error, refetch }: any) => {
+          if (error) {
+            return (
+              <>
+                <h3>Error</h3>
+                {JSON.stringify(error)}
+              </>
+            );
+          }
+          if (loading || !data) return <Loading />;
+          if (data.accounts.items.length) {
+            const accounts = data.accounts.items as Account[];
+            return (
+              <>
+                <Header
+                  refetch={refetch}
+                  nextStartKey={data.accounts.nextStartKey}
+                />
+                <ListGroup flush>
+                  {accounts.map(({ name, _meta: { uuid } }) => (
+                    <ListGroupItem key={uuid}>
+                      <Link to={`/account/${uuid}`}>{name}</Link>
+                    </ListGroupItem>
+                  ))}
+                </ListGroup>
+              </>
+            );
+          }
           return (
             <>
-              <h3>Error</h3>
-              {JSON.stringify(error)}
+              <Header refetch={refetch} />
+              <CardBody>
+                <Note>No accounts found.</Note>
+              </CardBody>
             </>
           );
-        }
-        if (loading || !data) return <Loading />;
-        if (data.accounts.items.length) {
-          const accounts = data.accounts.items as Account[];
-          return (
-            <ListGroup flush>
-              <ListGroupItem>
-                <Button
-                  outline
-                  color={'secondary'}
-                  onClick={() => {
-                    refetch();
-                  }}
-                >
-                  reload
-                </Button>
-              </ListGroupItem>
-              {accounts.map(({ name, _meta: { uuid } }) => (
-                <ListGroupItem key={uuid}>
-                  <Link to={`/account/${uuid}`}>{name}</Link>
-                </ListGroupItem>
-              ))}
-            </ListGroup>
-          );
-        }
-        return (
-          <CardBody>
-            <Note>No accounts found.</Note>
-          </CardBody>
-        );
-      }}
-    </Query>
-    <CardFooter>
-      <Link to="/new/account">Add a new account</Link>
-    </CardFooter>
-  </Card>
+        }}
+      </Query>
+      <CardFooter>
+        <Link to="/new/account">Add a new account</Link>
+      </CardFooter>
+    </Card>
+  </Form>
 );

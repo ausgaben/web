@@ -1,8 +1,8 @@
 import gql from 'graphql-tag';
 
 export const accountsQuery = gql`
-  query accounts {
-    accounts {
+  query accounts($startKey: ID) {
+    accounts(startKey: $startKey) {
       items {
         _meta {
           uuid
@@ -10,6 +10,7 @@ export const accountsQuery = gql`
         name
         isSavingsAccount
       }
+      nextStartKey
     }
   }
 `;
