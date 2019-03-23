@@ -22,6 +22,14 @@ form {
   }
 }
 
+.card-footer {
+  nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
 .card-title {
   font-weight: bold;
   margin-bottom: 0;

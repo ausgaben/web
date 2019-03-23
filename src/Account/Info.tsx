@@ -28,7 +28,10 @@ export const Info = (props: { account: Account }) => {
         <CardTitle>{name}</CardTitle>
       </CardHeader>
       <CardFooter>
-        <Link to={`/account/${uuid}/settings`}>Settings</Link>
+        <nav>
+          <Link to={`/account/${uuid}/settings`}>Settings</Link>
+          <Link to={`/account/${uuid}/new/spending`}>Add Spending</Link>
+        </nav>
       </CardFooter>
     </Card>
   );

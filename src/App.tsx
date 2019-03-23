@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import { Component } from 'react';
 import { withAuthenticator } from 'aws-amplify-react';
 import Amplify, { Auth } from 'aws-amplify';
@@ -23,6 +23,7 @@ import { AccountPage } from './Account/Page';
 import { AccountSettingsPage } from './Account/SettingsPage';
 import { ApolloProvider } from 'react-apollo';
 import { createClient } from './Apollo/createClient';
+import { AddAccountSpendingPage } from './Account/AddAccountSpendingPage';
 
 Amplify.configure({
   Auth: {
@@ -36,62 +37,62 @@ Amplify.configure({
 
 export const client = createClient();
 
-class App extends Component<{}, { navigationVisible: boolean }> {
-  constructor(props: any) {
-    super(props);
-    this.state = {
-      navigationVisible: false
-    };
-  }
+const App = () => {
+  const [navigationVisible, setNavigationVisible] = useState(false);
 
-  logout = async () => {
+  const toggleNavigation = () => setNavigationVisible(!navigationVisible);
+
+  const logout = async () => {
     await Auth.signOut();
     window.location.reload();
   };
 
-  toggleNavigation = () => {
-    this.setState({ navigationVisible: !this.state.navigationVisible });
-  };
-
-  render() {
-    return (
-      <Router>
-        <header>
-          <Navbar color="light" light>
-            <NavbarBrand href="/">Ausgaben</NavbarBrand>
-            <NavbarToggler onClick={() => this.toggleNavigation()} />
-            <Collapse isOpen={this.state.navigationVisible} navbar>
-              <Nav navbar>
-                <NavItem>
-                  <Link className="nav-link" to="/accounts">
-                    Accounts
-                  </Link>
-                </NavItem>
-                <NavItem>
-                  <Button onClick={() => this.logout()} outline color="danger">
-                    Log out
-                  </Button>
-                </NavItem>
-              </Nav>
-            </Collapse>
-          </Navbar>
-        </header>
-        <main>
-          <ApolloProvider client={client}>
-            <Route exact path="/" render={() => <Redirect to="/accounts" />} />
-            <Route exact path="/accounts" component={AccountsPage} />
-            <Route exact path="/new/account" component={CreateAccountsPage} />
-            <Route exact path="/account/:uuid" component={AccountPage} />
-            <Route
-              exact
-              path="/account/:uuid/settings"
-              component={AccountSettingsPage}
-            />
-          </ApolloProvider>
-        </main>
-      </Router>
-    );
-  }
-}
+  return (
+    <Router>
+      <header>
+        <Navbar color="light" light>
+          <NavbarBrand href="/">Ausgaben</NavbarBrand>
+          <NavbarToggler onClick={() => toggleNavigation()} />
+          <Collapse isOpen={navigationVisible} navbar>
+            <Nav navbar>
+              <NavItem>
+                <Link
+                  className="nav-link"
+                  to="/accounts"
+                  onClick={() => toggleNavigation()}
+                >
+                  Accounts
+                </Link>
+              </NavItem>
+              <NavItem>
+                <Button onClick={() => logout()} outline color="danger">
+                  Log out
+                </Button>
+              </NavItem>
+            </Nav>
+          </Collapse>
+        </Navbar>
+      </header>
+      <main>
+        <ApolloProvider client={client}>
+          <Route exact path="/" render={() => <Redirect to="/accounts" />} />
+          <Route exact path="/accounts" component={AccountsPage} />
+          <Route exact path="/new/account" component={CreateAccountsPage} />
+          <Route exact path="/account/:uuid" component={AccountPage} />
+          <Route
+            exact
+            path="/account/:uuid/settings"
+            component={AccountSettingsPage}
+          />
+          <Route
+            exact
+            path="/account/:uuid/new/spending"
+            component={AddAccountSpendingPage}
+          />
+        </ApolloProvider>
+      </main>
+    </Router>
+  );
+};
 
 export default withAuthenticator(App);
