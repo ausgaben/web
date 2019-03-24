@@ -28,21 +28,13 @@ form {
   .form-group {
     &.oneLine {
       display: flex;
-      align-items: center;
+      align-items: baseline;
       justify-content: space-between;
 
       label {
         margin-bottom: 0;
         white-space: nowrap;
         margin-right: 0.5rem;
-      }
-
-      &.withValueSelector {
-        align-items: baseline;
-
-        input + .valueSelector {
-          margin-top: 0.25rem;
-        }
       }
     }
   }

@@ -189,34 +189,23 @@ export const AddSpending = (props: { account: Account }) => {
                       </Button>
                     </ButtonGroup>
                   </FormGroup>
-                  <FormGroup className="oneLine withValueSelector">
+                  <FormGroup className="oneLine">
                     <Label for="paidWith">paid with</Label>
                     <div>
-                      <Input
-                        disabled={adding}
-                        type="text"
-                        name="paidWith"
-                        id="paidWith"
-                        placeholder="e.g. 'VISA Debit'"
-                        value={paidWith}
-                        onChange={({ target: { value } }) => {
-                          setPaidWith(value);
-                        }}
-                        onBlur={({ target: { value } }) => {
-                          if (!value.length) return;
-                          const m = Array.from(
-                            new Set([...paymentMethods, value]).values()
-                          );
-                          setPaymentMethods(m);
-                          Cache.setItem('addSpending.paymentMethods', m);
-                        }}
-                      />
                       <ValueSelector
+                        value={paidWith}
                         values={paymentMethods}
                         disabled={adding}
                         onSelect={setPaidWith}
                         onDelete={method => {
                           const m = remove(paymentMethods, method);
+                          setPaymentMethods(m);
+                          Cache.setItem('addSpending.paymentMethods', m);
+                        }}
+                        onAdd={value => {
+                          const m = Array.from(
+                            new Set([...paymentMethods, value]).values()
+                          );
                           setPaymentMethods(m);
                           Cache.setItem('addSpending.paymentMethods', m);
                         }}

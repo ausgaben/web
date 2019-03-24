@@ -4,11 +4,13 @@ import { Button, ButtonGroup } from 'reactstrap';
 
 export const PredefinedValueButton = ({
   value,
+  selected,
   onSelect,
   onDelete,
   disabled
 }: {
   value: string;
+  selected: boolean;
   onSelect: () => void;
   onDelete: () => void;
   disabled?: boolean;
@@ -21,7 +23,7 @@ export const PredefinedValueButton = ({
         tabIndex={-1}
         color="info"
         size="sm"
-        outline
+        outline={!selected}
         disabled={disabled}
         onClick={() => onSelect()}
       >
