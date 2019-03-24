@@ -1,5 +1,5 @@
 import React from 'react';
-import { AddSpending } from './AddSpending';
+import { AddSpending } from '../AddSpending/AddSpending';
 import { Page } from './Page';
 
 export const AddAccountSpendingPage = Page(account => (

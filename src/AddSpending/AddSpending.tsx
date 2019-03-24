@@ -15,18 +15,23 @@ import {
   Label,
   Input,
   Row,
-  Col
+  Col,
+  InputGroupButtonDropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+  InputGroup
 } from 'reactstrap';
 import gql from 'graphql-tag';
 import { Fail, Note } from '../Note/Note';
-import './Info.scss';
+import '../Account/Info.scss';
 import { Account } from '../schema';
 import { Mutation } from 'react-apollo';
 import { GraphQLError } from 'graphql';
 import { currencies, NOK } from '../currency/currencies';
 import { Cache } from 'aws-amplify';
-import './AddSpending.scss';
-import { remove, splice } from '../util/splice';
+import { remove } from '../util/splice';
+import { ValueSelector } from '../ValueSelector/ValueSelector';
 
 export const addSpendingQuery = gql`
   mutation addSpending($accountId: ID!) {
@@ -56,6 +61,7 @@ export const AddSpending = (props: { account: Account }) => {
   const [paymentMethods, setPaymentMethods] = useState(
     Cache.getItem('addSpending.paymentMethods') || []
   );
+  const [currencyDropdownOpen, setCurrencyDropdownOpen] = useState(false);
 
   const isValid =
     category.length && description.length && parseFloat(amount) > 0;
@@ -123,40 +129,45 @@ export const AddSpending = (props: { account: Account }) => {
                   <div className="amount">
                     <FormGroup className="oneLine">
                       <Label for="amount">Amount</Label>
-                      <Input
-                        disabled={adding}
-                        tabIndex={++tabIndex}
-                        type="number"
-                        min="0"
-                        name="amount"
-                        id="amount"
-                        placeholder="e.g. '123.45'"
-                        value={amount}
-                        required
-                        onChange={({ target: { value } }) =>
-                          setAmount((Math.abs(+value) as unknown) as string)
-                        }
-                      />
-                    </FormGroup>
-                    <FormGroup>
-                      <Label for="currency" hidden>
-                        Currency
-                      </Label>
-                      <Input
-                        type="select"
-                        name="currency"
-                        id="currency"
-                        value={currency}
-                        disabled={adding}
-                        onChange={({ target: { value } }) => {
-                          setCurrency(value);
-                          Cache.setItem('addSpending.currency', value);
-                        }}
-                      >
-                        {currencies.map(({ id }) => (
-                          <option key={id}>{id}</option>
-                        ))}
-                      </Input>
+                      <InputGroup>
+                        <Input
+                          disabled={adding}
+                          tabIndex={++tabIndex}
+                          type="number"
+                          min="0"
+                          name="amount"
+                          id="amount"
+                          placeholder="e.g. '123.45'"
+                          value={amount}
+                          required
+                          onChange={({ target: { value } }) =>
+                            setAmount((Math.abs(+value) as unknown) as string)
+                          }
+                        />
+
+                        <InputGroupButtonDropdown
+                          addonType="append"
+                          isOpen={currencyDropdownOpen}
+                          toggle={() =>
+                            setCurrencyDropdownOpen(!currencyDropdownOpen)
+                          }
+                        >
+                          <DropdownToggle caret>{currency}</DropdownToggle>
+                          <DropdownMenu>
+                            {currencies.map(({ id }) => (
+                              <DropdownItem
+                                key={id}
+                                onClick={() => {
+                                  setCurrency(id);
+                                  Cache.setItem('addSpending.currency', id);
+                                }}
+                              >
+                                {id}
+                              </DropdownItem>
+                            ))}
+                          </DropdownMenu>
+                        </InputGroupButtonDropdown>
+                      </InputGroup>
                     </FormGroup>
                   </div>
                   <FormGroup className="oneLine">
@@ -252,85 +263,5 @@ export const AddSpending = (props: { account: Account }) => {
         )}
       </Card>
     </Form>
-  );
-};
-
-const ValueSelector = ({
-  values,
-  onSelect,
-  onDelete,
-  disabled
-}: {
-  values: string[];
-  onSelect: (value: string) => void;
-  onDelete: (value: string) => void;
-  disabled?: boolean;
-}) => {
-  if (!values.length) {
-    return null;
-  }
-  return (
-    <div className="valueSelector">
-      {values.map(method => (
-        <PredefinedValueButton
-          value={method}
-          onSelect={() => onSelect(method)}
-          onDelete={() => onDelete(method)}
-          key={method}
-          disabled={disabled}
-        />
-      ))}
-    </div>
-  );
-};
-
-const PredefinedValueButton = ({
-  value,
-  onSelect,
-  onDelete,
-  disabled
-}: {
-  value: string;
-  onSelect: () => void;
-  onDelete: () => void;
-  disabled?: boolean;
-}) => {
-  const [confirmDelete, setConfirmDelete] = useState(false);
-  const [timeoutId, setTimeoutId] = useState(0 as any);
-  return (
-    <ButtonGroup>
-      <Button
-        tabIndex={-1}
-        color="info"
-        size="sm"
-        outline
-        disabled={disabled}
-        onClick={() => onSelect()}
-      >
-        {value}
-      </Button>
-      <Button
-        tabIndex={-1}
-        color={confirmDelete ? 'danger' : 'info'}
-        size="sm"
-        outline={!confirmDelete}
-        disabled={disabled}
-        onClick={() => {
-          if (confirmDelete) {
-            clearTimeout(timeoutId);
-            onDelete();
-          } else {
-            setConfirmDelete(true);
-            setTimeoutId(
-              setTimeout(() => {
-                setConfirmDelete(false);
-              }, 1000)
-            );
-          }
-        }}
-      >
-        {!confirmDelete ? '⨯' : '⁉️'}
-      </Button>
-    </ButtonGroup>
   );
 };
