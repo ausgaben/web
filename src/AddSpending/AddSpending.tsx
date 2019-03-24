@@ -33,9 +33,29 @@ import { Cache } from 'aws-amplify';
 import { remove } from '../util/splice';
 import { ValueSelector } from '../ValueSelector/ValueSelector';
 
-export const addSpendingQuery = gql`
-  mutation addSpending($accountId: ID!) {
-    addSpending(accountId: $accountId)
+export const createSpendingQuery = gql`
+  mutation createSpending(
+    $accountId: ID!
+    $spentAt: String!
+    $category: String!
+    $description: String!
+    $amount: Float!
+    $currencyId: ID!
+    $isIncome: Boolean
+    $paidWith: String!
+  ) {
+    createSpending(
+      accountId: $accountId
+      spentAt: $spentAt
+      category: $category
+      description: $description
+      amount: $amount
+      currencyId: $currencyId
+      isIncome: $isIncome
+      paidWith: $paidWith
+    ) {
+      uuid
+    }
   }
 `;
 
@@ -77,8 +97,8 @@ export const AddSpending = (props: { account: Account }) => {
           </CardTitle>
         </CardHeader>
         {!added && (
-          <Mutation mutation={addSpendingQuery}>
-            {addSpendingMutation => (
+          <Mutation mutation={createSpendingQuery}>
+            {createSpendingMutation => (
               <>
                 <CardBody>
                   <FormGroup className="oneLine">
@@ -219,7 +239,18 @@ export const AddSpending = (props: { account: Account }) => {
                     onClick={async () => {
                       setAdding(true);
                       setError(false);
-                      addSpendingMutation({ variables: { uuid } }).then(
+                      createSpendingMutation({
+                        variables: {
+                          accountID: uuid,
+                          spentAt,
+                          category,
+                          description,
+                          amount,
+                          currency,
+                          isIncome,
+                          paidWith
+                        }
+                      }).then(
                         async ({
                           errors
                         }: { errors?: GraphQLError[] } | any) => {
