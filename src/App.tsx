@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Component } from 'react';
 import { withAuthenticator } from 'aws-amplify-react';
 import Amplify, { Auth } from 'aws-amplify';
 import {
@@ -18,6 +17,7 @@ import {
   Redirect
 } from 'react-router-dom';
 import { AccountsPage } from './Accounts/Page';
+import { AboutPage } from './About/Page';
 import { CreateAccountsPage } from './CreateAccount/Page';
 import { AccountPage } from './Account/Page';
 import { AccountSettingsPage } from './Account/SettingsPage';
@@ -65,6 +65,15 @@ const App = () => {
                 </Link>
               </NavItem>
               <NavItem>
+                <Link
+                  className="nav-link"
+                  to="/about"
+                  onClick={() => toggleNavigation()}
+                >
+                  About
+                </Link>
+              </NavItem>
+              <NavItem>
                 <Button onClick={() => logout()} outline color="danger">
                   Log out
                 </Button>
@@ -77,6 +86,7 @@ const App = () => {
         <ApolloProvider client={client}>
           <Route exact path="/" render={() => <Redirect to="/accounts" />} />
           <Route exact path="/accounts" component={AccountsPage} />
+          <Route exact path="/about" component={AboutPage} />
           <Route exact path="/new/account" component={CreateAccountsPage} />
           <Route exact path="/account/:uuid" component={AccountPage} />
           <Route
