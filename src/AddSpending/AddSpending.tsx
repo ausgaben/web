@@ -191,26 +191,25 @@ export const AddSpending = (props: { account: Account }) => {
                   </FormGroup>
                   <FormGroup className="oneLine">
                     <Label for="paidWith">paid with</Label>
-                    <div>
-                      <ValueSelector
-                        value={paidWith}
-                        values={paymentMethods}
-                        disabled={adding}
-                        onSelect={setPaidWith}
-                        onDelete={method => {
-                          const m = remove(paymentMethods, method);
-                          setPaymentMethods(m);
-                          Cache.setItem('addSpending.paymentMethods', m);
-                        }}
-                        onAdd={value => {
-                          const m = Array.from(
-                            new Set([...paymentMethods, value]).values()
-                          );
-                          setPaymentMethods(m);
-                          Cache.setItem('addSpending.paymentMethods', m);
-                        }}
-                      />
-                    </div>
+                    <ValueSelector
+                      value={paidWith}
+                      values={paymentMethods}
+                      disabled={adding}
+                      onSelect={setPaidWith}
+                      onDelete={method => {
+                        const m = remove(paymentMethods, method);
+                        setPaymentMethods(m);
+                        Cache.setItem('addSpending.paymentMethods', m);
+                      }}
+                      onAdd={value => {
+                        const m = Array.from(
+                          new Set([...paymentMethods, value]).values()
+                        );
+                        setPaymentMethods(m);
+                        setPaidWith(value);
+                        Cache.setItem('addSpending.paymentMethods', m);
+                      }}
+                    />
                   </FormGroup>
                 </CardBody>
                 <CardFooter>
