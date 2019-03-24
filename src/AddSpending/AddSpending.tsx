@@ -94,7 +94,6 @@ export const AddSpending = (props: { account: Account }) => {
   const reset = () => {
     setIsIncome(false);
     setIsPending(false);
-    setCategory('');
     setDescription('');
     setAmountWhole('');
     setAmountFraction('');
@@ -183,6 +182,28 @@ export const AddSpending = (props: { account: Account }) => {
                   <FormGroup className="oneLine">
                     <Label for="amountWhole">Amount</Label>
                     <InputGroup>
+                      <InputGroupButtonDropdown
+                        addonType="prepend"
+                        isOpen={currencyDropdownOpen}
+                        toggle={() =>
+                          setCurrencyDropdownOpen(!currencyDropdownOpen)
+                        }
+                      >
+                        <DropdownToggle caret>{currency}</DropdownToggle>
+                        <DropdownMenu>
+                          {currencies.map(({ id }) => (
+                            <DropdownItem
+                              key={id}
+                              onClick={() => {
+                                setCurrency(id);
+                                Cache.setItem('addSpending.currency', id);
+                              }}
+                            >
+                              {id}
+                            </DropdownItem>
+                          ))}
+                        </DropdownMenu>
+                      </InputGroupButtonDropdown>
                       <Input
                         disabled={adding}
                         tabIndex={++tabIndex}
@@ -229,28 +250,6 @@ export const AddSpending = (props: { account: Account }) => {
                           }
                         }}
                       />
-                      <InputGroupButtonDropdown
-                        addonType="append"
-                        isOpen={currencyDropdownOpen}
-                        toggle={() =>
-                          setCurrencyDropdownOpen(!currencyDropdownOpen)
-                        }
-                      >
-                        <DropdownToggle caret>{currency}</DropdownToggle>
-                        <DropdownMenu>
-                          {currencies.map(({ id }) => (
-                            <DropdownItem
-                              key={id}
-                              onClick={() => {
-                                setCurrency(id);
-                                Cache.setItem('addSpending.currency', id);
-                              }}
-                            >
-                              {id}
-                            </DropdownItem>
-                          ))}
-                        </DropdownMenu>
-                      </InputGroupButtonDropdown>
                     </InputGroup>
                   </FormGroup>
                 </div>
@@ -279,7 +278,7 @@ export const AddSpending = (props: { account: Account }) => {
                     value={paidWith}
                     values={paymentMethods}
                     disabled={adding}
-                    onSelect={setPaidWith}
+                    onSelect={value => setPaidWith(value ? value : '')}
                     onDelete={method => {
                       const m = remove(paymentMethods, method);
                       setPaymentMethods(m);
