@@ -1,23 +1,21 @@
 import React, { useState } from 'react';
 import { Connect } from 'aws-amplify-react';
 import {
+  Button,
   Card,
+  CardBody,
+  CardFooter,
   CardHeader,
   CardTitle,
-  CardBody,
-  ListGroup,
-  ListGroupItem,
-  CardFooter,
-  Button,
   Form
 } from 'reactstrap';
 import gql from 'graphql-tag';
 import { Fail, Note } from '../Note/Note';
-import './Info.scss';
 import { Account } from '../schema';
 import { Mutation } from 'react-apollo';
 import { accountsQuery } from '../graphql/queries/accountsQuery';
 import { GraphQLError } from 'graphql';
+import { Link } from 'react-router-dom';
 
 export const deleteAccountQuery = gql`
   mutation deleteAccount($accountId: ID!) {
@@ -29,7 +27,7 @@ export const Settings = (props: { account: Account }) => {
   const {
     account: {
       name,
-      _meta: { uuid }
+      _meta: { id }
     }
   } = props;
   const [deleting, setDeleting] = useState(false);
@@ -66,7 +64,7 @@ export const Settings = (props: { account: Account }) => {
                   accounts: { items: accounts }
                 } = res;
                 const accountToDelete = accounts.find(
-                  ({ _meta: { uuid: u } }) => uuid === u
+                  ({ _meta: { id: u } }) => id === u
                 );
                 if (accountToDelete) {
                   accounts.splice(accounts.indexOf(accountToDelete), 1);
@@ -86,27 +84,32 @@ export const Settings = (props: { account: Account }) => {
           >
             {deleteAccountMutation => (
               <CardFooter>
-                <Button
-                  disabled={deleting}
-                  onClick={async () => {
-                    setDeleting(true);
-                    deleteAccountMutation({
-                      variables: { accountId: uuid }
-                    }).then(
-                      async ({ errors }: { errors?: GraphQLError[] } | any) => {
-                        if (errors) {
-                          setError(true);
-                          setDeleting(false);
-                        } else {
-                          setDeleted(true);
+                <nav>
+                  <Link to={`/account/${id}`}>cancel</Link>
+                  <Button
+                    disabled={deleting}
+                    onClick={async () => {
+                      setDeleting(true);
+                      deleteAccountMutation({
+                        variables: { accountId: id }
+                      }).then(
+                        async ({
+                          errors
+                        }: { errors?: GraphQLError[] } | any) => {
+                          if (errors) {
+                            setError(true);
+                            setDeleting(false);
+                          } else {
+                            setDeleted(true);
+                          }
                         }
-                      }
-                    );
-                  }}
-                  color="danger"
-                >
-                  Delete
-                </Button>
+                      );
+                    }}
+                    color="danger"
+                  >
+                    Delete
+                  </Button>
+                </nav>
               </CardFooter>
             )}
           </Mutation>

@@ -5,7 +5,7 @@ export const accountsQuery = gql`
     accounts(startKey: $startKey) {
       items {
         _meta {
-          uuid
+          id
         }
         name
         isSavingsAccount

@@ -1,38 +1,24 @@
 import React from 'react';
 import { Connect } from 'aws-amplify-react';
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardBody,
-  ListGroup,
-  ListGroupItem,
-  CardFooter
-} from 'reactstrap';
-import { Loading } from '../Loading/Loading';
-import { Note } from '../Note/Note';
+import { Card, CardHeader, CardTitle } from 'reactstrap';
 import { Link } from 'react-router-dom';
-import './Info.scss';
 import { Account } from '../schema';
 
 export const Info = (props: { account: Account }) => {
   const {
     account: {
       name,
-      _meta: { uuid }
+      _meta: { id }
     }
   } = props;
   return (
     <Card>
       <CardHeader>
         <CardTitle>{name}</CardTitle>
-      </CardHeader>
-      <CardFooter>
         <nav>
-          <Link to={`/account/${uuid}/settings`}>Settings</Link>
-          <Link to={`/account/${uuid}/new/spending`}>Add Spending</Link>
+          <Link to={`/account/${id}/settings`}>Settings</Link>
         </nav>
-      </CardFooter>
+      </CardHeader>
     </Card>
   );
 };

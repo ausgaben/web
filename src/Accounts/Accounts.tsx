@@ -1,14 +1,11 @@
 import React from 'react';
 import {
   Card,
-  CardHeader,
-  CardTitle,
   CardBody,
-  ListGroup,
-  ListGroupItem,
   CardFooter,
-  Button,
-  Form
+  Form,
+  ListGroup,
+  ListGroupItem
 } from 'reactstrap';
 import { Loading } from '../Loading/Loading';
 import { Note } from '../Note/Note';
@@ -17,44 +14,7 @@ import './Accounts.scss';
 import { Account } from '../schema';
 import { Query } from 'react-apollo';
 import { accountsQuery } from '../graphql/queries/accountsQuery';
-
-const Header = ({
-  refetch,
-  nextStartKey
-}: {
-  refetch: (variables?: object) => void;
-  nextStartKey?: string;
-}) => (
-  <CardHeader>
-    <CardTitle>Accounts</CardTitle>
-    <nav>
-      {nextStartKey && (
-        <Button
-          outline
-          color={'secondary'}
-          onClick={() => {
-            refetch({
-              startKey: nextStartKey
-            });
-          }}
-        >
-          next
-        </Button>
-      )}
-      <Button
-        outline
-        color={'secondary'}
-        onClick={() => {
-          refetch({
-            startKey: undefined
-          });
-        }}
-      >
-        reload
-      </Button>
-    </nav>
-  </CardHeader>
-);
+import { ListingHeader } from '../ListingHeader/ListingHeader';
 
 export const Accounts = () => (
   <Form>
@@ -74,14 +34,15 @@ export const Accounts = () => (
             const accounts = data.accounts.items as Account[];
             return (
               <>
-                <Header
+                <ListingHeader
+                  title={'Accounts'}
                   refetch={refetch}
                   nextStartKey={data.accounts.nextStartKey}
                 />
                 <ListGroup flush>
-                  {accounts.map(({ name, _meta: { uuid } }) => (
-                    <ListGroupItem key={uuid}>
-                      <Link to={`/account/${uuid}`}>{name}</Link>
+                  {accounts.map(({ name, _meta: { id } }) => (
+                    <ListGroupItem key={id}>
+                      <Link to={`/account/${id}`}>{name}</Link>
                     </ListGroupItem>
                   ))}
                 </ListGroup>
@@ -90,7 +51,7 @@ export const Accounts = () => (
           }
           return (
             <>
-              <Header refetch={refetch} />
+              <ListingHeader refetch={refetch} title={'Accounts'} />
               <CardBody>
                 <Note>No accounts found.</Note>
               </CardBody>

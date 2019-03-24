@@ -73,7 +73,7 @@ export const ValueSelector = ({
               id="newValue"
               placeholder="e.g. 'VISA Debit'"
               minLength={1}
-              innerRef={ref => ref && ref.focus()}
+              innerRef={ref => ref && values.length && ref.focus()}
               value={newValue}
               onChange={({ target: { value } }) => {
                 setNewValue(value);

@@ -19,7 +19,7 @@ import { Account } from '../schema';
 export const createAccountQuery = gql`
   mutation createAccount($name: String!, $isSavingsAccount: Boolean!) {
     createAccount(name: $name, isSavingsAccount: $isSavingsAccount) {
-      uuid
+      id
     }
   }
 `;
@@ -43,7 +43,7 @@ export const CreateAccount = () => {
         cache,
         {
           data: {
-            createAccount: { uuid }
+            createAccount: { id }
           }
         }
       ) => {
@@ -68,7 +68,7 @@ export const CreateAccount = () => {
                     name,
                     isSavingsAccount,
                     _meta: {
-                      uuid,
+                      id,
                       __typename: 'EntityMeta'
                     },
                     __typename: 'Account'

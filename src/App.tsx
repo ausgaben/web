@@ -24,6 +24,7 @@ import { AccountSettingsPage } from './Account/SettingsPage';
 import { ApolloProvider } from 'react-apollo';
 import { createClient } from './Apollo/createClient';
 import { AddAccountSpendingPage } from './Account/AddAccountSpendingPage';
+import { Page as SpendingPage } from './Spending/Page';
 
 Amplify.configure({
   Auth: {
@@ -88,16 +89,21 @@ const App = () => {
           <Route exact path="/accounts" component={AccountsPage} />
           <Route exact path="/about" component={AboutPage} />
           <Route exact path="/new/account" component={CreateAccountsPage} />
-          <Route exact path="/account/:uuid" component={AccountPage} />
+          <Route exact path="/account/:id" component={AccountPage} />
           <Route
             exact
-            path="/account/:uuid/settings"
+            path="/account/:id/settings"
             component={AccountSettingsPage}
           />
           <Route
             exact
-            path="/account/:uuid/new/spending"
+            path="/account/:id/new/spending"
             component={AddAccountSpendingPage}
+          />
+          <Route
+            exact
+            path="/account/:accountId/spending/:spendingId"
+            component={SpendingPage}
           />
         </ApolloProvider>
       </main>

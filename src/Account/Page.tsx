@@ -5,15 +5,16 @@ import { Note } from '../Note/Note';
 import { Query } from 'react-apollo';
 import { accountQuery } from '../graphql/queries/accountQuery';
 import { Info } from './Info';
+import { Spendings } from './Spendings';
 
 export const Page = (children: (account: Account) => ReactNode) => ({
   match: {
-    params: { uuid }
+    params: { id }
   }
 }: {
-  match: { params: { uuid: string } };
+  match: { params: { id: string } };
 }) => (
-  <Query query={accountQuery} variables={{ uuid }}>
+  <Query query={accountQuery} variables={{ accountId: id }}>
     {({ data, loading, error }: any) => {
       if (error) {
         return (
@@ -28,9 +29,14 @@ export const Page = (children: (account: Account) => ReactNode) => ({
         const account = data.accounts.items[0] as Account;
         return <>{children(account)}</>;
       }
-      return <Note>Account {uuid} not found.</Note>;
+      return <Note>Account {id} not found.</Note>;
     }}
   </Query>
 );
 
-export const AccountPage = Page(account => <Info account={account} />);
+export const AccountPage = Page(account => (
+  <>
+    <Info account={account} />
+    <Spendings account={account} />
+  </>
+));

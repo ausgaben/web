@@ -1,13 +1,13 @@
 import gql from 'graphql-tag';
 
 export const accountQuery = gql`
-  query accounts($uuid: ID!) {
-    accounts(filter: { uuid: $uuid }) {
+  query accounts($accountId: ID!) {
+    accounts(filter: { accountId: $accountId }) {
       items {
         name
         isSavingsAccount
         _meta {
-          uuid
+          id
         }
       }
     }

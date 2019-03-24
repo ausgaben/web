@@ -22,7 +22,6 @@ import {
 } from 'reactstrap';
 import gql from 'graphql-tag';
 import { Fail, Note } from '../Note/Note';
-import '../Account/Info.scss';
 import { Account } from '../schema';
 import { Mutation } from 'react-apollo';
 import { GraphQLError } from 'graphql';
@@ -30,29 +29,32 @@ import { currencies, NOK } from '../currency/currencies';
 import { Cache } from 'aws-amplify';
 import { remove } from '../util/splice';
 import { ValueSelector } from '../ValueSelector/ValueSelector';
+import { Link } from 'react-router-dom';
 
 export const createSpendingQuery = gql`
   mutation createSpending(
     $accountId: ID!
-    $spentAt: String!
+    $bookedAt: String!
     $category: String!
     $description: String!
     $amount: Int!
     $currencyId: ID!
     $isIncome: Boolean
+    $isPending: Boolean
     $paidWith: String!
   ) {
     createSpending(
       accountId: $accountId
-      spentAt: $spentAt
+      bookedAt: $bookedAt
       category: $category
       description: $description
       amount: $amount
       currencyId: $currencyId
       isIncome: $isIncome
+      isPending: $isPending
       paidWith: $paidWith
     ) {
-      uuid
+      id
     }
   }
 `;
@@ -61,14 +63,15 @@ export const AddSpending = (props: { account: Account }) => {
   const {
     account: {
       name,
-      _meta: { uuid }
+      _meta: { id }
     }
   } = props;
   const [adding, setAdding] = useState(false);
   const [added, setAdded] = useState(false);
   const [error, setError] = useState(false);
   const [isIncome, setIsIncome] = useState(false);
-  const [spentAt, setSpentAt] = useState(new Date());
+  const [isPending, setIsPending] = useState(false);
+  const [bookedAt, setBookedAt] = useState(new Date());
   const [category, setCategory] = useState('');
   const [description, setDescription] = useState('');
   const [paidWith, setPaidWith] = useState('');
@@ -90,6 +93,7 @@ export const AddSpending = (props: { account: Account }) => {
 
   const reset = () => {
     setIsIncome(false);
+    setIsPending(false);
     setCategory('');
     setDescription('');
     setAmountWhole('');
@@ -111,19 +115,41 @@ export const AddSpending = (props: { account: Account }) => {
             <>
               <CardBody>
                 <FormGroup className="oneLine">
-                  <Label for="spentAt">Date</Label>
-                  <Input
-                    tabIndex={++tabIndex}
-                    disabled={adding}
-                    type="date"
-                    name="spentAt"
-                    id="spentAt"
-                    value={spentAt.toISOString().substr(0, 10)}
-                    required
-                    onChange={({ target: { value } }) =>
-                      setSpentAt(new Date(Date.parse(value)))
-                    }
-                  />
+                  <Label for="bookedAt">Date</Label>
+                  <InputGroup>
+                    <Input
+                      tabIndex={++tabIndex}
+                      disabled={adding}
+                      type="date"
+                      name="bookedAt"
+                      id="bookedAt"
+                      value={bookedAt.toISOString().substr(0, 10)}
+                      required
+                      onChange={({ target: { value } }) =>
+                        setBookedAt(new Date(Date.parse(value)))
+                      }
+                    />
+                    <InputGroupAddon addonType="append">
+                      <Button
+                        color="warning"
+                        outline={!isPending}
+                        onClick={() => setIsPending(true)}
+                        title="Pending"
+                      >
+                        ⏳
+                      </Button>
+                    </InputGroupAddon>
+                    <InputGroupAddon addonType="append">
+                      <Button
+                        color="success"
+                        outline={isPending}
+                        onClick={() => setIsPending(false)}
+                        title="Booked"
+                      >
+                        ✓
+                      </Button>
+                    </InputGroupAddon>
+                  </InputGroup>
                 </FormGroup>
                 <FormGroup className="oneLine">
                   <Label for="category">Category</Label>
@@ -271,46 +297,55 @@ export const AddSpending = (props: { account: Account }) => {
                 </FormGroup>
               </CardBody>
               <CardFooter>
-                <Button
-                  disabled={adding || !isValid}
-                  tabIndex={++tabIndex}
-                  onClick={async () => {
-                    setAdding(true);
-                    setError(false);
-                    createSpendingMutation({
-                      variables: {
-                        accountId: uuid,
-                        spentAt,
-                        category,
-                        description,
-                        amount,
-                        currencyId: currency,
-                        isIncome,
-                        paidWith
-                      }
-                    }).then(
-                      async ({ errors }: { errors?: GraphQLError[] } | any) => {
-                        if (errors) {
-                          setError(true);
-                          setAdding(false);
-                        } else {
-                          setAdded(true);
-                          setAdding(false);
-                          reset();
+                <nav>
+                  <Link to={`/account/${id}`}>cancel</Link>
+                  {added && (
+                    <Note>{isIncome ? 'Income' : 'Spending'} added.</Note>
+                  )}
+                  {error && (
+                    <Fail>
+                      Adding {isIncome ? 'Income' : 'Spending'} failed.
+                    </Fail>
+                  )}
+                  <Button
+                    disabled={adding || !isValid}
+                    tabIndex={++tabIndex}
+                    onClick={async () => {
+                      setAdded(false);
+                      setAdding(true);
+                      setError(false);
+                      createSpendingMutation({
+                        variables: {
+                          accountId: id,
+                          bookedAt,
+                          category,
+                          description,
+                          amount,
+                          currencyId: currency,
+                          isIncome,
+                          isPending,
+                          paidWith
                         }
-                      }
-                    );
-                  }}
-                  color="primary"
-                >
-                  Add
-                </Button>
-                {added && (
-                  <Note>{isIncome ? 'Income' : 'Spending'} added.</Note>
-                )}
-                {error && (
-                  <Fail>Adding {isIncome ? 'Income' : 'Spending'} failed.</Fail>
-                )}
+                      }).then(
+                        async ({
+                          errors
+                        }: { errors?: GraphQLError[] } | any) => {
+                          if (errors) {
+                            setError(true);
+                            setAdding(false);
+                          } else {
+                            setAdded(true);
+                            setAdding(false);
+                            reset();
+                          }
+                        }
+                      );
+                    }}
+                    color="primary"
+                  >
+                    Add
+                  </Button>
+                </nav>
               </CardFooter>
             </>
           )}
