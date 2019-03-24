@@ -1,26 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Connect } from 'aws-amplify-react';
 import {
+  Button,
   ButtonGroup,
   Card,
+  CardBody,
+  CardFooter,
   CardHeader,
   CardTitle,
-  CardBody,
-  ListGroup,
-  ListGroupItem,
-  CardFooter,
-  Button,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
   Form,
   FormGroup,
-  Label,
   Input,
-  Row,
-  Col,
+  InputGroup,
+  InputGroupAddon,
   InputGroupButtonDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-  InputGroup
+  InputGroupText,
+  Label
 } from 'reactstrap';
 import gql from 'graphql-tag';
 import { Fail, Note } from '../Note/Note';
@@ -39,7 +37,7 @@ export const createSpendingQuery = gql`
     $spentAt: String!
     $category: String!
     $description: String!
-    $amount: Float!
+    $amount: Int!
     $currencyId: ID!
     $isIncome: Boolean
     $paidWith: String!
@@ -74,7 +72,8 @@ export const AddSpending = (props: { account: Account }) => {
   const [category, setCategory] = useState('');
   const [description, setDescription] = useState('');
   const [paidWith, setPaidWith] = useState('');
-  const [amount, setAmount] = useState('');
+  const [amountWhole, setAmountWhole] = useState('');
+  const [amountFraction, setAmountFraction] = useState('');
   const [currency, setCurrency] = useState(
     Cache.getItem('addSpending.currency') || NOK.id
   );
@@ -83,8 +82,19 @@ export const AddSpending = (props: { account: Account }) => {
   );
   const [currencyDropdownOpen, setCurrencyDropdownOpen] = useState(false);
 
-  const isValid =
-    category.length && description.length && parseFloat(amount) > 0;
+  const amount =
+    (amountWhole ? parseInt(amountWhole, 10) * 100 : 0) +
+    (amountFraction ? parseInt(amountFraction, 10) : 0);
+
+  const isValid = category.length && description.length && amount > 0;
+
+  const reset = () => {
+    setIsIncome(false);
+    setCategory('');
+    setDescription('');
+    setAmountWhole('');
+    setAmountFraction('');
+  };
 
   let tabIndex = 0;
 
@@ -96,190 +106,215 @@ export const AddSpending = (props: { account: Account }) => {
             Add {isIncome ? 'income' : 'spending'} to <em>{name}</em>
           </CardTitle>
         </CardHeader>
-        {!added && (
-          <Mutation mutation={createSpendingQuery}>
-            {createSpendingMutation => (
-              <>
-                <CardBody>
-                  <FormGroup className="oneLine">
-                    <Label for="spentAt">Date</Label>
-                    <Input
-                      tabIndex={++tabIndex}
-                      disabled={adding}
-                      type="date"
-                      name="spentAt"
-                      id="spentAt"
-                      value={spentAt.toISOString().substr(0, 10)}
-                      required
-                      onChange={({ target: { value } }) =>
-                        setSpentAt(new Date(Date.parse(value)))
-                      }
-                    />
-                  </FormGroup>
-                  <FormGroup className="oneLine">
-                    <Label for="category">Category</Label>
-                    <Input
-                      disabled={adding}
-                      tabIndex={++tabIndex}
-                      type="text"
-                      name="category"
-                      id="category"
-                      placeholder="e.g. 'Mat'"
-                      value={category}
-                      required
-                      onChange={({ target: { value } }) => setCategory(value)}
-                    />
-                  </FormGroup>
-                  <FormGroup className="oneLine">
-                    <Label for="description">Description</Label>
-                    <Input
-                      disabled={adding}
-                      tabIndex={++tabIndex}
-                      type="text"
-                      name="description"
-                      id="description"
-                      placeholder="e.g. 'Rema 1000'"
-                      value={description}
-                      required
-                      onChange={({ target: { value } }) =>
-                        setDescription(value)
-                      }
-                    />
-                  </FormGroup>
-                  <div className="amount">
-                    <FormGroup className="oneLine">
-                      <Label for="amount">Amount</Label>
-                      <InputGroup>
-                        <Input
-                          disabled={adding}
-                          tabIndex={++tabIndex}
-                          type="number"
-                          min="0"
-                          name="amount"
-                          id="amount"
-                          placeholder="e.g. '123.45'"
-                          value={amount}
-                          required
-                          onChange={({ target: { value } }) =>
-                            setAmount((Math.abs(+value) as unknown) as string)
-                          }
-                        />
-
-                        <InputGroupButtonDropdown
-                          addonType="append"
-                          isOpen={currencyDropdownOpen}
-                          toggle={() =>
-                            setCurrencyDropdownOpen(!currencyDropdownOpen)
-                          }
-                        >
-                          <DropdownToggle caret>{currency}</DropdownToggle>
-                          <DropdownMenu>
-                            {currencies.map(({ id }) => (
-                              <DropdownItem
-                                key={id}
-                                onClick={() => {
-                                  setCurrency(id);
-                                  Cache.setItem('addSpending.currency', id);
-                                }}
-                              >
-                                {id}
-                              </DropdownItem>
-                            ))}
-                          </DropdownMenu>
-                        </InputGroupButtonDropdown>
-                      </InputGroup>
-                    </FormGroup>
-                  </div>
-                  <FormGroup className="oneLine">
-                    <Label>Type</Label>
-                    <ButtonGroup>
-                      <Button
-                        color="danger"
-                        outline={isIncome}
-                        onClick={() => setIsIncome(false)}
-                      >
-                        Spending
-                      </Button>
-                      <Button
-                        color="success"
-                        outline={!isIncome}
-                        onClick={() => setIsIncome(true)}
-                      >
-                        Income
-                      </Button>
-                    </ButtonGroup>
-                  </FormGroup>
-                  <FormGroup className="oneLine">
-                    <Label for="paidWith">paid with</Label>
-                    <ValueSelector
-                      value={paidWith}
-                      values={paymentMethods}
-                      disabled={adding}
-                      onSelect={setPaidWith}
-                      onDelete={method => {
-                        const m = remove(paymentMethods, method);
-                        setPaymentMethods(m);
-                        Cache.setItem('addSpending.paymentMethods', m);
-                      }}
-                      onAdd={value => {
-                        const m = Array.from(
-                          new Set([...paymentMethods, value]).values()
-                        );
-                        setPaymentMethods(m);
-                        setPaidWith(value);
-                        Cache.setItem('addSpending.paymentMethods', m);
-                      }}
-                    />
-                  </FormGroup>
-                </CardBody>
-                <CardFooter>
-                  <Button
-                    disabled={adding || !isValid}
+        <Mutation mutation={createSpendingQuery}>
+          {createSpendingMutation => (
+            <>
+              <CardBody>
+                <FormGroup className="oneLine">
+                  <Label for="spentAt">Date</Label>
+                  <Input
                     tabIndex={++tabIndex}
-                    onClick={async () => {
-                      setAdding(true);
-                      setError(false);
-                      createSpendingMutation({
-                        variables: {
-                          accountID: uuid,
-                          spentAt,
-                          category,
-                          description,
-                          amount,
-                          currency,
-                          isIncome,
-                          paidWith
-                        }
-                      }).then(
-                        async ({
-                          errors
-                        }: { errors?: GraphQLError[] } | any) => {
-                          if (errors) {
-                            setError(true);
-                            setAdding(false);
+                    disabled={adding}
+                    type="date"
+                    name="spentAt"
+                    id="spentAt"
+                    value={spentAt.toISOString().substr(0, 10)}
+                    required
+                    onChange={({ target: { value } }) =>
+                      setSpentAt(new Date(Date.parse(value)))
+                    }
+                  />
+                </FormGroup>
+                <FormGroup className="oneLine">
+                  <Label for="category">Category</Label>
+                  <Input
+                    disabled={adding}
+                    tabIndex={++tabIndex}
+                    type="text"
+                    name="category"
+                    id="category"
+                    placeholder="e.g. 'Mat'"
+                    value={category}
+                    required
+                    onChange={({ target: { value } }) => setCategory(value)}
+                  />
+                </FormGroup>
+                <FormGroup className="oneLine">
+                  <Label for="description">Description</Label>
+                  <Input
+                    disabled={adding}
+                    tabIndex={++tabIndex}
+                    type="text"
+                    name="description"
+                    id="description"
+                    placeholder="e.g. 'Rema 1000'"
+                    value={description}
+                    required
+                    onChange={({ target: { value } }) => setDescription(value)}
+                  />
+                </FormGroup>
+                <div className="amount">
+                  <FormGroup className="oneLine">
+                    <Label for="amountWhole">Amount</Label>
+                    <InputGroup>
+                      <Input
+                        disabled={adding}
+                        tabIndex={++tabIndex}
+                        type="number"
+                        min="0"
+                        name="amountWhole"
+                        id="amountWhole"
+                        placeholder="'123'"
+                        value={amountWhole}
+                        required
+                        onChange={({ target: { value } }) => {
+                          const v = Math.abs(+value);
+                          if (v === 0) {
+                            setAmountWhole('');
                           } else {
-                            setAdded(true);
+                            setAmountWhole((v as unknown) as string);
                           }
+                        }}
+                      />
+                      <InputGroupAddon
+                        addonType="append"
+                        style={{ marginRight: -1 }}
+                      >
+                        <InputGroupText>.</InputGroupText>
+                      </InputGroupAddon>
+                      <Input
+                        disabled={adding}
+                        tabIndex={++tabIndex}
+                        type="number"
+                        min="0"
+                        max="99"
+                        name="amountFraction"
+                        id="amountFraction"
+                        placeholder="'99'"
+                        maxLength={2}
+                        width={2}
+                        value={amountFraction}
+                        onChange={({ target: { value } }) => {
+                          const v = Math.abs(+value.substr(0, 2));
+                          if (v === 0) {
+                            setAmountFraction('');
+                          } else {
+                            setAmountFraction((v as unknown) as string);
+                          }
+                        }}
+                      />
+                      <InputGroupButtonDropdown
+                        addonType="append"
+                        isOpen={currencyDropdownOpen}
+                        toggle={() =>
+                          setCurrencyDropdownOpen(!currencyDropdownOpen)
                         }
-                      );
+                      >
+                        <DropdownToggle caret>{currency}</DropdownToggle>
+                        <DropdownMenu>
+                          {currencies.map(({ id }) => (
+                            <DropdownItem
+                              key={id}
+                              onClick={() => {
+                                setCurrency(id);
+                                Cache.setItem('addSpending.currency', id);
+                              }}
+                            >
+                              {id}
+                            </DropdownItem>
+                          ))}
+                        </DropdownMenu>
+                      </InputGroupButtonDropdown>
+                    </InputGroup>
+                  </FormGroup>
+                </div>
+                <FormGroup className="oneLine">
+                  <Label>Type</Label>
+                  <ButtonGroup>
+                    <Button
+                      color="danger"
+                      outline={isIncome}
+                      onClick={() => setIsIncome(false)}
+                    >
+                      Spending
+                    </Button>
+                    <Button
+                      color="success"
+                      outline={!isIncome}
+                      onClick={() => setIsIncome(true)}
+                    >
+                      Income
+                    </Button>
+                  </ButtonGroup>
+                </FormGroup>
+                <FormGroup className="oneLine">
+                  <Label for="paidWith">paid with</Label>
+                  <ValueSelector
+                    value={paidWith}
+                    values={paymentMethods}
+                    disabled={adding}
+                    onSelect={setPaidWith}
+                    onDelete={method => {
+                      const m = remove(paymentMethods, method);
+                      setPaymentMethods(m);
+                      Cache.setItem('addSpending.paymentMethods', m);
                     }}
-                    color="primary"
-                  >
-                    Add
-                  </Button>
-                  {added && (
-                    <Note>{isIncome ? 'Income' : 'Spending'} added.</Note>
-                  )}
-                  {error && (
-                    <Fail>
-                      Adding {isIncome ? 'Income' : 'Spending'} failed.
-                    </Fail>
-                  )}
-                </CardFooter>
-              </>
-            )}
-          </Mutation>
-        )}
+                    onAdd={value => {
+                      const m = Array.from(
+                        new Set([...paymentMethods, value]).values()
+                      );
+                      setPaymentMethods(m);
+                      setPaidWith(value);
+                      Cache.setItem('addSpending.paymentMethods', m);
+                    }}
+                  />
+                </FormGroup>
+              </CardBody>
+              <CardFooter>
+                <Button
+                  disabled={adding || !isValid}
+                  tabIndex={++tabIndex}
+                  onClick={async () => {
+                    setAdding(true);
+                    setError(false);
+                    createSpendingMutation({
+                      variables: {
+                        accountId: uuid,
+                        spentAt,
+                        category,
+                        description,
+                        amount,
+                        currencyId: currency,
+                        isIncome,
+                        paidWith
+                      }
+                    }).then(
+                      async ({ errors }: { errors?: GraphQLError[] } | any) => {
+                        if (errors) {
+                          setError(true);
+                          setAdding(false);
+                        } else {
+                          setAdded(true);
+                          setAdding(false);
+                          reset();
+                        }
+                      }
+                    );
+                  }}
+                  color="primary"
+                >
+                  Add
+                </Button>
+                {added && (
+                  <Note>{isIncome ? 'Income' : 'Spending'} added.</Note>
+                )}
+                {error && (
+                  <Fail>Adding {isIncome ? 'Income' : 'Spending'} failed.</Fail>
+                )}
+              </CardFooter>
+            </>
+          )}
+        </Mutation>
       </Card>
     </Form>
   );

@@ -20,8 +20,8 @@ import { accountsQuery } from '../graphql/queries/accountsQuery';
 import { GraphQLError } from 'graphql';
 
 export const deleteAccountQuery = gql`
-  mutation deleteAccount($uuid: ID!) {
-    deleteAccount(uuid: $uuid)
+  mutation deleteAccount($accountId: ID!) {
+    deleteAccount(accountId: $accountId)
   }
 `;
 
@@ -90,7 +90,9 @@ export const Settings = (props: { account: Account }) => {
                   disabled={deleting}
                   onClick={async () => {
                     setDeleting(true);
-                    deleteAccountMutation({ variables: { uuid } }).then(
+                    deleteAccountMutation({
+                      variables: { accountId: uuid }
+                    }).then(
                       async ({ errors }: { errors?: GraphQLError[] } | any) => {
                         if (errors) {
                           setError(true);
