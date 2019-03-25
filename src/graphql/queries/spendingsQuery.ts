@@ -8,6 +8,7 @@ export const spendingsQuery = gql`
           id
         }
         bookedAt
+        booked
         category
         description
         amount
@@ -15,8 +16,6 @@ export const spendingsQuery = gql`
           id
           toEUR
         }
-        isIncome
-        isPending
         paidWith
       }
       nextStartKey

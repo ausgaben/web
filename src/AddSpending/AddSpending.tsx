@@ -35,23 +35,23 @@ export const createSpendingQuery = gql`
   mutation createSpending(
     $accountId: ID!
     $bookedAt: String!
+    $booked: Boolean
     $category: String!
     $description: String!
     $amount: Int!
     $currencyId: ID!
     $isIncome: Boolean
-    $isPending: Boolean
     $paidWith: String!
   ) {
     createSpending(
       accountId: $accountId
       bookedAt: $bookedAt
+      booked: $booked
       category: $category
       description: $description
       amount: $amount
       currencyId: $currencyId
       isIncome: $isIncome
-      isPending: $isPending
       paidWith: $paidWith
     ) {
       id
@@ -70,7 +70,7 @@ export const AddSpending = (props: { account: Account }) => {
   const [added, setAdded] = useState(false);
   const [error, setError] = useState(false);
   const [isIncome, setIsIncome] = useState(false);
-  const [isPending, setIsPending] = useState(false);
+  const [booked, setBooked] = useState(true);
   const [bookedAt, setBookedAt] = useState(new Date());
   const [category, setCategory] = useState('');
   const [description, setDescription] = useState('');
@@ -93,7 +93,7 @@ export const AddSpending = (props: { account: Account }) => {
 
   const reset = () => {
     setIsIncome(false);
-    setIsPending(false);
+    setBooked(false);
     setDescription('');
     setAmountWhole('');
     setAmountFraction('');
@@ -131,8 +131,8 @@ export const AddSpending = (props: { account: Account }) => {
                     <InputGroupAddon addonType="append">
                       <Button
                         color="warning"
-                        outline={!isPending}
-                        onClick={() => setIsPending(true)}
+                        outline={!booked}
+                        onClick={() => setBooked(false)}
                         title="Pending"
                       >
                         ⏳
@@ -141,8 +141,8 @@ export const AddSpending = (props: { account: Account }) => {
                     <InputGroupAddon addonType="append">
                       <Button
                         color="success"
-                        outline={isPending}
-                        onClick={() => setIsPending(false)}
+                        outline={booked}
+                        onClick={() => setBooked(true)}
                         title="Booked"
                       >
                         ✓
@@ -319,10 +319,9 @@ export const AddSpending = (props: { account: Account }) => {
                           bookedAt,
                           category,
                           description,
-                          amount,
+                          amount: isIncome ? amount : -amount,
                           currencyId: currency,
-                          isIncome,
-                          isPending,
+                          booked,
                           paidWith
                         }
                       }).then(

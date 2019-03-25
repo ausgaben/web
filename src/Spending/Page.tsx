@@ -97,9 +97,7 @@ export const Page = ({
                       <dt>Paid with</dt>
                       <dd>{spending.paidWith}</dd>
                       <dt>Booked?</dt>
-                      <dd>{spending.isPending ? 'Yes' : 'No'}</dd>
-                      <dt>Income?</dt>
-                      <dd>{spending.isIncome ? 'Yes' : 'No'}</dd>
+                      <dd>{spending.booked ? 'Yes' : 'No'}</dd>
                     </dl>
                   </CardBody>
                   <Mutation

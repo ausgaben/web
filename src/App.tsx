@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { withAuthenticator } from 'aws-amplify-react';
 import Amplify, { Auth } from 'aws-amplify';
+import { CognitoUser } from 'amazon-cognito-identity-js';
 import {
   Navbar,
   NavbarBrand,
@@ -38,7 +39,17 @@ Amplify.configure({
 
 export const client = createClient();
 
-const App = () => {
+export const AuthDataContext = React.createContext<{ identityId?: string }>({});
+
+const App = ({ authData }: { authData: CognitoUser }) => {
+  const [identityId, setIdentityId] = useState();
+
+  useEffect(() => {
+    Auth.currentCredentials().then(({ identityId }) => {
+      setIdentityId(identityId);
+    });
+  });
+
   const [navigationVisible, setNavigationVisible] = useState(false);
 
   const toggleNavigation = () => setNavigationVisible(!navigationVisible);
@@ -84,28 +95,30 @@ const App = () => {
         </Navbar>
       </header>
       <main>
-        <ApolloProvider client={client}>
-          <Route exact path="/" render={() => <Redirect to="/accounts" />} />
-          <Route exact path="/accounts" component={AccountsPage} />
-          <Route exact path="/about" component={AboutPage} />
-          <Route exact path="/new/account" component={CreateAccountsPage} />
-          <Route exact path="/account/:id" component={AccountPage} />
-          <Route
-            exact
-            path="/account/:id/settings"
-            component={AccountSettingsPage}
-          />
-          <Route
-            exact
-            path="/account/:id/new/spending"
-            component={AddAccountSpendingPage}
-          />
-          <Route
-            exact
-            path="/account/:accountId/spending/:spendingId"
-            component={SpendingPage}
-          />
-        </ApolloProvider>
+        <AuthDataContext.Provider value={{ identityId }}>
+          <ApolloProvider client={client}>
+            <Route exact path="/" render={() => <Redirect to="/accounts" />} />
+            <Route exact path="/accounts" component={AccountsPage} />
+            <Route exact path="/about" component={AboutPage} />
+            <Route exact path="/new/account" component={CreateAccountsPage} />
+            <Route exact path="/account/:id" component={AccountPage} />
+            <Route
+              exact
+              path="/account/:id/settings"
+              component={AccountSettingsPage}
+            />
+            <Route
+              exact
+              path="/account/:id/new/spending"
+              component={AddAccountSpendingPage}
+            />
+            <Route
+              exact
+              path="/account/:accountId/spending/:spendingId"
+              component={SpendingPage}
+            />
+          </ApolloProvider>
+        </AuthDataContext.Provider>
       </main>
     </Router>
   );
