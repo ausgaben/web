@@ -18,6 +18,7 @@ import { Query } from 'react-apollo';
 import { ListingHeader } from '../ListingHeader/ListingHeader';
 import { FormatDate } from '../util/date/FormatDate';
 import { currenciesById } from '../currency/currencies';
+import { FormatMoney } from '../util/date/FormatMoney';
 
 export const Spendings = (props: { account: Account }) => {
   const {
@@ -70,11 +71,11 @@ export const Spendings = (props: { account: Account }) => {
                               {description}
                             </Link>
                           </td>
-                          <td className="money">
-                            <span className="amount">{amount / 100}</span>
-                            <span className="currency">
-                              {currenciesById[currencyId].symbol}
-                            </span>
+                          <td>
+                            <FormatMoney
+                              amount={amount}
+                              symbol={currenciesById[currencyId].symbol}
+                            />
                           </td>
                         </tr>
                       )

@@ -1,0 +1,20 @@
+span.money {
+  white-space: nowrap;
+  display: inline-block;
+  width: 100%;
+  text-align: right;
+
+  .currency,
+  .minus {
+    opacity: 0.5;
+    font-size: 80%;
+  }
+
+  &.income {
+    color: green;
+  }
+
+  &.spending {
+    color: darkred;
+  }
+}

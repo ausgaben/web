@@ -15,6 +15,7 @@ import { GraphQLError } from 'graphql';
 import { Link } from 'react-router-dom';
 import gql from 'graphql-tag';
 import { currenciesById } from '../currency/currencies';
+import { FormatMoney } from '../util/date/FormatMoney';
 
 export const deleteSpendingQuery = gql`
   mutation deleteSpending($spendingId: ID!) {
@@ -88,11 +89,11 @@ export const Page = ({
                       <dt>Description</dt>
                       <dd>{spending.description}</dd>
                       <dt>Amount</dt>
-                      <dd className="money">
-                        <span className="amount">{spending.amount / 100}</span>
-                        <span className="currency">
-                          {currenciesById[spending.currency.id].symbol}
-                        </span>
+                      <dd>
+                        <FormatMoney
+                          amount={spending.amount}
+                          symbol={currenciesById[spending.currency.id].symbol}
+                        />
                       </dd>
                       <dt>Paid with</dt>
                       <dd>{spending.paidWith}</dd>
