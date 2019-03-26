@@ -1,8 +1,18 @@
 import gql from 'graphql-tag';
 
 export const spendingsQuery = gql`
-  query spendings($accountId: ID!, $startKey: ID) {
-    spendings(accountId: $accountId, startKey: $startKey) {
+  query spendings(
+    $accountId: ID!
+    $startDate: String!
+    $endDate: String!
+    $startKey: ID
+  ) {
+    spendings(
+      accountId: $accountId
+      startDate: $startDate
+      endDate: $endDate
+      startKey: $startKey
+    ) {
       items {
         _meta {
           id

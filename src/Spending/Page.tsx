@@ -16,6 +16,7 @@ import { Link } from 'react-router-dom';
 import gql from 'graphql-tag';
 import { currenciesById } from '../currency/currencies';
 import { FormatMoney } from '../util/date/FormatMoney';
+import { FormatDate } from '../util/date/FormatDate';
 
 export const deleteSpendingQuery = gql`
   mutation deleteSpending($spendingId: ID!) {
@@ -83,7 +84,9 @@ export const Page = ({
                   <CardBody>
                     <dl>
                       <dt>Date</dt>
-                      <dd>{new Date(spending.bookedAt).toLocaleString()}</dd>
+                      <dd>
+                        <FormatDate date={spending.bookedAt} />
+                      </dd>
                       <dt>Category</dt>
                       <dd>{spending.category}</dd>
                       <dt>Description</dt>
