@@ -22,14 +22,16 @@ import {
 } from 'reactstrap';
 import gql from 'graphql-tag';
 import { Fail, Note } from '../Note/Note';
-import { Account } from '../schema';
+import { Account, Spending } from '../schema';
 import { Mutation } from 'react-apollo';
 import { GraphQLError } from 'graphql';
-import { currencies, NOK } from '../currency/currencies';
+import { currencies, currenciesById, NOK } from '../currency/currencies';
 import { Cache } from 'aws-amplify';
 import { remove } from '../util/splice';
 import { ValueSelector } from '../ValueSelector/ValueSelector';
 import { Link } from 'react-router-dom';
+import { accountsQuery } from '../graphql/queries/accountsQuery';
+import { month, spendingsQuery } from '../graphql/queries/spendingsQuery';
 
 export const createSpendingQuery = gql`
   mutation createSpending(
@@ -40,8 +42,7 @@ export const createSpendingQuery = gql`
     $description: String!
     $amount: Int!
     $currencyId: ID!
-    $isIncome: Boolean
-    $paidWith: String!
+    $paidWith: String
   ) {
     createSpending(
       accountId: $accountId
@@ -51,7 +52,6 @@ export const createSpendingQuery = gql`
       description: $description
       amount: $amount
       currencyId: $currencyId
-      isIncome: $isIncome
       paidWith: $paidWith
     ) {
       id
@@ -63,7 +63,7 @@ export const AddSpending = (props: { account: Account }) => {
   const {
     account: {
       name,
-      _meta: { id }
+      _meta: { id: accountId }
     }
   } = props;
   const [adding, setAdding] = useState(false);
@@ -93,7 +93,7 @@ export const AddSpending = (props: { account: Account }) => {
 
   const reset = () => {
     setIsIncome(false);
-    setBooked(false);
+    setBooked(true);
     setDescription('');
     setAmountWhole('');
     setAmountFraction('');
@@ -109,7 +109,78 @@ export const AddSpending = (props: { account: Account }) => {
             Add {isIncome ? 'income' : 'spending'} to <em>{name}</em>
           </CardTitle>
         </CardHeader>
-        <Mutation mutation={createSpendingQuery}>
+        <Mutation
+          mutation={createSpendingQuery}
+          update={(
+            cache,
+            {
+              data: {
+                createSpending: { id }
+              }
+            }
+          ) => {
+            const { startDate, endDate } = month();
+            const res = cache.readQuery<{
+              spendings: {
+                items: Spending[];
+              };
+            }>({
+              query: spendingsQuery,
+              variables: {
+                accountId,
+                startDate: startDate.toISO(),
+                endDate: endDate.toISO()
+              }
+            });
+            if (res) {
+              const {
+                spendings: { items: spendings }
+              } = res;
+              const newSpendings = [
+                ...spendings,
+                {
+                  accountId,
+                  bookedAt: bookedAt.toISOString(),
+                  category,
+                  description,
+                  amount: isIncome ? amount : -amount,
+                  currency: {
+                    ...currenciesById[currency],
+                    __typename: 'Currency'
+                  },
+                  booked,
+                  paidWith: paidWith.length ? paidWith : null,
+                  _meta: {
+                    id,
+                    __typename: 'EntityMeta'
+                  },
+                  __typename: 'Spending'
+                }
+              ] as Spending[];
+              newSpendings.sort(({ bookedAt: a }, { bookedAt: b }) =>
+                b.localeCompare(a)
+              );
+              cache.writeQuery({
+                query: spendingsQuery,
+                variables: {
+                  accountId,
+                  startDate: startDate.toISO(),
+                  endDate: endDate.toISO()
+                },
+                data: {
+                  ...res,
+                  spendings: {
+                    ...res.spendings,
+                    items: newSpendings
+                  }
+                }
+              });
+            }
+            setAdded(true);
+            setAdding(false);
+            reset();
+          }}
+        >
           {createSpendingMutation => (
             <>
               <CardBody>
@@ -131,7 +202,7 @@ export const AddSpending = (props: { account: Account }) => {
                     <InputGroupAddon addonType="append">
                       <Button
                         color="warning"
-                        outline={!booked}
+                        outline={booked}
                         onClick={() => setBooked(false)}
                         title="Pending"
                       >
@@ -141,7 +212,7 @@ export const AddSpending = (props: { account: Account }) => {
                     <InputGroupAddon addonType="append">
                       <Button
                         color="success"
-                        outline={booked}
+                        outline={!booked}
                         onClick={() => setBooked(true)}
                         title="Booked"
                       >
@@ -211,8 +282,8 @@ export const AddSpending = (props: { account: Account }) => {
                         min="0"
                         name="amountWhole"
                         id="amountWhole"
-                        placeholder="'123'"
                         value={amountWhole}
+                        placeholder="e.g. '27'"
                         required
                         onChange={({ target: { value } }) => {
                           const v = Math.abs(+value);
@@ -237,7 +308,7 @@ export const AddSpending = (props: { account: Account }) => {
                         max="99"
                         name="amountFraction"
                         id="amountFraction"
-                        placeholder="'99'"
+                        placeholder="e.g. '99'"
                         maxLength={2}
                         width={2}
                         value={amountFraction}
@@ -297,7 +368,7 @@ export const AddSpending = (props: { account: Account }) => {
               </CardBody>
               <CardFooter>
                 <nav>
-                  <Link to={`/account/${id}`}>cancel</Link>
+                  <Link to={`/account/${accountId}`}>cancel</Link>
                   {added && (
                     <Note>{isIncome ? 'Income' : 'Spending'} added.</Note>
                   )}
@@ -315,14 +386,14 @@ export const AddSpending = (props: { account: Account }) => {
                       setError(false);
                       createSpendingMutation({
                         variables: {
-                          accountId: id,
-                          bookedAt,
+                          accountId,
+                          bookedAt: bookedAt.toISOString(),
                           category,
                           description,
                           amount: isIncome ? amount : -amount,
                           currencyId: currency,
                           booked,
-                          paidWith
+                          ...(paidWith.length && { paidWith })
                         }
                       }).then(
                         async ({
@@ -331,10 +402,6 @@ export const AddSpending = (props: { account: Account }) => {
                           if (errors) {
                             setError(true);
                             setAdding(false);
-                          } else {
-                            setAdded(true);
-                            setAdding(false);
-                            reset();
                           }
                         }
                       );

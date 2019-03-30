@@ -1,4 +1,5 @@
 import gql from 'graphql-tag';
+import { DateTime } from 'luxon';
 
 export const spendingsQuery = gql`
   query spendings(
@@ -32,3 +33,12 @@ export const spendingsQuery = gql`
     }
   }
 `;
+
+export const month = () => {
+  const startDate = DateTime.local().startOf('month');
+  const endDate = startDate.endOf('month');
+  return {
+    startDate,
+    endDate
+  };
+};

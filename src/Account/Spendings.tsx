@@ -11,7 +11,7 @@ import {
 } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { Account, Spending } from '../schema';
-import { spendingsQuery } from '../graphql/queries/spendingsQuery';
+import { month, spendingsQuery } from '../graphql/queries/spendingsQuery';
 import { Loading } from '../Loading/Loading';
 import { Note } from '../Note/Note';
 import { Query } from 'react-apollo';
@@ -28,8 +28,7 @@ export const Spendings = (props: { account: Account }) => {
     }
   } = props;
 
-  const startOfMonth = DateTime.local().startOf('month');
-  const endOfMonth = startOfMonth.endOf('month');
+  const { startDate, endDate } = month();
 
   return (
     <Card>
@@ -37,8 +36,8 @@ export const Spendings = (props: { account: Account }) => {
         query={spendingsQuery}
         variables={{
           accountId,
-          startDate: startOfMonth.toISO(),
-          endDate: endOfMonth.toISO()
+          startDate: startDate.toISO(),
+          endDate: endDate.toISO()
         }}
       >
         {({ data, loading, error, refetch }: any) => {

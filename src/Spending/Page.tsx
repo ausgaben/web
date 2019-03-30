@@ -3,7 +3,7 @@ import { Spending } from '../schema';
 import { Loading } from '../Loading/Loading';
 import { Fail, Note } from '../Note/Note';
 import { Mutation, Query } from 'react-apollo';
-import { spendingsQuery } from '../graphql/queries/spendingsQuery';
+import { month, spendingsQuery } from '../graphql/queries/spendingsQuery';
 import {
   Button,
   CardBody,
@@ -35,8 +35,17 @@ export const Page = ({
   const [deleted, setDeleted] = useState(false);
   const [error, setError] = useState(false);
 
+  const { startDate, endDate } = month();
+
   return (
-    <Query query={spendingsQuery} variables={{ accountId }}>
+    <Query
+      query={spendingsQuery}
+      variables={{
+        accountId,
+        startDate: startDate.toISO(),
+        endDate: endDate.toISO()
+      }}
+    >
       {({ data, loading, error }: any) => {
         if (error) {
           return (
@@ -135,6 +144,7 @@ export const Page = ({
                             }
                           });
                         }
+                        setDeleted(true);
                       }
                     }}
                   >
@@ -155,8 +165,6 @@ export const Page = ({
                                   if (errors) {
                                     setError(true);
                                     setDeleting(false);
-                                  } else {
-                                    setDeleted(true);
                                   }
                                 }
                               );
