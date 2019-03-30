@@ -11,24 +11,28 @@ import {
 } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { Account, Spending } from '../schema';
-import { month, spendingsQuery } from '../graphql/queries/spendingsQuery';
+import {
+  month,
+  spendingsQuery,
+  allTime
+} from '../graphql/queries/spendingsQuery';
 import { Loading } from '../Loading/Loading';
 import { Note } from '../Note/Note';
 import { Query } from 'react-apollo';
 import { ListingHeader } from '../ListingHeader/ListingHeader';
 import { FormatDate } from '../util/date/FormatDate';
-import { currenciesById } from '../currency/currencies';
+import { currencies, currenciesById } from '../currency/currencies';
 import { FormatMoney } from '../util/date/FormatMoney';
-import { DateTime } from 'luxon';
 
 export const Spendings = (props: { account: Account }) => {
   const {
     account: {
+      isSavingsAccount,
       _meta: { id: accountId }
     }
   } = props;
 
-  const { startDate, endDate } = month();
+  const { startDate, endDate } = isSavingsAccount ? allTime() : month();
 
   return (
     <Card>
@@ -55,12 +59,29 @@ export const Spendings = (props: { account: Account }) => {
             const spendingsByCategory = spendings.reduce(
               (spendingsByCategory, spending) => {
                 if (!spendingsByCategory[spending.category]) {
-                  spendingsByCategory[spending.category] = [];
+                  spendingsByCategory[spending.category] = {
+                    spendings: [],
+                    sums: {}
+                  };
                 }
-                spendingsByCategory[spending.category].push(spending);
+                spendingsByCategory[spending.category].spendings.push(spending);
+                spendingsByCategory[spending.category].sums = {
+                  ['EUR']:
+                    (spendingsByCategory[spending.category].sums.EUR || 0) +
+                    spending.amount * spending.currency.toEUR,
+                  [spending.currency.id]:
+                    (spendingsByCategory[spending.category].sums[
+                      spending.currency.id
+                    ] || 0) + spending.amount
+                };
                 return spendingsByCategory;
               },
-              {} as { [key: string]: Spending[] }
+              {} as {
+                [key: string]: {
+                  spendings: Spending[];
+                  sums: { [key: string]: number };
+                };
+              }
             );
             return (
               <>
@@ -78,15 +99,27 @@ export const Spendings = (props: { account: Account }) => {
                     {Object.keys(spendingsByCategory).map(cat => (
                       <React.Fragment key={cat}>
                         <tr>
-                          <th colSpan={3}>{cat}</th>
+                          <th colSpan={2}>{cat}</th>
+                          <th>
+                            <FormatMoney
+                              amount={spendingsByCategory[cat].sums.NOK}
+                              symbol={currenciesById.NOK.symbol}
+                            />
+                          </th>
+                          <th>
+                            <FormatMoney
+                              amount={spendingsByCategory[cat].sums.EUR}
+                              symbol={currenciesById.EUR.symbol}
+                            />
+                          </th>
                         </tr>
-                        {spendingsByCategory[cat].map(
+                        {spendingsByCategory[cat].spendings.map(
                           ({
                             description,
                             bookedAt,
                             amount,
                             _meta: { id },
-                            currency: { id: currencyId }
+                            currency: { id: currencyId, toEUR }
                           }) => (
                             <tr key={id}>
                               <td>
@@ -103,6 +136,12 @@ export const Spendings = (props: { account: Account }) => {
                                 <FormatMoney
                                   amount={amount}
                                   symbol={currenciesById[currencyId].symbol}
+                                />
+                              </td>
+                              <td>
+                                <FormatMoney
+                                  amount={amount * toEUR}
+                                  symbol={currenciesById.EUR.symbol}
                                 />
                               </td>
                             </tr>

@@ -17,8 +17,8 @@ export const FormatMoney = ({
   >
     <span className="amount">
       {amount < 0 && <span className="minus">−</span>}
-      {Math.floor(Math.abs(amount / 100))}.
-      {`0${Math.abs(amount % 100)}`.slice(-2)}
+      {Math.floor(Math.abs(Math.round(amount) / 100))}.
+      {`0${Math.abs(Math.round(amount) % 100)}`.slice(-2)}
     </span>
     <span className="currency">{symbol}</span>
   </span>

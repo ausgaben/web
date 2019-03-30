@@ -42,3 +42,14 @@ export const month = () => {
     endDate
   };
 };
+
+export const allTime = () => {
+  const startDate = DateTime.fromJSDate(
+    new Date('2000-01-01T00:00:00')
+  ).startOf('month');
+  const endDate = DateTime.fromJSDate(new Date('2100-01-01T00:00:00'));
+  return {
+    startDate,
+    endDate
+  };
+};

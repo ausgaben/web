@@ -31,7 +31,11 @@ import { remove } from '../util/splice';
 import { ValueSelector } from '../ValueSelector/ValueSelector';
 import { Link } from 'react-router-dom';
 import { accountsQuery } from '../graphql/queries/accountsQuery';
-import { month, spendingsQuery } from '../graphql/queries/spendingsQuery';
+import {
+  allTime,
+  month,
+  spendingsQuery
+} from '../graphql/queries/spendingsQuery';
 
 export const createSpendingQuery = gql`
   mutation createSpending(
@@ -63,6 +67,7 @@ export const AddSpending = (props: { account: Account }) => {
   const {
     account: {
       name,
+      isSavingsAccount,
       _meta: { id: accountId }
     }
   } = props;
@@ -92,7 +97,6 @@ export const AddSpending = (props: { account: Account }) => {
   const isValid = category.length && description.length && amount > 0;
 
   const reset = () => {
-    setIsIncome(false);
     setBooked(true);
     setDescription('');
     setAmountWhole('');
@@ -119,7 +123,9 @@ export const AddSpending = (props: { account: Account }) => {
               }
             }
           ) => {
-            const { startDate, endDate } = month();
+            const { startDate, endDate } = isSavingsAccount
+              ? allTime()
+              : month();
             const res = cache.readQuery<{
               spendings: {
                 items: Spending[];
