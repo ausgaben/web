@@ -55,42 +55,40 @@ export const AccountItem = (props: { account: Account }) => {
           );
         }
         if (loading || !data) return <Loading />;
-        if (data.spendings.items.length) {
-          const spendings = data.spendings.items as Spending[];
-          const hasNOK = spendings.find(({ currency: { id } }) => id === 'NOK');
-          const sums = spendings.reduce(
-            (sums, spending) => ({
-              EUR: sums.EUR + spending.amount * spending.currency.toEUR,
-              NOK:
-                sums.NOK +
-                (spending.currency.id === 'NOK' ? spending.amount : 0)
-            }),
-            { EUR: 0, NOK: 0 }
-          );
-          return (
-            <tr>
-              <td colSpan={isSavingsAccount && !hasNOK ? 2 : 1}>
-                <Link to={`/account/${accountId}`}>{name}</Link>
-              </td>
-              {isSavingsAccount && hasNOK && (
-                <td>
-                  <FormatMoney
-                    amount={sums.NOK}
-                    symbol={currenciesById.NOK.symbol}
-                  />
-                </td>
-              )}
+
+        const spendings = data.spendings.items as Spending[];
+        const hasNOK = spendings.find(({ currency: { id } }) => id === 'NOK');
+        const sums = spendings.reduce(
+          (sums, spending) => ({
+            EUR: sums.EUR + spending.amount * spending.currency.toEUR,
+            NOK:
+              sums.NOK + (spending.currency.id === 'NOK' ? spending.amount : 0)
+          }),
+          { EUR: 0, NOK: 0 }
+        );
+        return (
+          <tr>
+            <td colSpan={isSavingsAccount && !hasNOK ? 2 : 1}>
+              <Link to={`/account/${accountId}`}>{name}</Link>
+            </td>
+            {isSavingsAccount && hasNOK && (
               <td>
-                {isSavingsAccount && (
-                  <FormatMoney
-                    amount={sums.EUR}
-                    symbol={currenciesById.EUR.symbol}
-                  />
-                )}
+                <FormatMoney
+                  amount={sums.NOK}
+                  symbol={currenciesById.NOK.symbol}
+                />
               </td>
-            </tr>
-          );
-        }
+            )}
+            <td>
+              {isSavingsAccount && (
+                <FormatMoney
+                  amount={sums.EUR}
+                  symbol={currenciesById.EUR.symbol}
+                />
+              )}
+            </td>
+          </tr>
+        );
       }}
     </Query>
   );

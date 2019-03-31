@@ -101,15 +101,15 @@ const App = ({ authData }: { authData: CognitoUser }) => {
             <Route exact path="/accounts" component={AccountsPage} />
             <Route exact path="/about" component={AboutPage} />
             <Route exact path="/new/account" component={CreateAccountsPage} />
-            <Route exact path="/account/:id" component={AccountPage} />
+            <Route exact path="/account/:accountId" component={AccountPage} />
             <Route
               exact
-              path="/account/:id/settings"
+              path="/account/:accountId/settings"
               component={AccountSettingsPage}
             />
             <Route
               exact
-              path="/account/:id/new/spending"
+              path="/account/:accountId/new/spending"
               component={AddAccountSpendingPage}
             />
             <Route

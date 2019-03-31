@@ -1,7 +1,9 @@
 import React from 'react';
 import { AddSpending } from '../AddSpending/AddSpending';
-import { Page } from './Page';
+import { WithAccount } from '../Accounts/WithAccount';
 
-export const AddAccountSpendingPage = Page(account => (
-  <AddSpending account={account} />
-));
+export const AddAccountSpendingPage = (props: any) => (
+  <WithAccount {...props}>
+    {account => <AddSpending account={account} />}
+  </WithAccount>
+);

@@ -1,7 +1,9 @@
 import React from 'react';
 import { Settings } from './Settings';
-import { Page } from './Page';
+import { WithAccount } from '../Accounts/WithAccount';
 
-export const AccountSettingsPage = Page(account => (
-  <Settings account={account} />
-));
+export const AccountSettingsPage = (props: any) => (
+  <WithAccount {...props}>
+    {account => <Settings account={account} />}
+  </WithAccount>
+);

@@ -373,50 +373,44 @@ export const AddSpending = (props: { account: Account }) => {
                 </FormGroup>
               </CardBody>
               <CardFooter>
-                <nav>
-                  <Link to={`/account/${accountId}`}>cancel</Link>
-                  {added && (
-                    <Note>{isIncome ? 'Income' : 'Spending'} added.</Note>
-                  )}
-                  {error && (
-                    <Fail>
-                      Adding {isIncome ? 'Income' : 'Spending'} failed.
-                    </Fail>
-                  )}
-                  <Button
-                    disabled={adding || !isValid}
-                    tabIndex={++tabIndex}
-                    onClick={async () => {
-                      setAdded(false);
-                      setAdding(true);
-                      setError(false);
-                      createSpendingMutation({
-                        variables: {
-                          accountId,
-                          bookedAt: bookedAt.toISOString(),
-                          category,
-                          description,
-                          amount: isIncome ? amount : -amount,
-                          currencyId: currency,
-                          booked,
-                          ...(paidWith.length && { paidWith })
+                <Link to={`/account/${accountId}`}>cancel</Link>
+                {added && (
+                  <Note>{isIncome ? 'Income' : 'Spending'} added.</Note>
+                )}
+                {error && (
+                  <Fail>Adding {isIncome ? 'Income' : 'Spending'} failed.</Fail>
+                )}
+                <Button
+                  disabled={adding || !isValid}
+                  tabIndex={++tabIndex}
+                  onClick={async () => {
+                    setAdded(false);
+                    setAdding(true);
+                    setError(false);
+                    createSpendingMutation({
+                      variables: {
+                        accountId,
+                        bookedAt: bookedAt.toISOString(),
+                        category,
+                        description,
+                        amount: isIncome ? amount : -amount,
+                        currencyId: currency,
+                        booked,
+                        ...(paidWith.length && { paidWith })
+                      }
+                    }).then(
+                      async ({ errors }: { errors?: GraphQLError[] } | any) => {
+                        if (errors) {
+                          setError(true);
+                          setAdding(false);
                         }
-                      }).then(
-                        async ({
-                          errors
-                        }: { errors?: GraphQLError[] } | any) => {
-                          if (errors) {
-                            setError(true);
-                            setAdding(false);
-                          }
-                        }
-                      );
-                    }}
-                    color="primary"
-                  >
-                    Add
-                  </Button>
-                </nav>
+                      }
+                    );
+                  }}
+                  color="primary"
+                >
+                  Add
+                </Button>
               </CardFooter>
             </>
           )}

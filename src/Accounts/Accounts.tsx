@@ -106,7 +106,6 @@ export const Accounts = () => {
                       </tr>
                     </tfoot>
                   </Table>
-                  <ListGroup flush />
                 </>
               );
             }

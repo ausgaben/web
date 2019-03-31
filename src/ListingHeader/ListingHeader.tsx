@@ -14,32 +14,30 @@ export const ListingHeader = ({
 }) => (
   <CardHeader>
     <CardTitle>{title}</CardTitle>
-    <nav>
-      {children}
-      {nextStartKey && (
-        <Button
-          outline
-          color={'secondary'}
-          onClick={() => {
-            refetch({
-              startKey: nextStartKey
-            });
-          }}
-        >
-          next
-        </Button>
-      )}
+    {children}
+    {nextStartKey && (
       <Button
         outline
         color={'secondary'}
         onClick={() => {
           refetch({
-            startKey: undefined
+            startKey: nextStartKey
           });
         }}
       >
-        reload
+        next
       </Button>
-    </nav>
+    )}
+    <Button
+      outline
+      color={'secondary'}
+      onClick={() => {
+        refetch({
+          startKey: undefined
+        });
+      }}
+    >
+      reload
+    </Button>
   </CardHeader>
 );
