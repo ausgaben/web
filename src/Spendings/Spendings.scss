@@ -1,0 +1,48 @@
+div.spendings {
+  > .category,
+  > .spending {
+    display: flex;
+    width: 100%;
+    align-items: baseline;
+    justify-content: space-between;
+  }
+  > .category {
+    .title {
+      flex-grow: 1;
+    }
+    .money {
+      width: auto;
+    }
+  }
+
+  > .spending {
+    > time.date {
+      width: auto;
+      flex-grow: 0;
+    }
+    > .description {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex-grow: 1;
+    }
+  }
+}
+
+table.spendings {
+  tr.spending {
+    font-size: 80%;
+  }
+  td.description {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 0;
+    width: 100%;
+  }
+  td.amount,
+  th.amount,
+  td.date {
+    text-align: right;
+  }
+}

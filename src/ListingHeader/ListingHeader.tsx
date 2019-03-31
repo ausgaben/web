@@ -4,25 +4,23 @@ import React from 'react';
 export const ListingHeader = ({
   title,
   refetch,
-  nextStartKey,
+  next,
   children
 }: {
   title: string;
-  refetch: (variables?: object) => void;
-  nextStartKey?: string;
+  refetch: () => void;
+  next?: () => void;
   children?: React.ReactNode;
 }) => (
   <CardHeader>
     <CardTitle>{title}</CardTitle>
     {children}
-    {nextStartKey && (
+    {next && (
       <Button
         outline
         color={'secondary'}
         onClick={() => {
-          refetch({
-            startKey: nextStartKey
-          });
+          next();
         }}
       >
         next
@@ -32,9 +30,7 @@ export const ListingHeader = ({
       outline
       color={'secondary'}
       onClick={() => {
-        refetch({
-          startKey: undefined
-        });
+        refetch();
       }}
     >
       reload

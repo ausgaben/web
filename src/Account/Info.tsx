@@ -13,7 +13,9 @@ export const Info = (props: { account: Account }) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{name}</CardTitle>
+        <CardTitle>
+          <Link to={`/accounts`}>⬅</Link> {name}
+        </CardTitle>
         <Link to={`/account/${id}/settings`}>Settings</Link>
       </CardHeader>
     </Card>

@@ -30,7 +30,6 @@ import { Cache } from 'aws-amplify';
 import { remove } from '../util/splice';
 import { ValueSelector } from '../ValueSelector/ValueSelector';
 import { Link } from 'react-router-dom';
-import { accountsQuery } from '../graphql/queries/accountsQuery';
 import {
   allTime,
   month,

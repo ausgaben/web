@@ -3,3 +3,12 @@
     display: block;
   }
 }
+
+table.accounts {
+  tbody {
+    font-size: 80%;
+    .amount {
+      text-align: right;
+    }
+  }
+}
