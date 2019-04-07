@@ -200,9 +200,12 @@ export const AddSpending = (props: { account: Account }) => {
                       id="bookedAt"
                       value={bookedAt.toISOString().substr(0, 10)}
                       required
-                      onChange={({ target: { value } }) =>
-                        setBookedAt(new Date(Date.parse(value)))
-                      }
+                      onChange={({ target: { value } }) => {
+                        const d = Date.parse(value);
+                        if (d) {
+                          setBookedAt(new Date(d));
+                        }
+                      }}
                     />
                     <InputGroupAddon addonType="append">
                       <Button
