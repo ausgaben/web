@@ -88,7 +88,7 @@ export const Settings = (props: { account: Account }) => {
         >
           {deleteAccountMutation => (
             <CardFooter>
-              <Link to={`/account/${id}`}>cancel</Link>
+              <Link to={`/account/${id}`}>⬅</Link>
               <Button
                 disabled={deleting}
                 onClick={async () => {

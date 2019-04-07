@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Connect } from 'aws-amplify-react';
 import { PredefinedValueButton } from './PredefinedValueButton';
 import {
   Input,

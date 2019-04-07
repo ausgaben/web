@@ -5,6 +5,7 @@ import { Mutation } from 'react-apollo';
 import { spendingsQuery } from '../graphql/queries/spendingsQuery';
 import {
   Button,
+  Card,
   CardBody,
   CardFooter,
   CardHeader,
@@ -45,7 +46,7 @@ export const Page = (props: {
           {({ spendings, variables }) => {
             if (deleted) {
               return (
-                <>
+                <Card>
                   <CardHeader>
                     <CardTitle>Spending</CardTitle>
                   </CardHeader>
@@ -54,10 +55,10 @@ export const Page = (props: {
                   </CardBody>
                   <CardFooter>
                     <nav>
-                      <Link to={`/account/${accountId}`}>back</Link>
+                      <Link to={`/account/${accountId}`}>⬅</Link>
                     </nav>
                   </CardFooter>
-                </>
+                </Card>
               );
             }
 
@@ -66,7 +67,7 @@ export const Page = (props: {
             );
             if (spending) {
               return (
-                <>
+                <Card>
                   {error && (
                     <CardBody>
                       <Fail>Spending deletion failed.</Fail>
@@ -142,7 +143,7 @@ export const Page = (props: {
                       >
                         {deleteSpendingMutation => (
                           <CardFooter>
-                            <Link to={`/account/${accountId}`}>cancel</Link>
+                            <Link to={`/account/${accountId}`}>⬅</Link>
                             <Button
                               disabled={deleting}
                               onClick={async () => {
@@ -169,7 +170,7 @@ export const Page = (props: {
                       </Mutation>
                     </>
                   )}
-                </>
+                </Card>
               );
             }
             return <Note>Spending {spendingId} not found.</Note>;
