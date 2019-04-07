@@ -1,3 +1,5 @@
+@import '../variables';
+
 div.spendings {
   > .category,
   > .spending {
@@ -32,6 +34,9 @@ div.spendings {
 table.spendings {
   tr.spending {
     font-size: 80%;
+    @media (min-width: $mobile-breakpoint) {
+      font-size: 100%;
+    }
   }
   td.description {
     white-space: nowrap;

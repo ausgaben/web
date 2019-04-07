@@ -26,6 +26,8 @@ import { ApolloProvider } from 'react-apollo';
 import { createClient } from './Apollo/createClient';
 import { AddAccountSpendingPage } from './Account/AddAccountSpendingPage';
 import { Page as SpendingPage } from './Spending/Page';
+import logo from './logo.svg';
+import './App.scss';
 
 Amplify.configure({
   Auth: {
@@ -40,6 +42,34 @@ Amplify.configure({
 export const client = createClient();
 
 export const AuthDataContext = React.createContext<{ identityId?: string }>({});
+
+const Navigation = (props: {
+  navbar?: boolean;
+  logout: () => void;
+  onClick?: () => void;
+  className?: string;
+}) => {
+  const { navbar, logout, onClick } = props;
+  return (
+    <Nav navbar={navbar} {...props}>
+      <NavItem>
+        <Link className="nav-link" to="/accounts" onClick={onClick}>
+          Accounts
+        </Link>
+      </NavItem>
+      <NavItem>
+        <Link className="nav-link" to="/about" onClick={onClick}>
+          About
+        </Link>
+      </NavItem>
+      <NavItem>
+        <Button onClick={logout} outline color="danger">
+          Log out
+        </Button>
+      </NavItem>
+    </Nav>
+  );
+};
 
 const App = ({ authData }: { authData: CognitoUser }) => {
   const [identityId, setIdentityId] = useState();
@@ -61,37 +91,31 @@ const App = ({ authData }: { authData: CognitoUser }) => {
 
   return (
     <Router>
-      <header>
+      <header className="bg-light">
         <Navbar color="light" light>
-          <NavbarBrand href="/">Ausgaben</NavbarBrand>
-          <NavbarToggler onClick={() => toggleNavigation()} />
-          <Collapse isOpen={navigationVisible} navbar>
-            <Nav navbar>
-              <NavItem>
-                <Link
-                  className="nav-link"
-                  to="/accounts"
-                  onClick={() => toggleNavigation()}
-                >
-                  Accounts
-                </Link>
-              </NavItem>
-              <NavItem>
-                <Link
-                  className="nav-link"
-                  to="/about"
-                  onClick={() => toggleNavigation()}
-                >
-                  About
-                </Link>
-              </NavItem>
-              <NavItem>
-                <Button onClick={() => logout()} outline color="danger">
-                  Log out
-                </Button>
-              </NavItem>
-            </Nav>
+          <NavbarBrand href="/">
+            <img
+              src={logo}
+              width="30"
+              height="30"
+              className="d-inline-block align-top"
+              alt="Ausgaben"
+            />
+            Ausgaben
+          </NavbarBrand>
+          <NavbarToggler onClick={toggleNavigation} className="hideOnDesktop" />
+          <Collapse isOpen={navigationVisible} navbar className="hideOnDesktop">
+            <Navigation
+              navbar={true}
+              onClick={toggleNavigation}
+              logout={logout}
+            />
           </Collapse>
+          <Navigation
+            className="showOnDesktop"
+            onClick={toggleNavigation}
+            logout={logout}
+          />
         </Navbar>
       </header>
       <main>

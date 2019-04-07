@@ -93,7 +93,7 @@ export const Accounts = () => {
                   <tfoot>
                     <tr>
                       <th colSpan={2}>Total</th>
-                      <th>
+                      <th className="amount">
                         <FormatMoney
                           amount={totalSavings}
                           symbol={currenciesById.EUR.symbol}
