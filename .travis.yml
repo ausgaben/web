@@ -1,0 +1,9 @@
+language: node_js
+notifications:
+  email: false
+node_js: 'stable'
+script:
+  - npm run build
+branches:
+  except:
+    - /^v\d+\.\d+\.\d+$/
