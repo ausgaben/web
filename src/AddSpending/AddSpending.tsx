@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { Connect } from 'aws-amplify-react';
+import React, { useState, useRef } from 'react';
 import {
   Button,
   ButtonGroup,
@@ -79,8 +78,10 @@ export const AddSpending = (props: { account: Account }) => {
   const [category, setCategory] = useState('');
   const [description, setDescription] = useState('');
   const [paidWith, setPaidWith] = useState('');
-  const [amountWhole, setAmountWhole] = useState('');
-  const [amountFraction, setAmountFraction] = useState('');
+  const [amountWholeInput, setAmountWholeInput] = useState('');
+  const [amountFractionInput, setAmountFractionInput] = useState('');
+  const amountWhole = useRef(0);
+  const amountFraction = useRef(0);
   const [currency, setCurrency] = useState(
     Cache.getItem('addSpending.currency') || NOK.id
   );
@@ -89,17 +90,15 @@ export const AddSpending = (props: { account: Account }) => {
   );
   const [currencyDropdownOpen, setCurrencyDropdownOpen] = useState(false);
 
-  const amount =
-    (amountWhole ? parseInt(amountWhole, 10) * 100 : 0) +
-    (amountFraction ? parseInt(amountFraction, 10) : 0);
+  const amount = amountWhole.current * 100 + amountFraction.current;
 
   const isValid = category.length && description.length && amount > 0;
 
   const reset = () => {
     setBooked(true);
     setDescription('');
-    setAmountWhole('');
-    setAmountFraction('');
+    setAmountWholeInput('');
+    setAmountFractionInput('');
   };
 
   let tabIndex = 0;
@@ -286,20 +285,17 @@ export const AddSpending = (props: { account: Account }) => {
                       <Input
                         disabled={adding}
                         tabIndex={++tabIndex}
-                        type="number"
-                        min="0"
+                        type="text"
+                        pattern="^[0-9]+"
                         name="amountWhole"
                         id="amountWhole"
-                        value={amountWhole}
+                        value={amountWholeInput}
                         placeholder="e.g. '27'"
                         required
                         onChange={({ target: { value } }) => {
-                          const v = Math.abs(+value);
-                          if (v === 0) {
-                            setAmountWhole('');
-                          } else {
-                            setAmountWhole((v as unknown) as string);
-                          }
+                          const v = value.replace(/[^0-9]/g, '');
+                          setAmountWholeInput(v);
+                          amountWhole.current = Math.abs(+v);
                         }}
                       />
                       <InputGroupAddon
@@ -311,22 +307,17 @@ export const AddSpending = (props: { account: Account }) => {
                       <Input
                         disabled={adding}
                         tabIndex={++tabIndex}
-                        type="number"
-                        min="0"
-                        max="99"
+                        pattern="^[0-9]{0,2}"
                         name="amountFraction"
                         id="amountFraction"
                         placeholder="e.g. '99'"
                         maxLength={2}
                         width={2}
-                        value={amountFraction}
+                        value={amountFractionInput}
                         onChange={({ target: { value } }) => {
-                          const v = Math.abs(+value.substr(0, 2));
-                          if (v === 0) {
-                            setAmountFraction('');
-                          } else {
-                            setAmountFraction((v as unknown) as string);
-                          }
+                          const v = value.replace(/[^0-9]/g, '');
+                          setAmountFractionInput(v);
+                          amountFraction.current = Math.abs(+v);
                         }}
                       />
                     </InputGroup>
@@ -375,7 +366,7 @@ export const AddSpending = (props: { account: Account }) => {
                 </FormGroup>
               </CardBody>
               <CardFooter>
-                <Link to={`/account/${accountId}`}>cancel</Link>
+                <Link to={`/account/${accountId}`}>⬅</Link>
                 {added && (
                   <Note>{isIncome ? 'Income' : 'Spending'} added.</Note>
                 )}
