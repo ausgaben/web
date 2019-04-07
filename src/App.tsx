@@ -51,7 +51,7 @@ const Navigation = (props: {
 }) => {
   const { navbar, logout, onClick } = props;
   return (
-    <Nav navbar={navbar} {...props}>
+    <Nav navbar={navbar} className={props.className}>
       <NavItem>
         <Link className="nav-link" to="/accounts" onClick={onClick}>
           Accounts
