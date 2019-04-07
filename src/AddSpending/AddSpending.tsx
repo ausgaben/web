@@ -19,7 +19,6 @@ import {
   InputGroupText,
   Label
 } from 'reactstrap';
-import gql from 'graphql-tag';
 import { Fail, Note } from '../Note/Note';
 import { Account, Spending } from '../schema';
 import { Mutation } from 'react-apollo';
@@ -34,32 +33,7 @@ import {
   month,
   spendingsQuery
 } from '../graphql/queries/spendingsQuery';
-
-export const createSpendingQuery = gql`
-  mutation createSpending(
-    $accountId: ID!
-    $bookedAt: String!
-    $booked: Boolean
-    $category: String!
-    $description: String!
-    $amount: Int!
-    $currencyId: ID!
-    $paidWith: String
-  ) {
-    createSpending(
-      accountId: $accountId
-      bookedAt: $bookedAt
-      booked: $booked
-      category: $category
-      description: $description
-      amount: $amount
-      currencyId: $currencyId
-      paidWith: $paidWith
-    ) {
-      id
-    }
-  }
-`;
+import { createSpendingMutation } from '../graphql/mutations/createSpending';
 
 export const AddSpending = (props: { account: Account }) => {
   const {
@@ -112,7 +86,7 @@ export const AddSpending = (props: { account: Account }) => {
           </CardTitle>
         </CardHeader>
         <Mutation
-          mutation={createSpendingQuery}
+          mutation={createSpendingMutation}
           update={(
             cache,
             {

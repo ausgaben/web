@@ -1,25 +1,15 @@
 import React, { useState } from 'react';
 import {
   Button,
-  Card,
-  CardBody,
-  CardFooter,
-  CardHeader,
-  CardTitle,
   Form,
-  InputGroup,
   Input,
+  InputGroup,
   InputGroupAddon,
   Label
 } from 'reactstrap';
 import gql from 'graphql-tag';
-import { Fail, Note } from '../Note/Note';
 import { Account } from '../schema';
 import { Mutation } from 'react-apollo';
-import { accountsQuery } from '../graphql/queries/accountsQuery';
-import { GraphQLError } from 'graphql';
-import { Link } from 'react-router-dom';
-import { createSpendingQuery } from '../AddSpending/AddSpending';
 
 export const inviteUserMutation = gql`
   mutation inviteUser($accountId: ID!, $userId: ID!) {

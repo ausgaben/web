@@ -28,6 +28,7 @@ import { AddAccountSpendingPage } from './Account/AddAccountSpendingPage';
 import { Page as SpendingPage } from './Spending/Page';
 import logo from './logo.svg';
 import './App.scss';
+import { AccountImportPage } from './Account/ImportPage';
 
 Amplify.configure({
   Auth: {
@@ -130,6 +131,11 @@ const App = ({ authData }: { authData: CognitoUser }) => {
               exact
               path="/account/:accountId/settings"
               component={AccountSettingsPage}
+            />
+            <Route
+              exact
+              path="/account/:accountId/import"
+              component={AccountImportPage}
             />
             <Route
               exact

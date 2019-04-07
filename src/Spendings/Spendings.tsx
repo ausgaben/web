@@ -11,129 +11,177 @@ import { Loading } from '../Loading/Loading';
 import { Note } from '../Note/Note';
 import './Spendings.scss';
 
+type SpendingCategory = {
+  spendings: Spending[];
+  sums: { [key: string]: number };
+  counts: { [key: string]: number };
+};
+
+type SpendingsByCategory = {
+  [key: string]: SpendingCategory;
+};
+
+const SpendingsList = ({
+  spendingsByCategory,
+  header,
+  accountId
+}: {
+  spendingsByCategory: SpendingsByCategory;
+  header: React.ReactElement;
+  accountId: string;
+}) => (
+  <Card>
+    {header}
+    <Table className="spendings">
+      <tbody>
+        {Object.keys(spendingsByCategory).map(cat => (
+          <React.Fragment key={cat}>
+            <tr>
+              <th colSpan={2}>{cat}</th>
+              {Object.keys(spendingsByCategory[cat].counts).map(key => {
+                if (spendingsByCategory[cat].counts[key] > 0) {
+                  return (
+                    <th key={key} className="amount">
+                      <FormatMoney
+                        amount={spendingsByCategory[cat].sums[key]}
+                        symbol={currenciesById[key].symbol}
+                      />
+                    </th>
+                  );
+                }
+                return null;
+              })}
+            </tr>
+            {spendingsByCategory[cat].spendings.map(
+              ({
+                description,
+                bookedAt,
+                amount,
+                _meta: { id },
+                currency: { id: currencyId, toEUR }
+              }) => (
+                <tr key={id} className="spending">
+                  <td className="date">
+                    <FormatDate date={bookedAt} />
+                  </td>
+                  <td className="description">
+                    <Link to={`/account/${accountId}/spending/${id}`}>
+                      {description}
+                    </Link>
+                  </td>
+                  {currencyId !== currenciesById.EUR.id && (
+                    <td className="amount">
+                      <FormatMoney
+                        amount={amount}
+                        symbol={currenciesById[currencyId].symbol}
+                      />
+                    </td>
+                  )}
+                  <td className="amount">
+                    <FormatMoney
+                      amount={amount * toEUR}
+                      symbol={currenciesById.EUR.symbol}
+                    />
+                  </td>
+                </tr>
+              )
+            )}
+          </React.Fragment>
+        ))}
+      </tbody>
+    </Table>
+  </Card>
+);
+
 export const Spendings = (props: { account: Account }) => {
   const {
     _meta: { id: accountId }
   } = props.account;
   return (
-    <Card>
-      <WithSpendings {...props} loading={<Loading />}>
-        {({ spendings, refetch, next }) => {
-          const spendingsByCategory = spendings.reduce(
-            (spendingsByCategory, spending) => {
-              if (!spendingsByCategory[spending.category]) {
-                spendingsByCategory[spending.category] = {
-                  spendings: [],
-                  sums: {},
-                  counts: {}
-                };
-                currencies.forEach(currency => {
-                  spendingsByCategory[spending.category].sums[currency.id] = 0;
-                  spendingsByCategory[spending.category].counts[
-                    currency.id
-                  ] = 0;
-                });
-              }
-              spendingsByCategory[spending.category].spendings.push(spending);
-
-              spendingsByCategory[spending.category].sums[
-                currenciesById.EUR.id
-              ] += spending.amount * spending.currency.toEUR;
-              if (spending.currency.id !== currenciesById.EUR.id) {
-                spendingsByCategory[spending.category].sums[
-                  spending.currency.id
-                ] += spending.amount;
-              }
-
-              spendingsByCategory[spending.category].counts[
-                spending.currency.id
-              ]++;
-              return spendingsByCategory;
-            },
-            {} as {
-              [key: string]: {
-                spendings: Spending[];
-                sums: { [key: string]: number };
-                counts: { [key: string]: number };
-              };
-            }
-          );
+    <WithSpendings {...props} loading={<Loading />}>
+      {({ spendings, refetch, next }) => {
+        if (!spendings.length) {
           return (
-            <>
-              <ListingHeader title={'Spendings'} refetch={refetch} next={next}>
-                <Link to={`/account/${accountId}/new/spending`}>
-                  Add Spending
-                </Link>
-              </ListingHeader>
-              {!spendings.length && (
-                <CardBody>
-                  <Note>No spendings found.</Note>
-                </CardBody>
-              )}
-              <Table className="spendings">
-                <tbody>
-                  {Object.keys(spendingsByCategory).map(cat => (
-                    <React.Fragment key={cat}>
-                      <tr>
-                        <th colSpan={2}>{cat}</th>
-                        {Object.keys(spendingsByCategory[cat].counts).map(
-                          key => {
-                            if (spendingsByCategory[cat].counts[key] > 0) {
-                              return (
-                                <th key={key} className="amount">
-                                  <FormatMoney
-                                    amount={spendingsByCategory[cat].sums[key]}
-                                    symbol={currenciesById[key].symbol}
-                                  />
-                                </th>
-                              );
-                            }
-                            return null;
-                          }
-                        )}
-                      </tr>
-                      {spendingsByCategory[cat].spendings.map(
-                        ({
-                          description,
-                          bookedAt,
-                          amount,
-                          _meta: { id },
-                          currency: { id: currencyId, toEUR }
-                        }) => (
-                          <tr key={id} className="spending">
-                            <td className="date">
-                              <FormatDate date={bookedAt} />
-                            </td>
-                            <td className="description">
-                              <Link to={`/account/${accountId}/spending/${id}`}>
-                                {description}
-                              </Link>
-                            </td>
-                            {currencyId !== currenciesById.EUR.id && (
-                              <td className="amount">
-                                <FormatMoney
-                                  amount={amount}
-                                  symbol={currenciesById[currencyId].symbol}
-                                />
-                              </td>
-                            )}
-                            <td className="amount">
-                              <FormatMoney
-                                amount={amount * toEUR}
-                                symbol={currenciesById.EUR.symbol}
-                              />
-                            </td>
-                          </tr>
-                        )
-                      )}
-                    </React.Fragment>
-                  ))}
-                </tbody>
-              </Table>
-            </>
+            <Card>
+              <CardBody>
+                <Note>No spendings found.</Note>
+              </CardBody>
+            </Card>
           );
-        }}
-      </WithSpendings>
-    </Card>
+        }
+
+        const spendingsByCategory = spendings.reduce(
+          (spendingsByCategory, spending) => {
+            const t = spending.booked ? 'booked' : 'pending';
+            if (!spendingsByCategory[t][spending.category]) {
+              spendingsByCategory[t][spending.category] = {
+                spendings: [],
+                sums: {},
+                counts: {}
+              };
+              currencies.forEach(currency => {
+                spendingsByCategory[t][spending.category].sums[currency.id] = 0;
+                spendingsByCategory[t][spending.category].counts[
+                  currency.id
+                ] = 0;
+              });
+            }
+            spendingsByCategory[t][spending.category].spendings.push(spending);
+
+            spendingsByCategory[t][spending.category].sums[
+              currenciesById.EUR.id
+            ] += spending.amount * spending.currency.toEUR;
+            if (spending.currency.id !== currenciesById.EUR.id) {
+              spendingsByCategory[t][spending.category].sums[
+                spending.currency.id
+              ] += spending.amount;
+            }
+
+            spendingsByCategory[t][spending.category].counts[
+              spending.currency.id
+            ]++;
+            return spendingsByCategory;
+          },
+          {
+            booked: {},
+            pending: {}
+          } as {
+            booked: SpendingsByCategory;
+            pending: SpendingsByCategory;
+          }
+        );
+
+        return (
+          <>
+            {Object.keys(spendingsByCategory.pending).length ? (
+              <SpendingsList
+                spendingsByCategory={spendingsByCategory.pending}
+                header={
+                  <ListingHeader
+                    title={'Pending'}
+                    refetch={refetch}
+                    next={next}
+                  />
+                }
+                accountId={accountId}
+              />
+            ) : null}
+            {Object.keys(spendingsByCategory.booked).length ? (
+              <SpendingsList
+                spendingsByCategory={spendingsByCategory.booked}
+                header={
+                  <ListingHeader
+                    title={'Booked'}
+                    refetch={refetch}
+                    next={next}
+                  />
+                }
+                accountId={accountId}
+              />
+            ) : null}
+          </>
+        );
+      }}
+    </WithSpendings>
   );
 };
