@@ -42,143 +42,145 @@ export const Page = (props: {
   } = props;
 
   return (
-    <WithAccount {...props}>
-      {account => (
-        <WithSpendings account={account} loading={<Loading />}>
-          {({ spendings, variables }) => {
-            if (deleted) {
-              return (
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Spending</CardTitle>
-                  </CardHeader>
-                  <CardBody>
-                    <Note>Spending deleted.</Note>
-                  </CardBody>
-                  <CardFooter>
-                    <nav>
-                      <Link to={`/account/${accountId}`}>⬅</Link>
-                    </nav>
-                  </CardFooter>
-                </Card>
-              );
-            }
-
-            const spending = spendings.find(
-              ({ _meta: { id } }) => id === spendingId
-            );
-            if (spending) {
-              return (
-                <Card>
-                  {error && (
+    <main>
+      <WithAccount {...props}>
+        {account => (
+          <WithSpendings account={account} loading={<Loading />}>
+            {({ spendings, variables }) => {
+              if (deleted) {
+                return (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Spending</CardTitle>
+                    </CardHeader>
                     <CardBody>
-                      <Fail>Spending deletion failed.</Fail>
+                      <Note>Spending deleted.</Note>
                     </CardBody>
-                  )}
-                  {!deleted && (
-                    <>
-                      <CardHeader>
-                        <CardTitle>Spending</CardTitle>
-                      </CardHeader>
+                    <CardFooter>
+                      <nav>
+                        <Link to={`/account/${accountId}`}>⬅</Link>
+                      </nav>
+                    </CardFooter>
+                  </Card>
+                );
+              }
+
+              const spending = spendings.find(
+                ({ _meta: { id } }) => id === spendingId
+              );
+              if (spending) {
+                return (
+                  <Card>
+                    {error && (
                       <CardBody>
-                        <dl>
-                          <dt>Date</dt>
-                          <dd>
-                            <FormatDate date={spending.bookedAt} />
-                          </dd>
-                          <dt>Category</dt>
-                          <dd>{spending.category}</dd>
-                          <dt>Description</dt>
-                          <dd>{spending.description}</dd>
-                          <dt>Amount</dt>
-                          <dd>
-                            <FormatMoney
-                              amount={spending.amount}
-                              symbol={
-                                currenciesById[spending.currency.id].symbol
-                              }
-                            />
-                          </dd>
-                          <dt>Paid with</dt>
-                          <dd>{spending.paidWith}</dd>
-                          <dt>Booked?</dt>
-                          <dd>{spending.booked ? 'Yes' : 'No'}</dd>
-                        </dl>
+                        <Fail>Spending deletion failed.</Fail>
                       </CardBody>
-                      <DeleteSpendingMutation
-                        mutation={deleteSpendingQuery}
-                        update={cache => {
-                          const res = cache.readQuery<{
-                            spendings: {
-                              items: Spending[];
-                            };
-                          }>({
-                            query: spendingsQuery,
-                            variables
-                          });
-                          if (res) {
-                            const {
-                              spendings: { items: spendings }
-                            } = res;
-                            const spendingToDelete = spendings.find(
-                              ({ _meta: { id: u } }) => spendingId === u
-                            );
-                            if (spendingToDelete) {
-                              spendings.splice(
-                                spendings.indexOf(spendingToDelete),
-                                1
-                              );
-                              cache.writeQuery({
-                                query: spendingsQuery,
-                                data: {
-                                  ...res,
-                                  spendings: {
-                                    ...res.spendings,
-                                    items: spendings
-                                  }
+                    )}
+                    {!deleted && (
+                      <>
+                        <CardHeader>
+                          <CardTitle>Spending</CardTitle>
+                        </CardHeader>
+                        <CardBody>
+                          <dl>
+                            <dt>Date</dt>
+                            <dd>
+                              <FormatDate date={spending.bookedAt} />
+                            </dd>
+                            <dt>Category</dt>
+                            <dd>{spending.category}</dd>
+                            <dt>Description</dt>
+                            <dd>{spending.description}</dd>
+                            <dt>Amount</dt>
+                            <dd>
+                              <FormatMoney
+                                amount={spending.amount}
+                                symbol={
+                                  currenciesById[spending.currency.id].symbol
                                 }
-                              });
-                            }
-                            setDeleted(true);
-                          }
-                        }}
-                      >
-                        {deleteSpendingMutation => (
-                          <CardFooter>
-                            <Link to={`/account/${accountId}`}>⬅</Link>
-                            <Button
-                              disabled={deleting}
-                              onClick={async () => {
-                                setDeleting(true);
-                                deleteSpendingMutation({
-                                  variables: { spendingId }
-                                }).then(
-                                  async ({
-                                    errors
-                                  }: { errors?: GraphQLError[] } | any) => {
-                                    if (errors) {
-                                      setError(true);
-                                      setDeleting(false);
+                              />
+                            </dd>
+                            <dt>Paid with</dt>
+                            <dd>{spending.paidWith}</dd>
+                            <dt>Booked?</dt>
+                            <dd>{spending.booked ? 'Yes' : 'No'}</dd>
+                          </dl>
+                        </CardBody>
+                        <DeleteSpendingMutation
+                          mutation={deleteSpendingQuery}
+                          update={cache => {
+                            const res = cache.readQuery<{
+                              spendings: {
+                                items: Spending[];
+                              };
+                            }>({
+                              query: spendingsQuery,
+                              variables
+                            });
+                            if (res) {
+                              const {
+                                spendings: { items: spendings }
+                              } = res;
+                              const spendingToDelete = spendings.find(
+                                ({ _meta: { id: u } }) => spendingId === u
+                              );
+                              if (spendingToDelete) {
+                                spendings.splice(
+                                  spendings.indexOf(spendingToDelete),
+                                  1
+                                );
+                                cache.writeQuery({
+                                  query: spendingsQuery,
+                                  data: {
+                                    ...res,
+                                    spendings: {
+                                      ...res.spendings,
+                                      items: spendings
                                     }
                                   }
-                                );
-                              }}
-                              color="danger"
-                            >
-                              Delete
-                            </Button>
-                          </CardFooter>
-                        )}
-                      </DeleteSpendingMutation>
-                    </>
-                  )}
-                </Card>
-              );
-            }
-            return <Note>Spending {spendingId} not found.</Note>;
-          }}
-        </WithSpendings>
-      )}
-    </WithAccount>
+                                });
+                              }
+                              setDeleted(true);
+                            }
+                          }}
+                        >
+                          {deleteSpendingMutation => (
+                            <CardFooter>
+                              <Link to={`/account/${accountId}`}>⬅</Link>
+                              <Button
+                                disabled={deleting}
+                                onClick={async () => {
+                                  setDeleting(true);
+                                  deleteSpendingMutation({
+                                    variables: { spendingId }
+                                  }).then(
+                                    async ({
+                                      errors
+                                    }: { errors?: GraphQLError[] } | any) => {
+                                      if (errors) {
+                                        setError(true);
+                                        setDeleting(false);
+                                      }
+                                    }
+                                  );
+                                }}
+                                color="danger"
+                              >
+                                Delete
+                              </Button>
+                            </CardFooter>
+                          )}
+                        </DeleteSpendingMutation>
+                      </>
+                    )}
+                  </Card>
+                );
+              }
+              return <Note>Spending {spendingId} not found.</Note>;
+            }}
+          </WithSpendings>
+        )}
+      </WithAccount>
+    </main>
   );
 };

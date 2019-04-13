@@ -5,8 +5,7 @@ import {
   CardBody,
   CardFooter,
   CardHeader,
-  CardTitle,
-  Form
+  CardTitle
 } from 'reactstrap';
 import gql from 'graphql-tag';
 import { Fail, Note } from '../Note/Note';

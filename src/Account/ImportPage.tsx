@@ -3,7 +3,9 @@ import { Import } from './Import';
 import { WithAccount } from '../Accounts/WithAccount';
 
 export const AccountImportPage = (props: any) => (
-  <WithAccount {...props}>
-    {account => <Import account={account} />}
-  </WithAccount>
+  <main>
+    <WithAccount {...props}>
+      {account => <Import account={account} />}
+    </WithAccount>
+  </main>
 );

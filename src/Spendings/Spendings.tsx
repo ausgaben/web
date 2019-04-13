@@ -10,6 +10,7 @@ import { WithSpendings } from './WithSpendings';
 import { Loading } from '../Loading/Loading';
 import { Note } from '../Note/Note';
 import './Spendings.scss';
+import { Info } from '../Account/Info';
 
 type SpendingCategory = {
   spendings: Spending[];
@@ -153,32 +154,37 @@ export const Spendings = (props: { account: Account }) => {
 
         return (
           <>
-            {Object.keys(spendingsByCategory.pending).length ? (
-              <SpendingsList
-                spendingsByCategory={spendingsByCategory.pending}
-                header={
-                  <ListingHeader
-                    title={'Pending'}
-                    refetch={refetch}
-                    next={next}
-                  />
-                }
-                accountId={accountId}
-              />
-            ) : null}
-            {Object.keys(spendingsByCategory.booked).length ? (
-              <SpendingsList
-                spendingsByCategory={spendingsByCategory.booked}
-                header={
-                  <ListingHeader
-                    title={'Booked'}
-                    refetch={refetch}
-                    next={next}
-                  />
-                }
-                accountId={accountId}
-              />
-            ) : null}
+            <section>
+              <Info account={props.account} />
+              {Object.keys(spendingsByCategory.booked).length ? (
+                <SpendingsList
+                  spendingsByCategory={spendingsByCategory.booked}
+                  header={
+                    <ListingHeader
+                      title={'Booked'}
+                      refetch={refetch}
+                      next={next}
+                    />
+                  }
+                  accountId={accountId}
+                />
+              ) : null}
+            </section>
+            <section>
+              {Object.keys(spendingsByCategory.pending).length ? (
+                <SpendingsList
+                  spendingsByCategory={spendingsByCategory.pending}
+                  header={
+                    <ListingHeader
+                      title={'Pending'}
+                      refetch={refetch}
+                      next={next}
+                    />
+                  }
+                  accountId={accountId}
+                />
+              ) : null}
+            </section>
           </>
         );
       }}

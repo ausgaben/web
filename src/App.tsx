@@ -119,37 +119,35 @@ const App = ({ authData }: { authData: CognitoUser }) => {
           />
         </Navbar>
       </header>
-      <main>
-        <AuthDataContext.Provider value={{ identityId }}>
-          <ApolloProvider client={client}>
-            <Route exact path="/" render={() => <Redirect to="/accounts" />} />
-            <Route exact path="/accounts" component={AccountsPage} />
-            <Route exact path="/about" component={AboutPage} />
-            <Route exact path="/new/account" component={CreateAccountsPage} />
-            <Route exact path="/account/:accountId" component={AccountPage} />
-            <Route
-              exact
-              path="/account/:accountId/settings"
-              component={AccountSettingsPage}
-            />
-            <Route
-              exact
-              path="/account/:accountId/import"
-              component={AccountImportPage}
-            />
-            <Route
-              exact
-              path="/account/:accountId/new/spending"
-              component={AddAccountSpendingPage}
-            />
-            <Route
-              exact
-              path="/account/:accountId/spending/:spendingId"
-              component={SpendingPage}
-            />
-          </ApolloProvider>
-        </AuthDataContext.Provider>
-      </main>
+      <AuthDataContext.Provider value={{ identityId }}>
+        <ApolloProvider client={client}>
+          <Route exact path="/" render={() => <Redirect to="/accounts" />} />
+          <Route exact path="/accounts" component={AccountsPage} />
+          <Route exact path="/about" component={AboutPage} />
+          <Route exact path="/new/account" component={CreateAccountsPage} />
+          <Route exact path="/account/:accountId" component={AccountPage} />
+          <Route
+            exact
+            path="/account/:accountId/settings"
+            component={AccountSettingsPage}
+          />
+          <Route
+            exact
+            path="/account/:accountId/import"
+            component={AccountImportPage}
+          />
+          <Route
+            exact
+            path="/account/:accountId/new/spending"
+            component={AddAccountSpendingPage}
+          />
+          <Route
+            exact
+            path="/account/:accountId/spending/:spendingId"
+            component={SpendingPage}
+          />
+        </ApolloProvider>
+      </AuthDataContext.Provider>
     </Router>
   );
 };

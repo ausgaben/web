@@ -1,0 +1,11 @@
+@import '../variables';
+
+@media (min-width: $wide-breakpoint) {
+  #root > main.account {
+    max-width: $wide-breakpoint;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr;
+    gap: 1rem;
+  }
+}
