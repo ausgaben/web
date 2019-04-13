@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { Account, Spending } from '../schema';
 import { ListingHeader } from '../ListingHeader/ListingHeader';
 import { FormatDate } from '../util/date/FormatDate';
-import { currencies, currenciesById } from '../currency/currencies';
+import { currencies, currenciesById, EUR } from '../currency/currencies';
 import { FormatMoney } from '../util/date/FormatMoney';
 import { WithSpendings } from './WithSpendings';
 import { Loading } from '../Loading/Loading';
@@ -39,19 +39,30 @@ const SpendingsList = ({
           <React.Fragment key={cat}>
             <tr>
               <th colSpan={2}>{cat}</th>
-              {Object.keys(spendingsByCategory[cat].counts).map(key => {
-                if (spendingsByCategory[cat].counts[key] > 0) {
-                  return (
-                    <th key={key} className="amount">
-                      <FormatMoney
-                        amount={spendingsByCategory[cat].sums[key]}
-                        symbol={currenciesById[key].symbol}
-                      />
-                    </th>
-                  );
-                }
-                return null;
-              })}
+              {Object.keys(spendingsByCategory[cat].counts)
+                .filter(key => key !== EUR.id)
+                .filter(key => spendingsByCategory[cat].counts[key] > 0)
+                .map(key => (
+                  <th key={key} className="amount">
+                    <FormatMoney
+                      amount={spendingsByCategory[cat].sums[key]}
+                      symbol={currenciesById[key].symbol}
+                    />
+                  </th>
+                ))}
+              {Object.keys(spendingsByCategory[cat].counts)
+                .filter(key => key !== EUR.id)
+                .filter(key => spendingsByCategory[cat].counts[key] > 0)
+                .length === 0 && <th />}
+              {spendingsByCategory[cat].counts[EUR.id] > 0 && (
+                <th className="amount">
+                  <FormatMoney
+                    amount={spendingsByCategory[cat].sums[EUR.id]}
+                    symbol={currenciesById[EUR.id].symbol}
+                  />
+                </th>
+              )}
+              {spendingsByCategory[cat].counts[EUR.id] === 0 && <th />}
             </tr>
             {spendingsByCategory[cat].spendings.map(
               ({
@@ -78,6 +89,7 @@ const SpendingsList = ({
                       />
                     </td>
                   )}
+                  {currencyId === currenciesById.EUR.id && <td />}
                   <td className="amount">
                     <FormatMoney
                       amount={amount * toEUR}
