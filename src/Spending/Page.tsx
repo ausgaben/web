@@ -147,6 +147,11 @@ export const Page = (props: {
                           {deleteSpendingMutation => (
                             <CardFooter>
                               <Link to={`/account/${accountId}`}>⬅</Link>
+                              <Link
+                                to={`/account/${accountId}/new/spending?copy=${spendingId}`}
+                              >
+                                Copy
+                              </Link>
                               <Button
                                 disabled={deleting}
                                 onClick={async () => {

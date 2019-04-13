@@ -51,33 +51,49 @@ class CreateSpendingMutation extends Mutation<
   }
 > {}
 
-export const AddSpending = (props: { account: Account }) => {
+export const AddSpending = (props: { account: Account; copy?: Spending }) => {
   const {
     account: {
       name,
       isSavingsAccount,
       _meta: { id: accountId }
-    }
+    },
+    copy
   } = props;
   const [adding, setAdding] = useState(false);
   const [added, setAdded] = useState(false);
   const [error, setError] = useState(false);
-  const [isIncome, setIsIncome] = useState(false);
-  const [booked, setBooked] = useState(true);
-  const [bookedAt, setBookedAt] = useState(new Date());
-  const [category, setCategory] = useState('');
-  const [description, setDescription] = useState('');
-  const [paidWith, setPaidWith] = useState('');
-  const [amountWholeInput, setAmountWholeInput] = useState('');
-  const [amountFractionInput, setAmountFractionInput] = useState('');
-  const amountWhole = useRef(0);
-  const amountFraction = useRef(0);
+  const [isIncome, setIsIncome] = useState(copy ? copy.amount > 0 : false);
+  const [booked, setBooked] = useState(copy ? copy.booked : true);
+  const [bookedAt, setBookedAt] = useState(
+    copy ? new Date(copy.bookedAt) : new Date()
+  );
+  const [category, setCategory] = useState(copy ? copy.category : '');
+  const [description, setDescription] = useState(copy ? copy.description : '');
+  const [paidWith, setPaidWith] = useState(copy ? `${copy.paidWith}` : '');
+  if (copy) {
+  }
+  const [amountWholeInput, setAmountWholeInput] = useState(
+    copy ? Math.floor(Math.abs(copy.amount) / 100) : ''
+  );
+  const [amountFractionInput, setAmountFractionInput] = useState(
+    copy ? Math.abs(copy.amount % 100) : ''
+  );
+  const amountWhole = useRef(
+    copy ? Math.floor(Math.abs(copy.amount) / 100) : 0
+  );
+  const amountFraction = useRef(copy ? Math.abs(copy.amount % 100) : 0);
   const [currency, setCurrency] = useState(
-    Cache.getItem('addSpending.currency') || NOK.id
+    copy ? copy.currency.id : Cache.getItem('addSpending.currency') || NOK.id
   );
-  const [paymentMethods, setPaymentMethods] = useState(
-    Cache.getItem('addSpending.paymentMethods') || []
-  );
+  const [paymentMethods, setPaymentMethods] = useState([
+    ...Array.from(
+      new Set([
+        ...(copy && copy.paidWith ? [copy.paidWith] : []),
+        ...(Cache.getItem('addSpending.paymentMethods') || [])
+      ])
+    )
+  ]);
   const [currencyDropdownOpen, setCurrencyDropdownOpen] = useState(false);
 
   const amount = amountWhole.current * 100 + amountFraction.current;
@@ -89,6 +105,8 @@ export const AddSpending = (props: { account: Account }) => {
     setDescription('');
     setAmountWholeInput('');
     setAmountFractionInput('');
+    amountWhole.current = 0;
+    amountFraction.current = 0;
   };
 
   let tabIndex = 0;
