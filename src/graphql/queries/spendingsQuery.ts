@@ -34,8 +34,9 @@ export const spendingsQuery = gql`
   }
 `;
 
-export const month = () => {
-  const startDate = DateTime.local().startOf('month');
+export const month = (
+  startDate: DateTime = DateTime.local().startOf('month')
+) => {
   const endDate = startDate.endOf('month');
   return {
     startDate,

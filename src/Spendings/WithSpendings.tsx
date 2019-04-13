@@ -1,16 +1,31 @@
-import React from 'react';
-import { Card, CardBody } from 'reactstrap';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
 import { Account, Spending } from '../schema';
 import {
   allTime,
   month,
   spendingsQuery
 } from '../graphql/queries/spendingsQuery';
-import { Loading } from '../Loading/Loading';
-import { Note } from '../Note/Note';
 import { Query } from 'react-apollo';
-import { ListingHeader } from '../ListingHeader/ListingHeader';
+import { DateTime } from 'luxon';
+import { Cache } from 'aws-amplify';
+
+class SpendingsQuery extends Query<
+  { spendings: { items: Spending[] } },
+  {
+    accountId: string;
+    startDate: string;
+    endDate: string;
+    startKey?: string;
+  }
+> {}
+
+const getDateSelection = (isSavingsAccount: boolean) => {
+  if (isSavingsAccount) {
+    return allTime();
+  }
+  const cached = Cache.getItem('withSpendings.startDate');
+  return month(cached ? DateTime.fromISO(cached) : undefined);
+};
 
 export const WithSpendings = (props: {
   account: Account;
@@ -19,7 +34,10 @@ export const WithSpendings = (props: {
     spendings: Spending[];
     refetch: () => void;
     next?: () => void;
+    nextMonth?: () => void;
+    prevMonth?: () => void;
     variables: any;
+    startDate: DateTime;
   }) => React.ReactElement;
 }) => {
   const {
@@ -30,7 +48,10 @@ export const WithSpendings = (props: {
     children
   } = props;
 
-  const { startDate, endDate } = isSavingsAccount ? allTime() : month();
+  const [dateRange, setDateRange] = useState(
+    getDateSelection(isSavingsAccount)
+  );
+  const { startDate, endDate } = dateRange;
   const variables = {
     accountId,
     startDate: startDate.toISO(),
@@ -38,7 +59,7 @@ export const WithSpendings = (props: {
   };
 
   return (
-    <Query query={spendingsQuery} variables={variables}>
+    <SpendingsQuery query={spendingsQuery} variables={variables}>
       {({ data, loading, error, refetch }: any) => {
         if (error) {
           return (
@@ -49,19 +70,43 @@ export const WithSpendings = (props: {
           );
         }
         if (loading || !data) return props.loading;
+        const refetchFn = (startDate?: DateTime) => {
+          if (isSavingsAccount) {
+            return refetch(variables);
+          }
+          if (startDate) {
+            Cache.setItem('withSpendings.startDate', startDate.toISO());
+            const { endDate } = month(startDate);
+            setDateRange({
+              startDate,
+              endDate
+            });
+            return refetch({
+              ...variables,
+              startDate: startDate.toISO(),
+              endDate: endDate.toISO()
+            });
+          }
+          return refetch(variables);
+        };
         return children({
           spendings: data.spendings.items,
-          refetch: () => refetch(variables),
+          refetch: refetchFn,
           variables,
+          startDate,
           next: data.spendings.nextStartKey
             ? () =>
                 refetch({
                   ...variables,
                   startKey: data.spendings.nextStartKey
                 })
-            : undefined
+            : undefined,
+          ...(!isSavingsAccount && {
+            prevMonth: () => refetchFn(startDate.minus({ month: 1 })),
+            nextMonth: () => refetchFn(startDate.plus({ month: 1 }))
+          })
         });
       }}
-    </Query>
+    </SpendingsQuery>
   );
 };

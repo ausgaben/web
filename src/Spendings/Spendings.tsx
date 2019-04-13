@@ -112,10 +112,18 @@ export const Spendings = (props: { account: Account }) => {
   } = props.account;
   return (
     <WithSpendings {...props} loading={<Loading />}>
-      {({ spendings, refetch, next }) => {
+      {({ spendings, refetch, next, nextMonth, prevMonth, startDate }) => {
         if (!spendings.length) {
           return (
             <Card>
+              <ListingHeader
+                title={'Booked'}
+                refetch={refetch}
+                next={next}
+                nextMonth={nextMonth}
+                prevMonth={prevMonth}
+                startDate={startDate}
+              />
               <CardBody>
                 <Note>No spendings found.</Note>
               </CardBody>
@@ -176,6 +184,9 @@ export const Spendings = (props: { account: Account }) => {
                       title={'Booked'}
                       refetch={refetch}
                       next={next}
+                      nextMonth={nextMonth}
+                      prevMonth={prevMonth}
+                      startDate={startDate}
                     />
                   }
                   accountId={accountId}
@@ -191,6 +202,9 @@ export const Spendings = (props: { account: Account }) => {
                       title={'Pending'}
                       refetch={refetch}
                       next={next}
+                      nextMonth={nextMonth}
+                      prevMonth={prevMonth}
+                      startDate={startDate}
                     />
                   }
                   accountId={accountId}
