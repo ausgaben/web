@@ -27,6 +27,8 @@ export const deleteSpendingQuery = gql`
   }
 `;
 
+class DeleteSpendingMutation extends Mutation<{}, { spendingId: string }> {}
+
 export const Page = (props: {
   match: { params: { spendingId: string; accountId: string } };
 }) => {
@@ -103,7 +105,7 @@ export const Page = (props: {
                           <dd>{spending.booked ? 'Yes' : 'No'}</dd>
                         </dl>
                       </CardBody>
-                      <Mutation
+                      <DeleteSpendingMutation
                         mutation={deleteSpendingQuery}
                         update={cache => {
                           const res = cache.readQuery<{
@@ -167,7 +169,7 @@ export const Page = (props: {
                             </Button>
                           </CardFooter>
                         )}
-                      </Mutation>
+                      </DeleteSpendingMutation>
                     </>
                   )}
                 </Card>

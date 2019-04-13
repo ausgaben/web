@@ -9,7 +9,7 @@ import {
 } from 'reactstrap';
 import gql from 'graphql-tag';
 import { Account } from '../schema';
-import { Mutation } from 'react-apollo';
+import { Mutation, MutationFn } from 'react-apollo';
 
 export const inviteUserMutation = gql`
   mutation inviteUser($accountId: ID!, $userId: ID!) {
@@ -23,7 +23,7 @@ export const InviteUserToAccount = (props: { account: Account }) => {
   const [userId, setUserId] = useState('');
   return (
     <Mutation mutation={inviteUserMutation}>
-      {inviteUserMutation => (
+      {(inviteUserMutation: MutationFn) => (
         <Form>
           <Label for="userid">User ID</Label>
           <InputGroup>

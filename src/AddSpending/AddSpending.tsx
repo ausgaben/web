@@ -21,7 +21,7 @@ import {
 } from 'reactstrap';
 import { Fail, Note } from '../Note/Note';
 import { Account, Spending } from '../schema';
-import { Mutation } from 'react-apollo';
+import { Mutation, MutationFn } from 'react-apollo';
 import { GraphQLError } from 'graphql';
 import { currencies, currenciesById, NOK } from '../currency/currencies';
 import { Cache } from 'aws-amplify';
@@ -34,6 +34,22 @@ import {
   spendingsQuery
 } from '../graphql/queries/spendingsQuery';
 import { createSpendingMutation } from '../graphql/mutations/createSpending';
+
+class CreateSpendingMutation extends Mutation<
+  {
+    createSpending: { id: string };
+  },
+  {
+    accountId: string;
+    bookedAt: string;
+    category: string;
+    description: string;
+    amount: number;
+    currencyId: string;
+    booked: boolean;
+    paidWith?: string;
+  }
+> {}
 
 export const AddSpending = (props: { account: Account }) => {
   const {
@@ -85,16 +101,12 @@ export const AddSpending = (props: { account: Account }) => {
             Add {isIncome ? 'income' : 'spending'} to <em>{name}</em>
           </CardTitle>
         </CardHeader>
-        <Mutation
+        <CreateSpendingMutation
           mutation={createSpendingMutation}
-          update={(
-            cache,
-            {
-              data: {
-                createSpending: { id }
-              }
-            }
-          ) => {
+          update={(cache, { data }) => {
+            const {
+              createSpending: { id }
+            } = data!;
             const { startDate, endDate } = isSavingsAccount
               ? allTime()
               : month();
@@ -381,7 +393,7 @@ export const AddSpending = (props: { account: Account }) => {
               </CardFooter>
             </>
           )}
-        </Mutation>
+        </CreateSpendingMutation>
       </Card>
     </Form>
   );

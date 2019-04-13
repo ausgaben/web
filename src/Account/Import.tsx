@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Button,
   Card,
@@ -8,20 +8,14 @@ import {
   CardTitle,
   Form,
   FormGroup,
-  Label,
   Input,
+  Label,
   Table
 } from 'reactstrap';
-import gql from 'graphql-tag';
-import { Fail, Note } from '../Note/Note';
 import { Account } from '../schema';
-import { Mutation } from 'react-apollo';
-import { accountsQuery } from '../graphql/queries/accountsQuery';
-import { GraphQLError } from 'graphql';
 import { Link } from 'react-router-dom';
-import { InviteUserToAccount } from './InviteUserToAccount';
 import { Cache } from 'aws-amplify';
-import { currenciesById, NOK } from '../currency/currencies';
+import { currenciesById } from '../currency/currencies';
 import { FormatDate } from '../util/date/FormatDate';
 import { FormatMoney } from '../util/date/FormatMoney';
 import { DateTime } from 'luxon';

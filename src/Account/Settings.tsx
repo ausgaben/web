@@ -23,6 +23,8 @@ export const deleteAccountQuery = gql`
   }
 `;
 
+class DeleteAccountMutation extends Mutation<{}, { accountId: string }> {}
+
 export const Settings = (props: { account: Account }) => {
   const {
     account: {
@@ -55,7 +57,7 @@ export const Settings = (props: { account: Account }) => {
         </CardBody>
       )}
       {!deleted && (
-        <Mutation
+        <DeleteAccountMutation
           mutation={deleteAccountQuery}
           update={cache => {
             const res = cache.readQuery<{
@@ -112,7 +114,7 @@ export const Settings = (props: { account: Account }) => {
               </Button>
             </CardFooter>
           )}
-        </Mutation>
+        </DeleteAccountMutation>
       )}
     </Card>
   );

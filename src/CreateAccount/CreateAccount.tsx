@@ -24,6 +24,16 @@ export const createAccountQuery = gql`
   }
 `;
 
+class CreateAccountMutation extends Mutation<
+  {
+    createAccount: { id: string };
+  },
+  {
+    name: string;
+    isSavingsAccount: boolean;
+  }
+> {}
+
 export const CreateAccount = () => {
   const [name, setName] = useState('');
   const [isSavingsAccount, setIsSavingsAccount] = useState(false);
@@ -37,16 +47,12 @@ export const CreateAccount = () => {
 
   const isValid = name.length;
   return (
-    <Mutation
+    <CreateAccountMutation
       mutation={createAccountQuery}
-      update={(
-        cache,
-        {
-          data: {
-            createAccount: { id }
-          }
-        }
-      ) => {
+      update={(cache, { data }) => {
+        const {
+          createAccount: { id }
+        } = data!;
         const res = cache.readQuery<{
           accounts: {
             items: Account[];
@@ -136,6 +142,6 @@ export const CreateAccount = () => {
           </Card>
         </Form>
       )}
-    </Mutation>
+    </CreateAccountMutation>
   );
 };
