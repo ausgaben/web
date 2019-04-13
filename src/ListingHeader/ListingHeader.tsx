@@ -42,7 +42,7 @@ export const ListingHeader = ({
         refetch();
       }}
     >
-      reload
+      refresh
     </Button>
     {startDate && (prevMonth || nextMonth) && (
       <nav className="dateRange">
