@@ -19,7 +19,7 @@ export const ValueSelector = ({
   value?: string;
   values: string[];
   onSelect: (value?: string) => void;
-  onDelete: (value: string) => void;
+  onDelete?: (value: string) => void;
   onAdd: (value: string) => void;
   disabled?: boolean;
 }) => {
@@ -33,11 +33,12 @@ export const ValueSelector = ({
             selected={value === method}
             value={method}
             onSelect={() => onSelect(value === method ? undefined : method)}
-            onDelete={() => onDelete(method)}
+            onDelete={() => (onDelete ? onDelete(method) : () => {})}
             key={method}
             disabled={disabled}
           />
         ))}
+        {/*
         {!toggleAdd && (
           <ButtonGroup>
             <Button
@@ -52,6 +53,7 @@ export const ValueSelector = ({
             </Button>
           </ButtonGroup>
         )}
+        */}
         {toggleAdd && (
           <InputGroup>
             <InputGroupAddon addonType="prepend">

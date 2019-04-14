@@ -1,0 +1,8 @@
+div.inputWithAutoComplete {
+  width: 100%;
+  position: relative;
+  ul.list-group {
+    position: absolute;
+    z-index: 99;
+  }
+}
