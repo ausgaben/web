@@ -104,7 +104,9 @@ export const CreateAccount = () => {
                   placeholder="e.g. 'Spendings'"
                   value={name}
                   required
-                  onChange={({ target: { value: name } }) => setName(name)}
+                  onChange={({ target: { value: name } }) =>
+                    setName(name.trim())
+                  }
                 />
               </FormGroup>
               <FormGroup check>

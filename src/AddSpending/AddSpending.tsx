@@ -243,7 +243,9 @@ export const AddSpending = (props: { account: Account; copy?: Spending }) => {
                     placeholder="e.g. 'Mat'"
                     value={category}
                     required
-                    onChange={({ target: { value } }) => setCategory(value)}
+                    onChange={({ target: { value } }) =>
+                      setCategory(value.trim())
+                    }
                   />
                 </FormGroup>
                 <FormGroup className="oneLine">
@@ -257,7 +259,9 @@ export const AddSpending = (props: { account: Account; copy?: Spending }) => {
                     placeholder="e.g. 'Rema 1000'"
                     value={description}
                     required
-                    onChange={({ target: { value } }) => setDescription(value)}
+                    onChange={({ target: { value } }) =>
+                      setDescription(value.trim())
+                    }
                   />
                 </FormGroup>
                 <div className="amount">
