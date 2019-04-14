@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   Button,
   ButtonGroup,
@@ -21,7 +21,7 @@ import {
 } from 'reactstrap';
 import { Fail, Note } from '../Note/Note';
 import { Account, Spending } from '../schema';
-import { Mutation, MutationFn } from 'react-apollo';
+import { Mutation } from 'react-apollo';
 import { GraphQLError } from 'graphql';
 import { currencies, currenciesById, NOK } from '../currency/currencies';
 import { Cache } from 'aws-amplify';
@@ -321,7 +321,9 @@ export const AddSpending = (props: { account: Account; copy?: Spending }) => {
                         onChange={({ target: { value } }) => {
                           const v = value.replace(/[^0-9]/g, '');
                           setAmountFractionInput(v);
-                          amountFraction.current = Math.abs(+v);
+                          amountFraction.current = Math.abs(
+                            +`${v}00`.slice(0, 2)
+                          );
                         }}
                       />
                     </InputGroup>
