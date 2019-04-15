@@ -74,7 +74,17 @@ export const AutoComplete = ({
       {!autoCompleteHidden && hits.length > 0 && (
         <ListGroup>
           {hits.map((s, i) => (
-            <ListGroupItem key={i} color={highlight === i ? 'info' : undefined}>
+            <ListGroupItem
+              key={i}
+              color={highlight === i ? 'info' : undefined}
+              onMouseEnter={() => {
+                setHighLight(i);
+              }}
+              onClick={() => {
+                onChange(hits[i]);
+                setAutoCompleteHidden(true);
+              }}
+            >
               {s}
             </ListGroupItem>
           ))}
