@@ -117,7 +117,7 @@ export const AddSpending = (props: { account: Account; copy?: Spending }) => {
           account={props.account}
           loading={<Loading />}
         >
-          {({ autoCompleteStrings }) => (
+          {({ autoCompleteStrings, refetch: refetchAutoCompleteStrings }) => (
             <CreateSpendingMutation
               mutation={createSpendingMutation}
               update={(cache, { data }) => {
@@ -186,6 +186,7 @@ export const AddSpending = (props: { account: Account; copy?: Spending }) => {
                 setAdded(true);
                 setAdding(false);
                 reset();
+                refetchAutoCompleteStrings();
               }}
             >
               {createSpendingMutation => (
