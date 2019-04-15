@@ -104,9 +104,7 @@ export const CreateAccount = () => {
                   placeholder="e.g. 'Spendings'"
                   value={name}
                   required
-                  onChange={({ target: { value: name } }) =>
-                    setName(name.trim())
-                  }
+                  onChange={({ target: { value: name } }) => setName(name)}
                 />
               </FormGroup>
               <FormGroup check>
@@ -128,7 +126,7 @@ export const CreateAccount = () => {
                   setSubmitting(true);
                   await createAccountMutation({
                     variables: {
-                      name,
+                      name: name.trim(),
                       isSavingsAccount
                     }
                   });

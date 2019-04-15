@@ -44,7 +44,7 @@ export const AutoComplete = ({
         value={value}
         required={required}
         onChange={({ target: { value } }) => {
-          onChange(value.trim());
+          onChange(value);
           setAutoCompleteHidden(false);
           setHighLight(-1);
         }}

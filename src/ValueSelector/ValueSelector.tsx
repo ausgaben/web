@@ -77,7 +77,7 @@ export const ValueSelector = ({
               innerRef={ref => ref && values.length && ref.focus()}
               value={newValue}
               onChange={({ target: { value } }) => {
-                setNewValue(value.trim());
+                setNewValue(value);
               }}
             />
             <InputGroupAddon addonType="append">
@@ -86,7 +86,7 @@ export const ValueSelector = ({
                 size="sm"
                 disabled={disabled || !newValue.length}
                 onClick={() => {
-                  onAdd(newValue);
+                  onAdd(newValue.trim());
                   setToggleAdd(false);
                   setNewValue('');
                 }}

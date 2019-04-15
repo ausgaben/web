@@ -381,8 +381,8 @@ export const AddSpending = (props: { account: Account; copy?: Spending }) => {
                           variables: {
                             accountId,
                             bookedAt: bookedAt.toISOString(),
-                            category,
-                            description,
+                            category: category.trim(),
+                            description: description.trim(),
                             amount: isIncome ? amount : -amount,
                             currencyId: currency,
                             booked,
