@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Card, CardBody, CardFooter, Table } from 'reactstrap';
+import { Card, CardBody, Table } from 'reactstrap';
 import { Loading } from '../Loading/Loading';
 import { Note } from '../Note/Note';
 import { Link } from 'react-router-dom';
@@ -45,7 +45,7 @@ export const Accounts = () => {
           0
         )
     );
-  });
+  }, [accounts]);
 
   return (
     <Card>

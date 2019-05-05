@@ -217,7 +217,9 @@ export const AddSpending = (props: { account: Account; copy?: Spending }) => {
                             onClick={() => setBooked(false)}
                             title="Pending"
                           >
-                            ⏳
+                            <span role="img" aria-label="hourglass">
+                              ⏳
+                            </span>
                           </Button>
                         </InputGroupAddon>
                         <InputGroupAddon addonType="append">
@@ -227,7 +229,9 @@ export const AddSpending = (props: { account: Account; copy?: Spending }) => {
                             onClick={() => setBooked(true)}
                             title="Booked"
                           >
-                            ✓
+                            <span role="img" aria-label="checkmark">
+                              ✓
+                            </span>
                           </Button>
                         </InputGroupAddon>
                       </InputGroup>

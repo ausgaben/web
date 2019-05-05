@@ -1,10 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Account, Spending } from '../schema';
+import { Account } from '../schema';
 import { currenciesById } from '../currency/currencies';
 import { FormatMoney } from '../util/date/FormatMoney';
 import { WithSpendings } from '../Spendings/WithSpendings';
-import { Loading } from '../Loading/Loading';
 
 export const AccountItem = (props: { account: Account }) => {
   const {

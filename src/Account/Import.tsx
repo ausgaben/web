@@ -29,11 +29,6 @@ type ParsedSpending = {
   amount: number;
 };
 
-const importSpendings = (
-  callback: (imported: string[]) => void,
-  spendings: React.MutableRefObject<ParsedSpending[]>
-) => {};
-
 export const Import = (props: { account: Account }) => {
   const {
     account: {
@@ -57,7 +52,7 @@ export const Import = (props: { account: Account }) => {
     .map((line: string) => {
       let [type, category, description, amount] = line.split('\t');
       if (!type || !category || !description || !amount) {
-        return;
+        return undefined;
       }
       amount = amount.replace(/ €$/, '');
       const fracMatch = amount.match(/,([0-9]+)$/);
@@ -67,7 +62,7 @@ export const Import = (props: { account: Account }) => {
       const f = parseInt(whole, 10) * 100;
       let a = Math.abs(f) + parseInt(fraction, 10);
       if (a === 0) {
-        return;
+        return undefined;
       }
       return {
         id: line,
@@ -120,7 +115,7 @@ export const Import = (props: { account: Account }) => {
       .then(() => {
         setImported(i);
       });
-  }, [spendingsToBeImported]);
+  }, [spendingsToBeImported, accountId, bookedAt]);
 
   return (
     <Form>

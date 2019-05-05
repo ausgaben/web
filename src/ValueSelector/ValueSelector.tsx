@@ -1,12 +1,6 @@
 import React, { useState } from 'react';
 import { PredefinedValueButton } from './PredefinedValueButton';
-import {
-  Input,
-  Button,
-  InputGroup,
-  InputGroupAddon,
-  ButtonGroup
-} from 'reactstrap';
+import { Button, Input, InputGroup, InputGroupAddon } from 'reactstrap';
 
 export const ValueSelector = ({
   value,
