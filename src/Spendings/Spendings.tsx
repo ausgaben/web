@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Table, CardBody } from 'reactstrap';
+import { Card, Table, CardBody, Button } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { Account, Spending } from '../schema';
 import { ListingHeader } from '../ListingHeader/ListingHeader';
@@ -11,6 +11,23 @@ import { Loading } from '../Loading/Loading';
 import { Note } from '../Note/Note';
 import './Spendings.scss';
 import { Info } from '../Account/Info';
+import { Mutation } from 'react-apollo';
+import gql from 'graphql-tag';
+
+export const markSpendingAsBooked = gql`
+  mutation updateSpending($spendingId: ID!) {
+    updateSpending(spendingId: $spendingId, booked: true)
+  }
+`;
+
+class MarkSpendingAsBookedMutation extends Mutation<
+  {
+    updateSpending: void;
+  },
+  {
+    spendingId: string;
+  }
+> {}
 
 type SpendingCategory = {
   spendings: Spending[];
@@ -38,7 +55,7 @@ const SpendingsList = ({
         {Object.keys(spendingsByCategory).map(cat => (
           <React.Fragment key={cat}>
             <tr>
-              <th colSpan={2}>{cat}</th>
+              <th colSpan={3}>{cat}</th>
               {Object.keys(spendingsByCategory[cat].counts)
                 .filter(key => key !== EUR.id)
                 .filter(key => spendingsByCategory[cat].counts[key] > 0)
@@ -69,10 +86,36 @@ const SpendingsList = ({
                 description,
                 bookedAt,
                 amount,
+                booked,
                 _meta: { id },
                 currency: { id: currencyId, toEUR }
               }) => (
                 <tr key={id} className="spending">
+                  {!booked && (
+                    <td>
+                      <MarkSpendingAsBookedMutation
+                        mutation={markSpendingAsBooked}
+                      >
+                        {markSpendingAsBooked => (
+                          <Button
+                            color="secondary"
+                            outline={true}
+                            onClick={() =>
+                              markSpendingAsBooked({
+                                variables: { spendingId: id }
+                              })
+                            }
+                            title="Mark as booked"
+                          >
+                            <span role="img" aria-label="checkmark">
+                              ✓
+                            </span>
+                          </Button>
+                        )}
+                      </MarkSpendingAsBookedMutation>
+                    </td>
+                  )}
+                  {booked && <td />}
                   <td className="date">
                     <FormatDate date={bookedAt} />
                   </td>
