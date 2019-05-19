@@ -6,6 +6,11 @@ export type Account = {
 
 export type EntityMeta = {
   id: string;
+  name: string;
+  version: number;
+  createdAt: Date;
+  updatedAt?: Date;
+  deletedAt?: Date;
 };
 
 export type Currency = {
