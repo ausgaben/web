@@ -44,135 +44,137 @@ export const SpendingsList = ({
     {header}
     <Table className="spendings">
       <tbody>
-        {Object.keys(spendingsByCategory).map(cat => (
-          <React.Fragment key={cat}>
-            <tr>
-              <th colSpan={3}>{cat}</th>
-              {Object.keys(spendingsByCategory[cat].counts)
-                .filter(key => key !== EUR.id)
-                .filter(key => spendingsByCategory[cat].counts[key] > 0)
-                .map(key => (
-                  <th key={key} className="amount">
+        {Object.keys(spendingsByCategory)
+          .sort()
+          .map(cat => (
+            <React.Fragment key={cat}>
+              <tr>
+                <th colSpan={3}>{cat}</th>
+                {Object.keys(spendingsByCategory[cat].counts)
+                  .filter(key => key !== EUR.id)
+                  .filter(key => spendingsByCategory[cat].counts[key] > 0)
+                  .map(key => (
+                    <th key={key} className="amount">
+                      <FormatMoney
+                        amount={spendingsByCategory[cat].sums[key]}
+                        symbol={currenciesById[key].symbol}
+                      />
+                    </th>
+                  ))}
+                {Object.keys(spendingsByCategory[cat].counts)
+                  .filter(key => key !== EUR.id)
+                  .filter(key => spendingsByCategory[cat].counts[key] > 0)
+                  .length === 0 && <th />}
+                {spendingsByCategory[cat].counts[EUR.id] > 0 && (
+                  <th className="amount">
                     <FormatMoney
-                      amount={spendingsByCategory[cat].sums[key]}
-                      symbol={currenciesById[key].symbol}
+                      amount={spendingsByCategory[cat].sums[EUR.id]}
+                      symbol={currenciesById[EUR.id].symbol}
                     />
                   </th>
-                ))}
-              {Object.keys(spendingsByCategory[cat].counts)
-                .filter(key => key !== EUR.id)
-                .filter(key => spendingsByCategory[cat].counts[key] > 0)
-                .length === 0 && <th />}
-              {spendingsByCategory[cat].counts[EUR.id] > 0 && (
-                <th className="amount">
-                  <FormatMoney
-                    amount={spendingsByCategory[cat].sums[EUR.id]}
-                    symbol={currenciesById[EUR.id].symbol}
-                  />
-                </th>
-              )}
-              {spendingsByCategory[cat].counts[EUR.id] === 0 && <th />}
-            </tr>
-            {spendingsByCategory[cat].spendings.map(
-              ({
-                description,
-                bookedAt,
-                amount,
-                booked,
-                _meta: { id },
-                currency: { id: currencyId, toEUR }
-              }) => (
-                <tr key={id} className="spending">
-                  {!booked && (
-                    <td>
-                      <MarkSpendingAsBookedMutation
-                        mutation={markSpendingAsBooked}
-                        update={cache => {
-                          const res = cache.readQuery<{
-                            spendings: {
-                              items: Spending[];
-                            };
-                          }>({
-                            query: spendingsQuery,
-                            variables
-                          });
-                          if (res) {
-                            const {
-                              spendings: { items: spendings }
-                            } = res;
-                            const spendingToUpdate = spendings.find(
-                              ({ _meta: { id: u } }) => id === u
-                            );
-                            if (spendingToUpdate) {
-                              spendings[
-                                spendings.indexOf(spendingToUpdate)
-                              ] = updateAggregate<Spending>({
-                                ...spendingToUpdate,
-                                booked: true
-                              });
-                              cache.writeQuery({
-                                query: spendingsQuery,
-                                data: {
-                                  ...res,
-                                  spendings: {
-                                    ...res.spendings,
-                                    items: spendings
+                )}
+                {spendingsByCategory[cat].counts[EUR.id] === 0 && <th />}
+              </tr>
+              {spendingsByCategory[cat].spendings.map(
+                ({
+                  description,
+                  bookedAt,
+                  amount,
+                  booked,
+                  _meta: { id },
+                  currency: { id: currencyId, toEUR }
+                }) => (
+                  <tr key={id} className="spending">
+                    {!booked && (
+                      <td>
+                        <MarkSpendingAsBookedMutation
+                          mutation={markSpendingAsBooked}
+                          update={cache => {
+                            const res = cache.readQuery<{
+                              spendings: {
+                                items: Spending[];
+                              };
+                            }>({
+                              query: spendingsQuery,
+                              variables
+                            });
+                            if (res) {
+                              const {
+                                spendings: { items: spendings }
+                              } = res;
+                              const spendingToUpdate = spendings.find(
+                                ({ _meta: { id: u } }) => id === u
+                              );
+                              if (spendingToUpdate) {
+                                spendings[
+                                  spendings.indexOf(spendingToUpdate)
+                                ] = updateAggregate<Spending>({
+                                  ...spendingToUpdate,
+                                  booked: true
+                                });
+                                cache.writeQuery({
+                                  query: spendingsQuery,
+                                  data: {
+                                    ...res,
+                                    spendings: {
+                                      ...res.spendings,
+                                      items: spendings
+                                    }
                                   }
-                                }
-                              });
-                              onUpdateSpendings(spendings);
+                                });
+                                onUpdateSpendings(spendings);
+                              }
                             }
-                          }
-                        }}
-                      >
-                        {markSpendingAsBooked => (
-                          <Button
-                            color="secondary"
-                            outline={true}
-                            onClick={() =>
-                              markSpendingAsBooked({
-                                variables: { spendingId: id }
-                              })
-                            }
-                            title="Mark as booked"
-                          >
-                            <span role="img" aria-label="checkmark">
-                              ✓
-                            </span>
-                          </Button>
-                        )}
-                      </MarkSpendingAsBookedMutation>
+                          }}
+                        >
+                          {markSpendingAsBooked => (
+                            <Button
+                              color="secondary"
+                              outline={true}
+                              onClick={() =>
+                                markSpendingAsBooked({
+                                  variables: { spendingId: id }
+                                })
+                              }
+                              title="Mark as booked"
+                            >
+                              <span role="img" aria-label="checkmark">
+                                ✓
+                              </span>
+                            </Button>
+                          )}
+                        </MarkSpendingAsBookedMutation>
+                      </td>
+                    )}
+                    {booked && <td />}
+                    <td className="date">
+                      <FormatDate date={bookedAt} />
                     </td>
-                  )}
-                  {booked && <td />}
-                  <td className="date">
-                    <FormatDate date={bookedAt} />
-                  </td>
-                  <td className="description">
-                    <Link to={`/account/${accountId}/spending/${id}`}>
-                      {description}
-                    </Link>
-                  </td>
-                  {currencyId !== currenciesById.EUR.id && (
+                    <td className="description">
+                      <Link to={`/account/${accountId}/spending/${id}`}>
+                        {description}
+                      </Link>
+                    </td>
+                    {currencyId !== currenciesById.EUR.id && (
+                      <td className="amount">
+                        <FormatMoney
+                          amount={amount}
+                          symbol={currenciesById[currencyId].symbol}
+                        />
+                      </td>
+                    )}
+                    {currencyId === currenciesById.EUR.id && <td />}
                     <td className="amount">
                       <FormatMoney
-                        amount={amount}
-                        symbol={currenciesById[currencyId].symbol}
+                        amount={amount * toEUR}
+                        symbol={currenciesById.EUR.symbol}
                       />
                     </td>
-                  )}
-                  {currencyId === currenciesById.EUR.id && <td />}
-                  <td className="amount">
-                    <FormatMoney
-                      amount={amount * toEUR}
-                      symbol={currenciesById.EUR.symbol}
-                    />
-                  </td>
-                </tr>
-              )
-            )}
-          </React.Fragment>
-        ))}
+                  </tr>
+                )
+              )}
+            </React.Fragment>
+          ))}
       </tbody>
     </Table>
   </Card>
