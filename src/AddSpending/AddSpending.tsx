@@ -206,7 +206,9 @@ export const AddSpending = (props: { account: Account; copy?: Spending }) => {
                           onChange={({ target: { value } }) => {
                             const d = Date.parse(value);
                             if (d) {
-                              setBookedAt(new Date(d));
+                              const bookedAt = new Date(d);
+                              setBookedAt(bookedAt);
+                              setBooked(bookedAt.getTime() <= Date.now());
                             }
                           }}
                         />
