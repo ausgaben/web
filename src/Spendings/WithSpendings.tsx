@@ -10,7 +10,7 @@ import { DateTime } from 'luxon';
 import { Cache } from 'aws-amplify';
 
 class SpendingsQuery extends Query<
-  { spendings: { items: Spending[] } },
+  { spendings: { items: Spending[]; nextStartKey?: string } },
   {
     accountId: string;
     startDate: string;
@@ -60,7 +60,7 @@ export const WithSpendings = (props: {
 
   return (
     <SpendingsQuery query={spendingsQuery} variables={variables}>
-      {({ data, loading, error, refetch }: any) => {
+      {({ data, loading, error, refetch, fetchMore }) => {
         if (error) {
           return (
             <>
@@ -89,18 +89,32 @@ export const WithSpendings = (props: {
           }
           return refetch(variables);
         };
+        if (data.spendings.nextStartKey) {
+          fetchMore({
+            variables: {
+              ...variables,
+              startKey: data.spendings.nextStartKey
+            },
+            updateQuery: (prev, { fetchMoreResult }) => {
+              if (!fetchMoreResult) return prev;
+              return {
+                spendings: {
+                  ...prev.spendings,
+                  items: [
+                    ...prev.spendings.items,
+                    ...fetchMoreResult.spendings.items
+                  ],
+                  nextStartKey: fetchMoreResult.spendings.nextStartKey
+                }
+              };
+            }
+          });
+        }
         return children({
           spendings: data.spendings.items,
           refetch: refetchFn,
           variables,
           startDate,
-          next: data.spendings.nextStartKey
-            ? () =>
-                refetch({
-                  ...variables,
-                  startKey: data.spendings.nextStartKey
-                })
-            : undefined,
           ...(!isSavingsAccount && {
             prevMonth: () => refetchFn(startDate.minus({ month: 1 })),
             nextMonth: () => refetchFn(startDate.plus({ month: 1 }))
