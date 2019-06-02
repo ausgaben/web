@@ -26,7 +26,10 @@ type ParsedSpending = {
   id: string;
   category: string;
   description: string;
+  currencyId: string;
   amount: number;
+  dayOfMonth: number;
+  bookedAt: DateTime;
 };
 
 export const Import = (props: { account: Account }) => {
@@ -45,13 +48,25 @@ export const Import = (props: { account: Account }) => {
   const [spendingsToBeImported, setSpendingsToBeImported] = useState(
     [] as ParsedSpending[]
   );
-  const bookedAt = DateTime.local().startOf('month');
-
   const spendings: ParsedSpending[] = importData
     .split('\n')
     .map((line: string) => {
-      let [type, category, description, amount] = line.split('\t');
-      if (!type || !category || !description || !amount) {
+      let [
+        type,
+        category,
+        description,
+        currency,
+        amount,
+        dayOfMonth
+      ] = line.split('\t');
+      if (
+        !type ||
+        !category ||
+        !description ||
+        !amount ||
+        !currency ||
+        !dayOfMonth
+      ) {
         return undefined;
       }
       amount = amount.replace(/ €$/, '');
@@ -68,7 +83,13 @@ export const Import = (props: { account: Account }) => {
         id: line,
         category,
         description,
-        amount: f < 0 ? -a : a
+        amount: f < 0 ? -a : a,
+        bookedAt: DateTime.local()
+          .startOf('month')
+          .set({ day: parseInt(dayOfMonth, 10) }),
+        currencyId: currenciesById[currency]
+          ? currenciesById[currency].id
+          : currenciesById.EUR.id
       };
     })
     .filter((l: any) => l);
@@ -94,7 +115,10 @@ export const Import = (props: { account: Account }) => {
     const i: string[] = [];
     spendingsToBeImported
       .reduce(
-        (promise, { id, category, description, amount }) =>
+        (
+          promise,
+          { id, category, description, amount, bookedAt, currencyId }
+        ) =>
           promise.then(async () => {
             await client.mutate({
               mutation: createSpendingMutation,
@@ -104,7 +128,7 @@ export const Import = (props: { account: Account }) => {
                 category,
                 description,
                 amount: amount,
-                currencyId: currenciesById.EUR.id,
+                currencyId,
                 booked: false
               }
             });
@@ -115,7 +139,7 @@ export const Import = (props: { account: Account }) => {
       .then(() => {
         setImported(i);
       });
-  }, [spendingsToBeImported, accountId, bookedAt]);
+  }, [spendingsToBeImported, accountId]);
 
   return (
     <Form>
@@ -131,7 +155,8 @@ export const Import = (props: { account: Account }) => {
               type="textarea"
               name="import"
               id="import"
-              placeholder="e.g. 'Mat'"
+              placeholder="Type	Category	Title	Currency	Value	Day of Month
+Vorsorge	Versicherungen	Allianz - Lebensversicherung	EUR	-197,86	1"
               value={importData}
               required
               onChange={({ target: { value } }) => {
@@ -165,23 +190,31 @@ export const Import = (props: { account: Account }) => {
                   <tr>
                     <th colSpan={4}>{cat}</th>
                   </tr>
-                  {spendingsByCategory[cat].map(
-                    ({ id, description, amount }, key) => (
-                      <tr key={key} className="spending">
-                        <td className="date">
-                          <FormatDate date={bookedAt.toISODate()} />
-                        </td>
-                        <td className="description">{description}</td>
-                        <td className="amount">
-                          <FormatMoney
-                            amount={amount}
-                            symbol={currenciesById.EUR.symbol}
-                          />
-                        </td>
-                        <td>{imported.includes(id) ? '✓' : '—'}</td>
-                      </tr>
+                  {spendingsByCategory[cat]
+                    .sort(
+                      ({ bookedAt: b1 }, { bookedAt: b2 }) =>
+                        b1.toJSDate().getTime() - b2.toJSDate().getTime()
                     )
-                  )}
+                    .map(
+                      (
+                        { id, description, amount, bookedAt, currencyId },
+                        key
+                      ) => (
+                        <tr key={key} className="spending">
+                          <td className="date">
+                            <FormatDate date={bookedAt.toISODate()} />
+                          </td>
+                          <td className="description">{description}</td>
+                          <td className="amount">
+                            <FormatMoney
+                              amount={amount}
+                              symbol={currenciesById[currencyId].symbol}
+                            />
+                          </td>
+                          <td>{imported.includes(id) ? '✓' : '—'}</td>
+                        </tr>
+                      )
+                    )}
                 </React.Fragment>
               ))}
             </tbody>
