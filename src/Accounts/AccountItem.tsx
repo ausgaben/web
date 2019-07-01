@@ -15,7 +15,14 @@ export const AccountItem = (props: { account: Account }) => {
   } = props;
 
   return (
-    <WithSpendings {...props} loading={''}>
+    <WithSpendings
+      {...props}
+      loading={
+        <tr>
+          <td colSpan={3} />
+        </tr>
+      }
+    >
       {({ spendings }) => {
         const hasNOK = spendings.find(({ currency: { id } }) => id === 'NOK');
         const sums = spendings.reduce(

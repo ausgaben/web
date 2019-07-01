@@ -52,6 +52,10 @@ export const createClient = () =>
       query: {
         errorPolicy: 'all'
       },
+      watchQuery: {
+        errorPolicy: 'all',
+        fetchPolicy: 'cache-and-network'
+      },
       mutate: {
         errorPolicy: 'all'
       }
