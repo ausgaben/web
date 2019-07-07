@@ -95,7 +95,6 @@ export const AddSpending = (props: { account: Account; copy?: Spending }) => {
   const isValid = category.length && description.length && amount > 0;
 
   const reset = () => {
-    setBooked(true);
     setDescription('');
     setAmountWholeInput('');
     setAmountFractionInput('');
