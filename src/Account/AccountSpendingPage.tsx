@@ -7,7 +7,6 @@ import { WithAccount } from '../Accounts/WithAccount';
 import { WithSpendings } from '../Spendings/WithSpendings';
 import { Loading } from '../Loading/Loading';
 import { RouteComponentProps } from 'react-router-dom';
-import { Account, Spending } from '../schema';
 
 type routeProps = RouteComponentProps<{
   accountId: string;
