@@ -20,6 +20,12 @@ import { FormatDate } from '../util/date/FormatDate';
 import { WithAccount } from '../Accounts/WithAccount';
 import { WithSpendings } from '../Spendings/WithSpendings';
 import { Loading } from '../Loading/Loading';
+import { RouteComponentProps } from 'react-router-dom';
+
+type routeProps = RouteComponentProps<{
+  accountId: string;
+  spendingId: string;
+}>;
 
 export const deleteSpendingQuery = gql`
   mutation deleteSpending($spendingId: ID!) {
@@ -29,9 +35,7 @@ export const deleteSpendingQuery = gql`
 
 class DeleteSpendingMutation extends Mutation<{}, { spendingId: string }> {}
 
-export const Page = (props: {
-  match: { params: { spendingId: string; accountId: string } };
-}) => {
+export const Page = (props: routeProps) => {
   const [deleting, setDeleting] = useState(false);
   const [deleted, setDeleted] = useState(false);
   const [error, setError] = useState(false);
@@ -151,6 +155,12 @@ export const Page = (props: {
                                 to={`/account/${accountId}/new/spending?copy=${spendingId}`}
                               >
                                 Copy
+                              </Link>
+                              <Link
+                                to={`/account/${accountId}/spending/${spendingId}/edit`}
+                                className="button"
+                              >
+                                Edit
                               </Link>
                               <Button
                                 disabled={deleting}

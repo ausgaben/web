@@ -24,7 +24,10 @@ import { AccountPage } from './Account/Page';
 import { AccountSettingsPage } from './Account/SettingsPage';
 import { ApolloProvider } from 'react-apollo';
 import { createClient } from './Apollo/createClient';
-import { AddAccountSpendingPage } from './Account/AddAccountSpendingPage';
+import {
+  AddSpendingPage,
+  EditSpendingPage
+} from './Account/AccountSpendingPage';
 import { Page as SpendingPage } from './Spending/Page';
 import logo from './logo.svg';
 import './App.scss';
@@ -139,7 +142,12 @@ const App = ({ authData }: { authData: CognitoUser }) => {
           <Route
             exact
             path="/account/:accountId/new/spending"
-            component={AddAccountSpendingPage}
+            component={AddSpendingPage}
+          />
+          <Route
+            exact
+            path="/account/:accountId/spending/:spendingId/edit"
+            component={EditSpendingPage}
           />
           <Route
             exact
