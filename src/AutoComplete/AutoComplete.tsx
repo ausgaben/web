@@ -69,6 +69,10 @@ export const AutoComplete = ({
             setAutoCompleteHidden(true);
           }
         }}
+        onBlur={() => {
+          setAutoCompleteHidden(true);
+          setHighLight(-1);
+        }}
       />
       {!autoCompleteHidden && hits.length > 0 && (
         <ListGroup>
