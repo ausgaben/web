@@ -28,7 +28,6 @@ export const AutoComplete = ({
   const hits =
     value.length > 0
       ? strings
-          .filter(s => s !== value)
           .filter(s => s.toLowerCase().indexOf(value.toLowerCase()) >= 0)
           .slice(0, 9)
       : [];
@@ -76,7 +75,7 @@ export const AutoComplete = ({
           {hits.map((s, i) => (
             <ListGroupItem
               key={i}
-              color={highlight === i ? 'info' : undefined}
+              color={highlight === i || value === s ? 'info' : undefined}
               onMouseEnter={() => {
                 setHighLight(i);
               }}
