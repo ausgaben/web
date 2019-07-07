@@ -306,6 +306,7 @@ export const AddSpending = (props: { account: Account; copy?: Spending }) => {
                               setAmountWholeInput(v);
                               amountWhole.current = Math.abs(+v);
                             }}
+                            autoComplete="off"
                           />
                           <InputGroupAddon
                             addonType="append"
@@ -330,6 +331,7 @@ export const AddSpending = (props: { account: Account; copy?: Spending }) => {
                                 +`${v}00`.slice(0, 2)
                               );
                             }}
+                            autoComplete="off"
                           />
                         </InputGroup>
                       </FormGroup>
