@@ -24,7 +24,7 @@ export const AutoComplete = ({
   required?: boolean;
 }) => {
   const [highlight, setHighLight] = useState(-1);
-  const [autoCompleteHidden, setAutoCompleteHidden] = useState(false);
+  const [autoCompleteHidden, setAutoCompleteHidden] = useState(true);
   const hits =
     value.length > 0
       ? strings
