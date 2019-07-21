@@ -71,6 +71,9 @@ export const AutoComplete = ({
         }}
         onBlur={() => {
           setAutoCompleteHidden(true);
+          if (highlight !== -1) {
+            onChange(hits[highlight]);
+          }
           setHighLight(-1);
         }}
       />
@@ -82,10 +85,6 @@ export const AutoComplete = ({
               color={highlight === i || value === s ? 'info' : undefined}
               onMouseEnter={() => {
                 setHighLight(i);
-              }}
-              onClick={() => {
-                onChange(hits[i]);
-                setAutoCompleteHidden(true);
               }}
             >
               {s}
