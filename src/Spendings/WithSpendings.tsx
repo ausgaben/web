@@ -5,19 +5,9 @@ import {
   month,
   spendingsQuery
 } from '../graphql/queries/spendingsQuery';
-import { Query } from 'react-apollo';
 import { DateTime } from 'luxon';
 import { Cache } from 'aws-amplify';
-
-class SpendingsQuery extends Query<
-  { spendings: { items: Spending[]; nextStartKey?: string } },
-  {
-    accountId: string;
-    startDate: string;
-    endDate: string;
-    startKey?: string;
-  }
-> {}
+import { useQuery } from '@apollo/react-hooks';
 
 const getDateSelection = (isSavingsAccount: boolean) => {
   if (isSavingsAccount) {
@@ -29,7 +19,7 @@ const getDateSelection = (isSavingsAccount: boolean) => {
 
 export const WithSpendings = (props: {
   account: Account;
-  loading: React.ReactNode;
+  loading: React.ReactElement;
   children: (args: {
     spendings: Spending[];
     refetch: () => void;
@@ -58,69 +48,73 @@ export const WithSpendings = (props: {
     endDate: endDate.toISO()
   };
 
-  return (
-    <SpendingsQuery query={spendingsQuery} variables={variables}>
-      {({ data, loading, error, refetch, fetchMore }) => {
-        if (error) {
-          return (
-            <>
-              <h3>Error</h3>
-              {JSON.stringify(error)}
-            </>
-          );
-        }
-        if (loading || !data) return props.loading;
-        const refetchFn = (startDate?: DateTime) => {
-          if (isSavingsAccount) {
-            return refetch(variables);
+  const { data, loading, error, refetch, fetchMore } = useQuery<
+    { spendings: { items: Spending[]; nextStartKey?: string } },
+    {
+      accountId: string;
+      startDate: string;
+      endDate: string;
+      startKey?: string;
+    }
+  >(spendingsQuery, { variables });
+
+  if (error) {
+    return (
+      <>
+        <h3>Error</h3>
+        {JSON.stringify(error)}
+      </>
+    );
+  }
+  if (loading || !data) return props.loading;
+  const refetchFn = (startDate?: DateTime) => {
+    if (isSavingsAccount) {
+      return refetch(variables);
+    }
+    if (startDate) {
+      Cache.setItem('withSpendings.startDate', startDate.toISO());
+      const { endDate } = month(startDate);
+      setDateRange({
+        startDate,
+        endDate
+      });
+      return refetch({
+        ...variables,
+        startDate: startDate.toISO(),
+        endDate: endDate.toISO()
+      });
+    }
+    return refetch(variables);
+  };
+  if (data.spendings.nextStartKey) {
+    fetchMore({
+      variables: {
+        ...variables,
+        startKey: data.spendings.nextStartKey
+      },
+      updateQuery: (prev, { fetchMoreResult }) => {
+        if (!fetchMoreResult) return prev;
+        return {
+          spendings: {
+            ...prev.spendings,
+            items: [
+              ...prev.spendings.items,
+              ...fetchMoreResult.spendings.items
+            ],
+            nextStartKey: fetchMoreResult.spendings.nextStartKey
           }
-          if (startDate) {
-            Cache.setItem('withSpendings.startDate', startDate.toISO());
-            const { endDate } = month(startDate);
-            setDateRange({
-              startDate,
-              endDate
-            });
-            return refetch({
-              ...variables,
-              startDate: startDate.toISO(),
-              endDate: endDate.toISO()
-            });
-          }
-          return refetch(variables);
         };
-        if (data.spendings.nextStartKey) {
-          fetchMore({
-            variables: {
-              ...variables,
-              startKey: data.spendings.nextStartKey
-            },
-            updateQuery: (prev, { fetchMoreResult }) => {
-              if (!fetchMoreResult) return prev;
-              return {
-                spendings: {
-                  ...prev.spendings,
-                  items: [
-                    ...prev.spendings.items,
-                    ...fetchMoreResult.spendings.items
-                  ],
-                  nextStartKey: fetchMoreResult.spendings.nextStartKey
-                }
-              };
-            }
-          });
-        }
-        return children({
-          spendings: data.spendings.items,
-          refetch: refetchFn,
-          variables,
-          startDate,
-          ...(!isSavingsAccount && {
-            prevMonth: () => refetchFn(startDate.minus({ month: 1 })),
-            nextMonth: () => refetchFn(startDate.plus({ month: 1 }))
-          })
-        });
-      }}
-    </SpendingsQuery>
-  );
+      }
+    });
+  }
+  return children({
+    spendings: data.spendings.items,
+    refetch: refetchFn,
+    variables,
+    startDate,
+    ...(!isSavingsAccount && {
+      prevMonth: () => refetchFn(startDate.minus({ month: 1 })),
+      nextMonth: () => refetchFn(startDate.plus({ month: 1 }))
+    })
+  });
 };

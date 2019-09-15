@@ -12,7 +12,7 @@ import {
   CardFooter
 } from 'reactstrap';
 import gql from 'graphql-tag';
-import { Mutation } from 'react-apollo';
+import { Mutation } from '@apollo/react-components';
 import { accountsQuery } from '../graphql/queries/accountsQuery';
 import { Account } from '../schema';
 
@@ -23,16 +23,6 @@ export const createAccountQuery = gql`
     }
   }
 `;
-
-class CreateAccountMutation extends Mutation<
-  {
-    createAccount: { id: string };
-  },
-  {
-    name: string;
-    isSavingsAccount: boolean;
-  }
-> {}
 
 export const CreateAccount = () => {
   const [name, setName] = useState('');
@@ -47,7 +37,15 @@ export const CreateAccount = () => {
 
   const isValid = name.length;
   return (
-    <CreateAccountMutation
+    <Mutation<
+      {
+        createAccount: { id: string };
+      },
+      {
+        name: string;
+        isSavingsAccount: boolean;
+      }
+    >
       mutation={createAccountQuery}
       update={(cache, { data }) => {
         const {
@@ -142,6 +140,6 @@ export const CreateAccount = () => {
           </Card>
         </Form>
       )}
-    </CreateAccountMutation>
+    </Mutation>
   );
 };

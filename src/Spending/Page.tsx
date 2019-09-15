@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Spending } from '../schema';
 import { Fail, Note } from '../Note/Note';
-import { Mutation } from 'react-apollo';
+import { Mutation } from '@apollo/react-components';
 import { spendingsQuery } from '../graphql/queries/spendingsQuery';
 import {
   Button,
@@ -32,8 +32,6 @@ export const deleteSpendingQuery = gql`
     deleteSpending(spendingId: $spendingId)
   }
 `;
-
-class DeleteSpendingMutation extends Mutation<{}, { spendingId: string }> {}
 
 export const Page = (props: routeProps) => {
   const [deleting, setDeleting] = useState(false);
@@ -110,7 +108,7 @@ export const Page = (props: routeProps) => {
                             <dd>{spending.booked ? 'Yes' : 'No'}</dd>
                           </dl>
                         </CardBody>
-                        <DeleteSpendingMutation
+                        <Mutation<{}, { spendingId: string }>
                           mutation={deleteSpendingQuery}
                           update={cache => {
                             const res = cache.readQuery<{
@@ -185,7 +183,7 @@ export const Page = (props: routeProps) => {
                               </Button>
                             </CardFooter>
                           )}
-                        </DeleteSpendingMutation>
+                        </Mutation>
                       </>
                     )}
                   </Card>

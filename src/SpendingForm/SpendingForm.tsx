@@ -21,7 +21,8 @@ import {
 } from 'reactstrap';
 import { Fail, Note } from '../Note/Note';
 import { Account, Spending } from '../schema';
-import { Mutation, MutationFn } from 'react-apollo';
+import { Mutation } from '@apollo/react-components';
+import { MutationFunction } from '@apollo/react-common';
 import { ApolloError } from 'apollo-client';
 import { currencies, NOK } from '../currency/currencies';
 import { Cache } from 'aws-amplify';
@@ -44,34 +45,18 @@ type SpendingMutationVariables = {
   paidWith?: string;
 };
 
-class CreateSpendingMutation extends Mutation<
-  {
-    createSpending: { id: string };
-  },
-  SpendingMutationVariables
-> {}
-
-class EditSpendingMutation extends Mutation<
-  {
-    editSpending: { id: string };
-  },
-  {
-    spendingId: string;
-    bookedAt: string;
-    category: string;
-    description: string;
-    amount: number;
-    currencyId: string;
-    booked: boolean;
-    paidWith?: string;
-  }
-> {}
-
 export const CreateSpendingForm = (props: {
   account: Account;
   spending?: Spending;
 }) => (
-  <CreateSpendingMutation mutation={createSpendingMutation}>
+  <Mutation<
+    {
+      createSpending: { id: string };
+    },
+    SpendingMutationVariables
+  >
+    mutation={createSpendingMutation}
+  >
     {(createSpendingMutation, { loading, error }) => (
       <FormForSpending
         loading={loading}
@@ -94,14 +79,30 @@ export const CreateSpendingForm = (props: {
         )}
       />
     )}
-  </CreateSpendingMutation>
+  </Mutation>
 );
 
 export const EditSpendingForm = (props: {
   account: Account;
   spending: Spending;
 }) => (
-  <EditSpendingMutation mutation={editSpendingMutation}>
+  <Mutation<
+    {
+      editSpending: { id: string };
+    },
+    {
+      spendingId: string;
+      bookedAt: string;
+      category: string;
+      description: string;
+      amount: number;
+      currencyId: string;
+      booked: boolean;
+      paidWith?: string;
+    }
+  >
+    mutation={editSpendingMutation}
+  >
     {(editSpendingMutation, { loading, error }) => (
       <FormForSpending
         loading={loading}
@@ -132,10 +133,10 @@ export const EditSpendingForm = (props: {
         )}
       />
     )}
-  </EditSpendingMutation>
+  </Mutation>
 );
 
-const FormForSpending = <T extends MutationFn>({
+const FormForSpending = <T extends MutationFunction>({
   loading,
   spending,
   account,
@@ -153,7 +154,7 @@ const FormForSpending = <T extends MutationFn>({
   titleLabel: (args: { isIncome: boolean }) => React.ReactElement;
   successLabel: (args: { isIncome: boolean }) => React.ReactElement;
   errorLabel: (args: { isIncome: boolean }) => React.ReactElement;
-  onSubmit: MutationFn<any, SpendingMutationVariables>;
+  onSubmit: MutationFunction<any, SpendingMutationVariables>;
   error?: ApolloError;
 }) => {
   const [added, setAdded] = useState(false);

@@ -10,7 +10,7 @@ import {
 import gql from 'graphql-tag';
 import { Fail, Note } from '../Note/Note';
 import { Account } from '../schema';
-import { Mutation } from 'react-apollo';
+import { Mutation } from '@apollo/react-components';
 import { accountsQuery } from '../graphql/queries/accountsQuery';
 import { GraphQLError } from 'graphql';
 import { Link } from 'react-router-dom';
@@ -21,8 +21,6 @@ export const deleteAccountQuery = gql`
     deleteAccount(accountId: $accountId)
   }
 `;
-
-class DeleteAccountMutation extends Mutation<{}, { accountId: string }> {}
 
 export const Settings = (props: { account: Account }) => {
   const {
@@ -56,7 +54,7 @@ export const Settings = (props: { account: Account }) => {
         </CardBody>
       )}
       {!deleted && (
-        <DeleteAccountMutation
+        <Mutation<{}, { accountId: string }>
           mutation={deleteAccountQuery}
           update={cache => {
             const res = cache.readQuery<{
@@ -113,7 +111,7 @@ export const Settings = (props: { account: Account }) => {
               </Button>
             </CardFooter>
           )}
-        </DeleteAccountMutation>
+        </Mutation>
       )}
     </Card>
   );

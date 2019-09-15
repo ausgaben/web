@@ -6,7 +6,7 @@ import { FormatDate } from '../util/date/FormatDate';
 import { currenciesById, EUR } from '../currency/currencies';
 import { FormatMoney } from '../util/date/FormatMoney';
 import './Spendings.scss';
-import { Mutation } from 'react-apollo';
+import { Mutation } from '@apollo/react-components';
 import gql from 'graphql-tag';
 import { spendingsQuery } from '../graphql/queries/spendingsQuery';
 import { updateAggregate } from '../es/updateAggregate';
@@ -17,15 +17,6 @@ export const markSpendingAsBooked = gql`
     updateSpending(spendingId: $spendingId, booked: true)
   }
 `;
-
-class MarkSpendingAsBookedMutation extends Mutation<
-  {
-    updateSpending: void;
-  },
-  {
-    spendingId: string;
-  }
-> {}
 
 export const SpendingsList = ({
   spendingsByCategory,
@@ -87,7 +78,14 @@ export const SpendingsList = ({
                   <tr key={id} className="spending">
                     {!booked && (
                       <td>
-                        <MarkSpendingAsBookedMutation
+                        <Mutation<
+                          {
+                            updateSpending: void;
+                          },
+                          {
+                            spendingId: string;
+                          }
+                        >
                           mutation={markSpendingAsBooked}
                           update={cache => {
                             const res = cache.readQuery<{
@@ -143,7 +141,7 @@ export const SpendingsList = ({
                               </span>
                             </Button>
                           )}
-                        </MarkSpendingAsBookedMutation>
+                        </Mutation>
                       </td>
                     )}
                     {booked && <td />}
