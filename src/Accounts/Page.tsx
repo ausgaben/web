@@ -1,8 +1,9 @@
 import React from 'react';
 import { Accounts } from './Accounts';
+import { Main } from '../Styles';
 
 export const AccountsPage = () => (
-  <main>
+  <Main>
     <Accounts />
-  </main>
+  </Main>
 );

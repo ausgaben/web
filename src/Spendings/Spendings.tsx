@@ -2,7 +2,6 @@ import React from 'react';
 import { Account } from '../schema';
 import { WithSpendings } from './WithSpendings';
 import { Loading } from '../Loading/Loading';
-import './Spendings.scss';
 import { SpendingsByCategory } from './SpendingsByCategory';
 
 export const Spendings = (props: { account: Account }) => (

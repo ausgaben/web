@@ -4,7 +4,6 @@ import { Account, Spending } from '../schema';
 import { ListingHeader } from '../ListingHeader/ListingHeader';
 import { currencies, currenciesById } from '../currency/currencies';
 import { Note } from '../Note/Note';
-import './Spendings.scss';
 import { Info } from '../Account/Info';
 import { DateTime } from 'luxon';
 import { SpendingsList } from './SpendingsList';

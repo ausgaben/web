@@ -7,6 +7,7 @@ import { WithAccount } from '../Accounts/WithAccount';
 import { WithSpendings } from '../Spendings/WithSpendings';
 import { Loading } from '../Loading/Loading';
 import { RouteComponentProps } from 'react-router-dom';
+import { Main } from '../Styles';
 
 type routeProps = RouteComponentProps<{
   accountId: string;
@@ -14,7 +15,7 @@ type routeProps = RouteComponentProps<{
 }>;
 
 export const AddSpendingPage = (props: routeProps) => (
-  <main>
+  <Main>
     <WithAccount {...props}>
       {account => {
         const spendingId = new URLSearchParams(props.location.search).get(
@@ -37,11 +38,11 @@ export const AddSpendingPage = (props: routeProps) => (
         return <CreateSpendingForm account={account} />;
       }}
     </WithAccount>
-  </main>
+  </Main>
 );
 
 export const EditSpendingPage = (props: routeProps) => (
-  <main>
+  <Main>
     <WithAccount {...props}>
       {account => {
         const spendingId = props.match.params.spendingId!;
@@ -59,5 +60,5 @@ export const EditSpendingPage = (props: routeProps) => (
         );
       }}
     </WithAccount>
-  </main>
+  </Main>
 );

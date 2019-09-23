@@ -1,6 +1,16 @@
 import React, { useState } from 'react';
 import { Input, ListGroup, ListGroupItem } from 'reactstrap';
-import './AutoComplete.scss';
+import styled from 'styled-components';
+
+const AutoCompleteInput = styled.div`
+  width: 100%;
+  position: relative;
+`;
+
+const StyledListGroup = styled(ListGroup)`
+  position: absolute;
+  z-index: 99;
+`;
 
 export const AutoComplete = ({
   strings,
@@ -32,7 +42,7 @@ export const AutoComplete = ({
           .slice(0, 9)
       : [];
   return (
-    <div className="inputWithAutoComplete">
+    <AutoCompleteInput>
       <Input
         disabled={disabled}
         tabIndex={tabIndex}
@@ -78,7 +88,7 @@ export const AutoComplete = ({
         }}
       />
       {!autoCompleteHidden && hits.length > 0 && (
-        <ListGroup>
+        <StyledListGroup>
           {hits.map((s, i) => (
             <ListGroupItem
               key={i}
@@ -90,8 +100,8 @@ export const AutoComplete = ({
               {s}
             </ListGroupItem>
           ))}
-        </ListGroup>
+        </StyledListGroup>
       )}
-    </div>
+    </AutoCompleteInput>
   );
 };

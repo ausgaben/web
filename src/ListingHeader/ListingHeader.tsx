@@ -1,8 +1,21 @@
 import { Button, CardHeader, CardTitle } from 'reactstrap';
 import React from 'react';
 import { DateTime } from 'luxon';
+import styled from 'styled-components';
 
-import './ListingHeader.scss';
+const DateRangeNav = styled.nav`
+  display: flex;
+  align-items: baseline;
+`;
+
+const DateRangeButton = styled(Button)`
+  :first-child {
+    margin-right: 0.5rem;
+  }
+  :last-child {
+    margin-left: 0.5rem;
+  }
+`;
 
 export const ListingHeader = ({
   title,
@@ -45,9 +58,9 @@ export const ListingHeader = ({
       refresh
     </Button>
     {startDate && (prevMonth || nextMonth) && (
-      <nav className="dateRange">
+      <DateRangeNav>
         {prevMonth && (
-          <Button
+          <DateRangeButton
             outline
             color={'secondary'}
             onClick={() => {
@@ -55,11 +68,11 @@ export const ListingHeader = ({
             }}
           >
             &lt;
-          </Button>
+          </DateRangeButton>
         )}
         {startDate.toFormat('LL.yyyy')}
         {nextMonth && (
-          <Button
+          <DateRangeButton
             outline
             color={'secondary'}
             onClick={() => {
@@ -67,9 +80,9 @@ export const ListingHeader = ({
             }}
           >
             &gt;
-          </Button>
+          </DateRangeButton>
         )}
-      </nav>
+      </DateRangeNav>
     )}
   </CardHeader>
 );

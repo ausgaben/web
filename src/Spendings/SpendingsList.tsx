@@ -5,16 +5,38 @@ import { Spending } from '../schema';
 import { FormatDate } from '../util/date/FormatDate';
 import { currenciesById, EUR } from '../currency/currencies';
 import { FormatMoney } from '../util/date/FormatMoney';
-import './Spendings.scss';
 import { Mutation } from '@apollo/react-components';
 import gql from 'graphql-tag';
 import { spendingsQuery } from '../graphql/queries/spendingsQuery';
 import { updateAggregate } from '../es/updateAggregate';
 import { SpendingsByCategory } from './SpendingsByCategory';
+import styled from 'styled-components';
+import { mobileBreakpoint } from '../Styles';
 
 export const markSpendingAsBooked = gql`
   mutation updateSpending($spendingId: ID!) {
     updateSpending(spendingId: $spendingId, booked: true)
+  }
+`;
+
+export const SpendingsTable = styled(Table)`
+  tr.spending {
+    font-size: 80%;
+    @media (min-width: ${mobileBreakpoint}) {
+      font-size: 100%;
+    }
+  }
+  td.description {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 0;
+    width: 100%;
+  }
+  td.amount,
+  th.amount,
+  td.date {
+    text-align: right;
   }
 `;
 
@@ -33,7 +55,7 @@ export const SpendingsList = ({
 }) => (
   <Card>
     {header}
-    <Table className="spendings">
+    <SpendingsTable>
       <tbody>
         {Object.keys(spendingsByCategory)
           .sort()
@@ -174,6 +196,6 @@ export const SpendingsList = ({
             </React.Fragment>
           ))}
       </tbody>
-    </Table>
+    </SpendingsTable>
   </Card>
 );

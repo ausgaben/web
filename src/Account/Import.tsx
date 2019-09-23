@@ -9,8 +9,7 @@ import {
   Form,
   FormGroup,
   Input,
-  Label,
-  Table
+  Label
 } from 'reactstrap';
 import { Account } from '../schema';
 import { Link } from 'react-router-dom';
@@ -21,6 +20,7 @@ import { FormatMoney } from '../util/date/FormatMoney';
 import { DateTime } from 'luxon';
 import { client } from '../App';
 import { createSpendingMutation } from '../graphql/mutations/createSpending';
+import { SpendingsTable } from '../Spendings/SpendingsList';
 
 type ParsedSpending = {
   id: string;
@@ -175,7 +175,7 @@ Vorsorge	Versicherungen	Allianz - Lebensversicherung	EUR	-197,86	1"
           <CardHeader>
             <CardTitle>Preview</CardTitle>
           </CardHeader>
-          <Table className="spendings">
+          <SpendingsTable>
             <thead>
               <tr>
                 <th>Date</th>
@@ -218,7 +218,7 @@ Vorsorge	Versicherungen	Allianz - Lebensversicherung	EUR	-197,86	1"
                 </React.Fragment>
               ))}
             </tbody>
-          </Table>
+          </SpendingsTable>
           <CardFooter>
             <Link to={`/account/${accountId}`}>⬅</Link>
             <Button

@@ -3,7 +3,6 @@ import { Card, CardBody, Table } from 'reactstrap';
 import { Loading } from '../Loading/Loading';
 import { Note } from '../Note/Note';
 import { Link } from 'react-router-dom';
-import './Accounts.scss';
 import { Account, Spending } from '../schema';
 import { Query } from 'react-apollo';
 import { accountsQuery } from '../graphql/queries/accountsQuery';
@@ -13,6 +12,21 @@ import { FormatMoney } from '../util/date/FormatMoney';
 import { currenciesById } from '../currency/currencies';
 import { client } from '../App';
 import { allTime, spendingsQuery } from '../graphql/queries/spendingsQuery';
+import styled from 'styled-components';
+import { mobileBreakpoint } from '../Styles';
+
+const AccountsTable = styled(Table)`
+  tbody,
+  tfoot {
+    font-size: 80%;
+    @media (min-width: ${mobileBreakpoint}) {
+      font-size: 100%;
+    }
+    .amount {
+      text-align: right;
+    }
+  }
+`;
 
 export const Accounts = () => {
   const [accounts, setAccounts] = useState([] as Account[]);
@@ -84,7 +98,7 @@ export const Accounts = () => {
                 >
                   <Link to="/new/account">Add account</Link>
                 </ListingHeader>
-                <Table className="accounts">
+                <AccountsTable>
                   <tbody>
                     {accounts.map(account => (
                       <AccountItem key={account._meta.id} account={account} />
@@ -101,7 +115,7 @@ export const Accounts = () => {
                       </th>
                     </tr>
                   </tfoot>
-                </Table>
+                </AccountsTable>
               </>
             );
           }

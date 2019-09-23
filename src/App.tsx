@@ -30,8 +30,14 @@ import {
 } from './Account/AccountSpendingPage';
 import { Page as SpendingPage } from './Spending/Page';
 import logo from './logo.svg';
-import './App.scss';
 import { AccountImportPage } from './Account/ImportPage';
+import styled from 'styled-components';
+import { GlobalStyle, mobileBreakpoint, wideBreakpoint } from './Styles';
+import { BootstrapStyles } from './BootstrapStyles';
+
+const Logo = styled.img`
+  margin-right: 0.25rem;
+`;
 
 Amplify.configure({
   Auth: {
@@ -51,11 +57,10 @@ const Navigation = (props: {
   navbar?: boolean;
   logout: () => void;
   onClick?: () => void;
-  className?: string;
 }) => {
-  const { navbar, logout, onClick } = props;
+  const { navbar, logout, onClick, ...restProps } = props;
   return (
-    <Nav navbar={navbar} className={props.className}>
+    <Nav navbar={navbar} {...restProps}>
       <NavItem>
         <Link className="nav-link" to="/accounts" onClick={onClick}>
           Accounts
@@ -74,6 +79,36 @@ const Navigation = (props: {
     </Nav>
   );
 };
+
+const DesktopNavigation = styled(Navigation)`
+  display: none;
+  @media (min-width: ${mobileBreakpoint}) {
+    display: flex;
+  }
+`;
+
+const MobileNavigation = styled(Navigation)`
+  display: flex;
+  .nav-item,
+  button {
+    align-self: flex-end;
+  }
+`;
+
+const HideOnMobile = styled.div`
+  text-align: right;
+  @media (min-width: ${mobileBreakpoint}) {
+    display: none;
+  }
+`;
+
+const StyledNavbar = styled(Navbar)`
+  align-items: baseline;
+  @media (min-width: ${wideBreakpoint}) {
+    max-width: $wide-breakpoint;
+    margin: 0 auto;
+  }
+`;
 
 const App = ({ authData }: { authData: CognitoUser }) => {
   const [identityId, setIdentityId] = useState();
@@ -95,10 +130,12 @@ const App = ({ authData }: { authData: CognitoUser }) => {
 
   return (
     <Router>
+      <GlobalStyle />
+      <BootstrapStyles />
       <header className="bg-light">
-        <Navbar color="light" light>
+        <StyledNavbar color="light" light>
           <NavbarBrand href="/">
-            <img
+            <Logo
               src={logo}
               width="30"
               height="30"
@@ -107,20 +144,18 @@ const App = ({ authData }: { authData: CognitoUser }) => {
             />
             Ausgaben
           </NavbarBrand>
-          <NavbarToggler onClick={toggleNavigation} className="hideOnDesktop" />
-          <Collapse isOpen={navigationVisible} navbar className="hideOnDesktop">
-            <Navigation
-              navbar={true}
-              onClick={toggleNavigation}
-              logout={logout}
-            />
-          </Collapse>
-          <Navigation
-            className="showOnDesktop"
-            onClick={toggleNavigation}
-            logout={logout}
-          />
-        </Navbar>
+          <HideOnMobile>
+            <NavbarToggler onClick={toggleNavigation} />
+            <Collapse isOpen={navigationVisible} navbar>
+              <MobileNavigation
+                navbar={true}
+                onClick={toggleNavigation}
+                logout={logout}
+              />
+            </Collapse>
+          </HideOnMobile>
+          <DesktopNavigation onClick={toggleNavigation} logout={logout} />
+        </StyledNavbar>
       </header>
       <AuthDataContext.Provider value={{ identityId }}>
         <ApolloProvider client={client}>

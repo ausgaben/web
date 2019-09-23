@@ -1,5 +1,7 @@
-@import 'variables';
+import { createGlobalStyle } from 'styled-components';
+import { mobileBreakpoint } from './Styles';
 
+export const BootstrapStyles = createGlobalStyle`
 form {
   .form-group {
     &.oneLine {
@@ -52,7 +54,7 @@ form {
 .card-subtitle {
   font-weight: 300;
   font-size: 85%;
-  @media (min-width: $mobile-breakpoint) {
+  @media (min-width: ${mobileBreakpoint}) {
     font-size: 100%;
   }
 }
@@ -61,15 +63,9 @@ form {
   margin-bottom: 0;
 }
 
-.money {
-  white-space: nowrap;
-  text-align: right;
-
-  .currency {
-    opacity: 0.5;
-    font-size: 80%;
-    @media (min-width: $mobile-breakpoint) {
-      font-size: 100%;
+  @media (min-width: ${mobileBreakpoint}) {
+    .card + .card {
+      margin-top: 1rem;
     }
   }
-}
+`;

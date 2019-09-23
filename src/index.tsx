@@ -1,9 +1,5 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import './typography.scss';
-import './bootstrap.scss';
-import './desktop.scss';
 import App from './App';
 
 ReactDOM.render(<App />, document.getElementById('root'));

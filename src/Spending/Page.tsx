@@ -21,6 +21,7 @@ import { WithAccount } from '../Accounts/WithAccount';
 import { WithSpendings } from '../Spendings/WithSpendings';
 import { Loading } from '../Loading/Loading';
 import { RouteComponentProps } from 'react-router-dom';
+import { Main } from '../Styles';
 
 type routeProps = RouteComponentProps<{
   accountId: string;
@@ -44,7 +45,7 @@ export const Page = (props: routeProps) => {
   } = props;
 
   return (
-    <main>
+    <Main>
       <WithAccount {...props}>
         {account => (
           <WithSpendings account={account} loading={<Loading />}>
@@ -194,6 +195,6 @@ export const Page = (props: routeProps) => {
           </WithSpendings>
         )}
       </WithAccount>
-    </main>
+    </Main>
   );
 };
