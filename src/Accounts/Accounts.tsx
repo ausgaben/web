@@ -37,16 +37,26 @@ export const Accounts = () => {
     setTotalSavings(
       accounts
         .filter(({ isSavingsAccount }) => isSavingsAccount)
-        .map(account =>
-          client.readQuery({
-            query: spendingsQuery,
-            variables: {
-              accountId: account._meta.id,
-              startDate: startDate.toISO(),
-              endDate: endDate.toISO()
-            }
-          })
-        )
+        .map(account => {
+          try {
+            return client.readQuery({
+              query: spendingsQuery,
+              variables: {
+                accountId: account._meta.id,
+                startDate: startDate.toISO(),
+                endDate: endDate.toISO()
+              }
+            });
+          } catch (error) {
+            // FIXME: Handle Invariant Violation
+            console.error(error);
+            return {
+              spendings: {
+                items: []
+              }
+            };
+          }
+        })
         .map(({ spendings: { items } }) => items as Spending[])
         .reduce(
           (sum, spendings) =>
