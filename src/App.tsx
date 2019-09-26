@@ -34,10 +34,7 @@ import { AccountImportPage } from './Account/ImportPage';
 import styled from 'styled-components';
 import { GlobalStyle, mobileBreakpoint, wideBreakpoint } from './Styles';
 import { BootstrapStyles } from './BootstrapStyles';
-
-const Logo = styled.img`
-  margin-right: 0.25rem;
-`;
+import * as Sentry from '@sentry/browser';
 
 Amplify.configure({
   Auth: {
@@ -49,6 +46,15 @@ Amplify.configure({
   }
 });
 
+const sentryDsn = process.env.REACT_APP_SENTRY_DSN;
+const netlifyCommitRef = process.env.COMMIT_REF;
+
+if (sentryDsn) {
+  Sentry.init({
+    dsn: sentryDsn,
+    ...(netlifyCommitRef ? { release: netlifyCommitRef } : {})
+  });
+}
 export const client = createClient();
 
 export const AuthDataContext = React.createContext<{ identityId?: string }>({});
@@ -108,6 +114,10 @@ const StyledNavbar = styled(Navbar)`
     max-width: $wide-breakpoint;
     margin: 0 auto;
   }
+`;
+
+const Logo = styled.img`
+  margin-right: 0.25rem;
 `;
 
 const App = ({ authData }: { authData: CognitoUser }) => {
