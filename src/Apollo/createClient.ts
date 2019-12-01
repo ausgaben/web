@@ -2,12 +2,12 @@ import { ApolloClient } from 'apollo-client';
 import { InMemoryCache, NormalizedCacheObject } from 'apollo-cache-inmemory';
 import { HttpLink } from 'apollo-link-http';
 import { concat } from 'apollo-link';
-import { AuthLink, AUTH_TYPE } from 'aws-appsync/lib/link/auth-link';
+import { AuthLink, AUTH_TYPE } from 'aws-appsync-auth-link/lib/auth-link';
 import {
   SubscriptionHandshakeLink,
   CONTROL_EVENTS_KEY
-} from 'aws-appsync/lib/link/subscription-handshake-link';
-import { NonTerminatingLink } from 'aws-appsync/lib/link/non-terminating-link';
+} from 'aws-appsync-subscription-link/lib/subscription-handshake-link';
+import { NonTerminatingLink } from 'aws-appsync-subscription-link/lib/non-terminating-link';
 import { onError } from 'apollo-link-error';
 import { split, from } from 'apollo-link';
 import { getMainDefinition } from 'apollo-utilities';
