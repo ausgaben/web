@@ -56,6 +56,80 @@ export const SpendingsList = ({
   <Card>
     {header}
     <SpendingsTable>
+      <thead>
+        <tr>
+          <th colSpan={3}>Total income</th>
+          {Object.entries(
+            Object.values(spendingsByCategory)
+              .map(({ spendings }) => spendings)
+              .flat()
+              .filter(({ currency }) => currency.id !== EUR.id)
+              .filter(({ amount }) => amount > 0)
+              .reduce((total, { amount, currency }) => {
+                if (!total[currency.id]) {
+                  total[currency.id] = amount;
+                } else {
+                  total[currency.id] += amount;
+                }
+                return total;
+              }, {} as { [key: string]: number })
+          ).map(([currencyId, amount]) => (
+            <th key={currencyId} className="amount">
+              <FormatMoney
+                amount={amount}
+                symbol={currenciesById[currencyId].symbol}
+              />
+            </th>
+          ))}
+          <th className="amount">
+            <FormatMoney
+              amount={Object.values(spendingsByCategory)
+                .map(({ spendings }) => spendings)
+                .flat()
+                .filter(({ currency }) => currency.id === EUR.id)
+                .filter(({ amount }) => amount > 0)
+                .reduce((total, { amount }) => total + amount, 0)}
+              symbol={EUR.symbol}
+            />
+          </th>
+        </tr>
+        <tr>
+          <th colSpan={3}>Total spendings</th>
+          {Object.entries(
+            Object.values(spendingsByCategory)
+              .map(({ spendings }) => spendings)
+              .flat()
+              .filter(({ currency }) => currency.id !== EUR.id)
+              .filter(({ amount }) => amount < 0)
+              .reduce((total, { amount, currency }) => {
+                if (!total[currency.id]) {
+                  total[currency.id] = amount;
+                } else {
+                  total[currency.id] += amount;
+                }
+                return total;
+              }, {} as { [key: string]: number })
+          ).map(([currencyId, amount]) => (
+            <th key={currencyId} className="amount">
+              <FormatMoney
+                amount={amount}
+                symbol={currenciesById[currencyId].symbol}
+              />
+            </th>
+          ))}
+          <th className="amount">
+            <FormatMoney
+              amount={Object.values(spendingsByCategory)
+                .map(({ spendings }) => spendings)
+                .flat()
+                .filter(({ currency }) => currency.id === EUR.id)
+                .filter(({ amount }) => amount < 0)
+                .reduce((total, { amount }) => total + amount, 0)}
+              symbol={EUR.symbol}
+            />
+          </th>
+        </tr>
+      </thead>
       <tbody>
         {Object.keys(spendingsByCategory)
           .sort()
