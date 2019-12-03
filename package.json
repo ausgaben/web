@@ -22,7 +22,7 @@
     "apollo-link-error": "^1.1.12",
     "apollo-link-http": "^1.5.16",
     "aws-amplify": "^1.2.4",
-    "aws-amplify-react": "^2.5.4",
+    "aws-amplify-react": "^3.1.1",
     "aws-appsync": "^3.0.2",
     "aws-appsync-auth-link": "^2.0.1",
     "aws-appsync-subscription-link": "^2.0.1",
