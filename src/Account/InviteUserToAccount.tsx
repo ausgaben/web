@@ -5,7 +5,8 @@ import {
   Input,
   InputGroup,
   InputGroupAddon,
-  Label
+  Label,
+  FormGroup
 } from 'reactstrap';
 import gql from 'graphql-tag';
 import { Account } from '../schema';
@@ -26,32 +27,34 @@ export const InviteUserToAccount = (props: { account: Account }) => {
     <Mutation mutation={inviteUserMutation}>
       {(inviteUserMutation: MutationFunction) => (
         <Form>
-          <Label for="userid">User ID</Label>
-          <InputGroup>
-            <Input
-              placeholder="e.g. 'eu-central-1:233b257f-b8b8-408a-9180-4afafe8a9dbd'"
-              id="userid"
-              value={userId}
-              onChange={({ target: { value } }) => setUserId(value)}
-            />
-            <InputGroupAddon addonType="append">
-              <Button
-                color="primary"
-                disabled={userId.length === 0}
-                onClick={async () => {
-                  setUserId('');
-                  inviteUserMutation({
-                    variables: {
-                      accountId: props.account._meta.id,
-                      userId
-                    }
-                  });
-                }}
-              >
-                Invite
-              </Button>
-            </InputGroupAddon>
-          </InputGroup>
+          <FormGroup>
+            <Label for="userid">User ID</Label>
+            <InputGroup>
+              <Input
+                placeholder="e.g. 'eu-central-1:233b257f-b8b8-408a-9180-4afafe8a9dbd'"
+                id="userid"
+                value={userId}
+                onChange={({ target: { value } }) => setUserId(value)}
+              />
+              <InputGroupAddon addonType="append">
+                <Button
+                  color="primary"
+                  disabled={userId.length === 0}
+                  onClick={async () => {
+                    setUserId('');
+                    inviteUserMutation({
+                      variables: {
+                        accountId: props.account._meta.id,
+                        userId
+                      }
+                    });
+                  }}
+                >
+                  Invite
+                </Button>
+              </InputGroupAddon>
+            </InputGroup>
+          </FormGroup>
         </Form>
       )}
     </Mutation>

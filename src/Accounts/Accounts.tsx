@@ -14,6 +14,7 @@ import { client } from '../App';
 import { allTime, spendingsQuery } from '../graphql/queries/spendingsQuery';
 import styled from 'styled-components';
 import { mobileBreakpoint } from '../Styles';
+import { convertToEUR } from '../currency/convert';
 
 const AccountsTable = styled(Table)`
   tbody,
@@ -63,7 +64,12 @@ export const Accounts = () => {
             sum +
             spendings.reduce(
               (sum, spending) =>
-                sum + spending.amount * spending.currency.toEUR,
+                sum +
+                convertToEUR(
+                  spending.amount,
+                  spending.currency,
+                  new Date(spending.bookedAt)
+                ),
               0
             ),
           0

@@ -6,6 +6,10 @@ export const accountQuery = gql`
       items {
         name
         isSavingsAccount
+        defaultCurrency {
+          id
+          symbol
+        }
         _meta {
           id
         }

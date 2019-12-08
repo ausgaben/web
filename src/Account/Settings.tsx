@@ -5,7 +5,11 @@ import {
   CardBody,
   CardFooter,
   CardHeader,
-  CardTitle
+  CardTitle,
+  FormGroup,
+  Label,
+  Input,
+  Form
 } from 'reactstrap';
 import gql from 'graphql-tag';
 import { Fail, Note } from '../Note/Note';
@@ -15,6 +19,7 @@ import { accountsQuery } from '../graphql/queries/accountsQuery';
 import { GraphQLError } from 'graphql';
 import { Link } from 'react-router-dom';
 import { InviteUserToAccount } from './InviteUserToAccount';
+import { EUR, NOK } from '../currency/currencies';
 
 export const deleteAccountQuery = gql`
   mutation deleteAccount($accountId: ID!) {
@@ -22,16 +27,26 @@ export const deleteAccountQuery = gql`
   }
 `;
 
+export const updateDefaultCurrencyQuery = gql`
+  mutation updateAccount($accountId: ID!, $defaultCurrencyId: ID!) {
+    updateAccount(accountId: $accountId, defaultCurrencyId: $defaultCurrencyId)
+  }
+`;
+
 export const Settings = (props: { account: Account }) => {
   const {
     account: {
       name,
+      defaultCurrency,
       _meta: { id }
     }
   } = props;
   const [deleting, setDeleting] = useState(false);
   const [deleted, setDeleted] = useState(false);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<string>();
+  const [defaultCurrencyId, setDefaultCurrencyId] = useState(
+    defaultCurrency.id
+  );
 
   return (
     <Card>
@@ -41,6 +56,47 @@ export const Settings = (props: { account: Account }) => {
         </CardHeader>
         <CardBody>
           <InviteUserToAccount account={props.account} />
+          <Mutation<{}, { accountId: string; defaultCurrencyId: string }>
+            mutation={updateDefaultCurrencyQuery}
+          >
+            {updateDefaultCurrencyQueryMutation => (
+              <Form>
+                <FormGroup>
+                  <Label for="defaultCurrency">Default Currency</Label>
+                  <Input
+                    type="select"
+                    name="defaultCurrency"
+                    id="defaultCurrency"
+                    value={defaultCurrencyId}
+                    onChange={e => {
+                      const oldValue = defaultCurrencyId;
+                      setDefaultCurrencyId(e.target.value);
+                      updateDefaultCurrencyQueryMutation({
+                        variables: {
+                          accountId: id,
+                          defaultCurrencyId: e.target.value
+                        }
+                      }).then(
+                        ({ errors }: { errors?: GraphQLError[] } | any) => {
+                          if (errors) {
+                            setError(errors[0].message);
+                            setDefaultCurrencyId(oldValue);
+                          }
+                        }
+                      );
+                    }}
+                  >
+                    <option value={EUR.id}>
+                      {EUR.id} ({EUR.symbol})
+                    </option>
+                    <option value={NOK.id}>
+                      {NOK.id} ({NOK.symbol})
+                    </option>
+                  </Input>
+                </FormGroup>
+              </Form>
+            )}
+          </Mutation>
         </CardBody>
       </>
       {deleted && (
@@ -50,7 +106,7 @@ export const Settings = (props: { account: Account }) => {
       )}
       {error && (
         <CardBody>
-          <Fail>Account deletion failed.</Fail>
+          <Fail>{error}</Fail>
         </CardBody>
       )}
       {!deleted && (
@@ -97,7 +153,7 @@ export const Settings = (props: { account: Account }) => {
                   }).then(
                     async ({ errors }: { errors?: GraphQLError[] } | any) => {
                       if (errors) {
-                        setError(true);
+                        setError(errors[0].message);
                         setDeleting(false);
                       } else {
                         setDeleted(true);

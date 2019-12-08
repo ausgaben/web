@@ -1,6 +1,7 @@
 export type Account = {
   name: string;
   isSavingsAccount: boolean;
+  defaultCurrency: Currency;
   _meta: EntityMeta;
 };
 
@@ -15,7 +16,6 @@ export type EntityMeta = {
 
 export type Currency = {
   id: string;
-  toEUR: number;
   symbol: string;
 };
 

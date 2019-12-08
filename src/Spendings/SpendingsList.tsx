@@ -12,6 +12,7 @@ import { updateAggregate } from '../es/updateAggregate';
 import { SpendingsByCategory } from './SpendingsByCategory';
 import styled from 'styled-components';
 import { mobileBreakpoint } from '../Styles';
+import { convertToEUR } from '../currency/convert';
 
 export const markSpendingAsBooked = gql`
   mutation updateSpending($spendingId: ID!) {
@@ -174,7 +175,7 @@ export const SpendingsList = ({
                     amount,
                     booked,
                     _meta: { id },
-                    currency: { id: currencyId, toEUR }
+                    currency: { id: currencyId, symbol: currencySymbol }
                   }) => (
                     <tr key={id} className="spending">
                       {!booked && (
@@ -258,14 +259,18 @@ export const SpendingsList = ({
                         <td className="amount">
                           <FormatMoney
                             amount={amount}
-                            symbol={currenciesById[currencyId].symbol}
+                            symbol={currencySymbol}
                           />
                         </td>
                       )}
                       {currencyId === currenciesById.EUR.id && <td />}
                       <td className="amount">
                         <FormatMoney
-                          amount={amount * toEUR}
+                          amount={convertToEUR(
+                            amount,
+                            currenciesById[currencyId],
+                            new Date(bookedAt)
+                          )}
                           symbol={currenciesById.EUR.symbol}
                         />
                       </td>

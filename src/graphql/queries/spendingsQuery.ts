@@ -25,7 +25,7 @@ export const spendingsQuery = gql`
         amount
         currency {
           id
-          toEUR
+          symbol
         }
         paidWith
       }

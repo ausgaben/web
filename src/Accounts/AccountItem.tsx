@@ -4,6 +4,7 @@ import { Account } from '../schema';
 import { currenciesById } from '../currency/currencies';
 import { FormatMoney } from '../util/date/FormatMoney';
 import { WithSpendings } from '../Spendings/WithSpendings';
+import { convertToEUR } from '../currency/convert';
 
 export const AccountItem = (props: { account: Account }) => {
   const {
@@ -27,7 +28,13 @@ export const AccountItem = (props: { account: Account }) => {
         const hasNOK = spendings.find(({ currency: { id } }) => id === 'NOK');
         const sums = spendings.reduce(
           (sums, spending) => ({
-            EUR: sums.EUR + spending.amount * spending.currency.toEUR,
+            EUR:
+              sums.EUR +
+              convertToEUR(
+                spending.amount,
+                spending.currency,
+                new Date(spending.bookedAt)
+              ),
             NOK:
               sums.NOK + (spending.currency.id === 'NOK' ? spending.amount : 0)
           }),

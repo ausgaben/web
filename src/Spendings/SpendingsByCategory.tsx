@@ -7,6 +7,7 @@ import { Note } from '../Note/Note';
 import { Info } from '../Account/Info';
 import { DateTime } from 'luxon';
 import { SpendingsList } from './SpendingsList';
+import { convertToEUR } from '../currency/convert';
 
 export type SpendingCategory = {
   spendings: Spending[];
@@ -73,8 +74,13 @@ export const SpendingsByCategory = (props: {
       }
       spendingsByCategory[t][spending.category].spendings.push(spending);
 
-      spendingsByCategory[t][spending.category].sums[currenciesById.EUR.id] +=
-        spending.amount * spending.currency.toEUR;
+      spendingsByCategory[t][spending.category].sums[
+        currenciesById.EUR.id
+      ] += convertToEUR(
+        spending.amount,
+        spending.currency,
+        new Date(spending.bookedAt)
+      );
       if (spending.currency.id !== currenciesById.EUR.id) {
         spendingsByCategory[t][spending.category].sums[spending.currency.id] +=
           spending.amount;
