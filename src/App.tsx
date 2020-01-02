@@ -29,6 +29,7 @@ import {
   EditSpendingPage
 } from './Account/AccountSpendingPage';
 import { Page as SpendingPage } from './Spending/Page';
+import { Page as ExchangeRatesPage } from './ExchangeRates/Page';
 import logo from './logo.svg';
 import { AccountImportPage } from './Account/ImportPage';
 import styled from 'styled-components';
@@ -70,6 +71,11 @@ const Navigation = (props: {
       <NavItem>
         <Link className="nav-link" to="/accounts" onClick={onClick}>
           Accounts
+        </Link>
+      </NavItem>
+      <NavItem>
+        <Link className="nav-link" to="/exchange-rates" onClick={onClick}>
+          Exchange Rates
         </Link>
       </NavItem>
       <NavItem>
@@ -171,6 +177,7 @@ const App = ({ authData }: { authData: CognitoUser }) => {
         <ApolloProvider client={client}>
           <Route exact path="/" render={() => <Redirect to="/accounts" />} />
           <Route exact path="/accounts" component={AccountsPage} />
+          <Route exact path="/exchange-rates" component={ExchangeRatesPage} />
           <Route exact path="/about" component={AboutPage} />
           <Route exact path="/new/account" component={CreateAccountsPage} />
           <Route exact path="/account/:accountId" component={AccountPage} />
