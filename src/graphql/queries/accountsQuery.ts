@@ -6,6 +6,7 @@ export const accountsQuery = gql`
       items {
         _meta {
           id
+          version
         }
         name
         isSavingsAccount

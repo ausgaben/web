@@ -12,6 +12,7 @@ export const accountQuery = gql`
         }
         _meta {
           id
+          version
         }
       }
     }
