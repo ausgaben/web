@@ -55,48 +55,51 @@ export const Settings = (props: { account: Account }) => {
           <CardTitle>{name}</CardTitle>
         </CardHeader>
         <CardBody>
-          <InviteUserToAccount account={props.account} />
-          <Mutation<{}, { accountId: string; defaultCurrencyId: string }>
-            mutation={updateDefaultCurrencyQuery}
-          >
-            {updateDefaultCurrencyQueryMutation => (
-              <Form>
-                <FormGroup>
-                  <Label for="defaultCurrency">Default Currency</Label>
-                  <Input
-                    type="select"
-                    name="defaultCurrency"
-                    id="defaultCurrency"
-                    value={defaultCurrencyId}
-                    onChange={e => {
-                      const oldValue = defaultCurrencyId;
-                      setDefaultCurrencyId(e.target.value);
-                      updateDefaultCurrencyQueryMutation({
-                        variables: {
-                          accountId: id,
-                          defaultCurrencyId: e.target.value
-                        }
-                      }).then(
-                        ({ errors }: { errors?: GraphQLError[] } | any) => {
-                          if (errors) {
-                            setError(errors[0].message);
-                            setDefaultCurrencyId(oldValue);
+          <Form>
+            <InviteUserToAccount account={props.account} />
+            <Mutation<{}, { accountId: string; defaultCurrencyId: string }>
+              mutation={updateDefaultCurrencyQuery}
+            >
+              {updateDefaultCurrencyQueryMutation => (
+                <fieldset>
+                  <legend>Settings</legend>
+                  <FormGroup>
+                    <Label for="defaultCurrency">Default Currency</Label>
+                    <Input
+                      type="select"
+                      name="defaultCurrency"
+                      id="defaultCurrency"
+                      value={defaultCurrencyId}
+                      onChange={e => {
+                        const oldValue = defaultCurrencyId;
+                        setDefaultCurrencyId(e.target.value);
+                        updateDefaultCurrencyQueryMutation({
+                          variables: {
+                            accountId: id,
+                            defaultCurrencyId: e.target.value
                           }
-                        }
-                      );
-                    }}
-                  >
-                    <option value={EUR.id}>
-                      {EUR.id} ({EUR.symbol})
-                    </option>
-                    <option value={NOK.id}>
-                      {NOK.id} ({NOK.symbol})
-                    </option>
-                  </Input>
-                </FormGroup>
-              </Form>
-            )}
-          </Mutation>
+                        }).then(
+                          ({ errors }: { errors?: GraphQLError[] } | any) => {
+                            if (errors) {
+                              setError(errors[0].message);
+                              setDefaultCurrencyId(oldValue);
+                            }
+                          }
+                        );
+                      }}
+                    >
+                      <option value={EUR.id}>
+                        {EUR.id} ({EUR.symbol})
+                      </option>
+                      <option value={NOK.id}>
+                        {NOK.id} ({NOK.symbol})
+                      </option>
+                    </Input>
+                  </FormGroup>
+                </fieldset>
+              )}
+            </Mutation>
+          </Form>
         </CardBody>
       </>
       {deleted && (

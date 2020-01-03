@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import {
   Button,
-  Form,
   Input,
   InputGroup,
   InputGroupAddon,
@@ -26,7 +25,8 @@ export const InviteUserToAccount = (props: { account: Account }) => {
   return (
     <Mutation mutation={inviteUserMutation}>
       {(inviteUserMutation: MutationFunction) => (
-        <Form>
+        <fieldset>
+          <legend>Invite user</legend>
           <FormGroup>
             <Label for="userid">User ID</Label>
             <InputGroup>
@@ -55,7 +55,7 @@ export const InviteUserToAccount = (props: { account: Account }) => {
               </InputGroupAddon>
             </InputGroup>
           </FormGroup>
-        </Form>
+        </fieldset>
       )}
     </Mutation>
   );
