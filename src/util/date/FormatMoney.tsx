@@ -25,21 +25,32 @@ const Spending = styled(Money)`
 const Minus = styled(Currency)``;
 const Amount = styled.span``;
 
+const Approximation = styled(Currency)``;
+
 export const FormatMoney = ({
   amount,
-  symbol
+  symbol,
+  approximation
 }: {
   amount: number;
   symbol: string;
+  approximation?: boolean;
 }) => {
-  let formatted = `${Math.floor(
-    Math.abs(Math.round(amount) / 100)
-  )}.${`0${Math.abs(Math.round(amount) % 100)}`.slice(-2)}`.replace(/.00$/, '');
+  let formatted = `${Math.floor(Math.abs(Math.round(amount) / 100))
+    .toString()
+    .replace(/\B(?=(\d{3})+(?!\d))/g, '.')},${`0${Math.abs(
+    Math.round(amount) % 100
+  )}`.slice(-2)}`.replace(/,00$/, '');
   let C = Money;
   if (amount > 0) C = Income;
   if (amount < 0) C = Spending;
   return (
     <C>
+      {approximation && (
+        <sup>
+          <Approximation>~</Approximation>
+        </sup>
+      )}
       <Amount>
         {amount < 0 && <Minus>−</Minus>}
         {formatted}
