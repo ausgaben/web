@@ -1,25 +1,47 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardBody } from 'reactstrap';
 import { Account, Spending } from '../schema';
 import { ListingHeader } from '../ListingHeader/ListingHeader';
-import { currencies, currenciesById } from '../currency/currencies';
 import { Note } from '../Note/Note';
 import { Info } from '../Account/Info';
 import { DateTime } from 'luxon';
 import { SpendingsList } from './SpendingsList';
-import { convertToEUR } from '../currency/convert';
+import { client } from '../App';
+import { fetchExchangeRate } from '../ExchangeRates/fetchExchangeRate';
+import { EUR } from '../currency/currencies';
+import styled from 'styled-components';
+import { wideBreakpoint } from '../Styles';
+
+const SpendingsSection = styled.section`
+  & + & {
+    @media (max-width: ${wideBreakpoint}) {
+      margin-top: 1rem;
+    }
+  }
+`;
 
 export type SpendingCategory = {
-  spendings: Spending[];
-  sums: { [key: string]: number };
-  counts: { [key: string]: number };
+  spendings: (Spending & {
+    amountInAccountDefaultCurrency: number;
+  })[];
+  totalInAccountDefaultCurrency: number;
+  hasConversion: boolean;
 };
 
 export type SpendingsByCategory = {
   [key: string]: SpendingCategory;
 };
 
-export const SpendingsByCategory = (props: {
+export const SpendingsByCategory = ({
+  spendings,
+  nextMonth,
+  next,
+  prevMonth,
+  startDate,
+  refetch,
+  account,
+  variables
+}: {
   spendings: Spending[];
   account: Account;
   refetch: () => void;
@@ -30,17 +52,78 @@ export const SpendingsByCategory = (props: {
   startDate?: DateTime;
   variables: any;
 }) => {
-  const [displaySpendings, updateDisplaySpendings] = useState(props.spendings);
-  const {
-    nextMonth,
-    next,
-    prevMonth,
-    startDate,
-    refetch,
-    account,
-    variables
-  } = props;
-  if (!displaySpendings.length) {
+  const [categorizedSpendings, updateCategorizedSpendings] = useState<{
+    booked: SpendingsByCategory;
+    pending: SpendingsByCategory;
+  }>({
+    booked: {},
+    pending: {}
+  });
+
+  useEffect(() => {
+    let isMounted = true;
+    const er = fetchExchangeRate(client);
+    const spendingsByCategory: {
+      booked: SpendingsByCategory;
+      pending: SpendingsByCategory;
+    } = {
+      booked: {},
+      pending: {}
+    };
+    spendings
+      .reduce(
+        (p, spending) =>
+          p.then(async () => {
+            const t = spending.booked ? 'booked' : 'pending';
+            if (!spendingsByCategory[t][spending.category]) {
+              spendingsByCategory[t][spending.category] = {
+                spendings: [],
+                totalInAccountDefaultCurrency: 0,
+                hasConversion: false
+              };
+            }
+            let amountInAccountDefaultCurrency = spending.amount;
+            if (spending.currency.id === account.defaultCurrency.id) {
+              // Spending is in account currency => no conversion
+              // pass
+            } else if (spending.currency.id === EUR.id) {
+              amountInAccountDefaultCurrency =
+                (spending.amount * 1) /
+                (await er(
+                  account.defaultCurrency,
+                  new Date(spending.bookedAt)
+                ));
+            } else {
+              amountInAccountDefaultCurrency =
+                spending.amount *
+                (await er(spending.currency, new Date(spending.bookedAt)));
+            }
+
+            spendingsByCategory[t][spending.category].spendings.push({
+              ...spending,
+              amountInAccountDefaultCurrency
+            });
+            spendingsByCategory[t][
+              spending.category
+            ].totalInAccountDefaultCurrency += amountInAccountDefaultCurrency;
+            if (spending.currency.id !== account.defaultCurrency.id) {
+              spendingsByCategory[t][spending.category].hasConversion = true;
+            }
+          }),
+        Promise.resolve()
+      )
+      .then(() => {
+        if (isMounted) {
+          updateCategorizedSpendings(spendingsByCategory);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [spendings, account]);
+
+  if (!spendings.length) {
     return (
       <Card>
         <ListingHeader
@@ -58,53 +141,13 @@ export const SpendingsByCategory = (props: {
     );
   }
 
-  const spendingsByCategory = displaySpendings.reduce(
-    (spendingsByCategory, spending) => {
-      const t = spending.booked ? 'booked' : 'pending';
-      if (!spendingsByCategory[t][spending.category]) {
-        spendingsByCategory[t][spending.category] = {
-          spendings: [],
-          sums: {},
-          counts: {}
-        };
-        currencies.forEach(currency => {
-          spendingsByCategory[t][spending.category].sums[currency.id] = 0;
-          spendingsByCategory[t][spending.category].counts[currency.id] = 0;
-        });
-      }
-      spendingsByCategory[t][spending.category].spendings.push(spending);
-
-      spendingsByCategory[t][spending.category].sums[
-        currenciesById.EUR.id
-      ] += convertToEUR(
-        spending.amount,
-        spending.currency,
-        new Date(spending.bookedAt)
-      );
-      if (spending.currency.id !== currenciesById.EUR.id) {
-        spendingsByCategory[t][spending.category].sums[spending.currency.id] +=
-          spending.amount;
-      }
-
-      spendingsByCategory[t][spending.category].counts[spending.currency.id]++;
-      return spendingsByCategory;
-    },
-    {
-      booked: {},
-      pending: {}
-    } as {
-      booked: SpendingsByCategory;
-      pending: SpendingsByCategory;
-    }
-  );
-
   return (
     <>
-      <section>
-        <Info account={props.account} />
-        {Object.keys(spendingsByCategory.booked).length ? (
+      <SpendingsSection>
+        <Info account={account} />
+        {Object.keys(categorizedSpendings.booked).length ? (
           <SpendingsList
-            spendingsByCategory={spendingsByCategory.booked}
+            spendingsByCategory={categorizedSpendings.booked}
             header={
               <ListingHeader
                 title={'Booked'}
@@ -115,16 +158,18 @@ export const SpendingsByCategory = (props: {
                 startDate={startDate}
               />
             }
-            accountId={account._meta.id}
+            account={account}
             variables={variables}
-            onUpdateSpendings={spendings => updateDisplaySpendings(spendings)}
+            onUpdateSpendings={() => {
+              // FIXME: Implement refresh
+            }}
           />
         ) : null}
-      </section>
-      <section>
-        {Object.keys(spendingsByCategory.pending).length ? (
+      </SpendingsSection>
+      <SpendingsSection>
+        {Object.keys(categorizedSpendings.pending).length ? (
           <SpendingsList
-            spendingsByCategory={spendingsByCategory.pending}
+            spendingsByCategory={categorizedSpendings.pending}
             header={
               <ListingHeader
                 title={'Pending'}
@@ -135,14 +180,14 @@ export const SpendingsByCategory = (props: {
                 startDate={startDate}
               />
             }
-            accountId={account._meta.id}
+            account={account}
             variables={variables}
-            onUpdateSpendings={spendings => {
-              updateDisplaySpendings([...spendings]);
+            onUpdateSpendings={() => {
+              // FIXME: Implement refresh
             }}
           />
         ) : null}
-      </section>
+      </SpendingsSection>
     </>
   );
 };

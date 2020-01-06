@@ -18,10 +18,7 @@ import styled from 'styled-components';
 import { mobileBreakpoint } from '../Styles';
 import { NormalizedCacheObject } from 'apollo-cache-inmemory';
 import ApolloClient from 'apollo-client';
-import {
-  exchangeRateQuery,
-  ExchangeRate
-} from '../graphql/queries/exchangeRateQuery';
+import { fetchExchangeRate } from '../ExchangeRates/fetchExchangeRate';
 
 const AccountsTable = styled(Table)`
   .amount {
@@ -35,23 +32,6 @@ const AccountsTable = styled(Table)`
     }
   }
 `;
-
-const exchangeconversionRates: { [key: string]: Promise<number> } = {};
-const fetchExchangeRate = (
-  client: ApolloClient<NormalizedCacheObject>
-) => async (currency: Currency, date: Date): Promise<number> => {
-  const k = `${currency.id}-${date.toISOString().substring(0, 10)}`;
-  if (!exchangeconversionRates[k]) {
-    exchangeconversionRates[k] = client
-      .query<ExchangeRate>({
-        query: exchangeRateQuery,
-        fetchPolicy: 'cache-first',
-        variables: { currencyId: currency.id, date: date.toISOString() }
-      })
-      .then(res => res.data.exchangeRate.rate);
-  }
-  return exchangeconversionRates[k];
-};
 
 type AccountTotal = {
   totalSavingsInEUR: number;

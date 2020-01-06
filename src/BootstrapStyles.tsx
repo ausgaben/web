@@ -68,4 +68,8 @@ form {
       margin-top: 1rem;
     }
   }
+
+  .card table {
+    margin-bottom: 0;
+  }
 `;

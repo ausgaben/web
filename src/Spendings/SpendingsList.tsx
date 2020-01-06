@@ -1,9 +1,8 @@
 import React from 'react';
 import { Button, Card, Table } from 'reactstrap';
 import { Link } from 'react-router-dom';
-import { Spending } from '../schema';
+import { Spending, Account } from '../schema';
 import { FormatDate } from '../util/date/FormatDate';
-import { currenciesById, EUR } from '../currency/currencies';
 import { FormatMoney } from '../util/date/FormatMoney';
 import { Mutation } from '@apollo/react-components';
 import gql from 'graphql-tag';
@@ -12,12 +11,15 @@ import { updateAggregate } from '../es/updateAggregate';
 import { SpendingsByCategory } from './SpendingsByCategory';
 import styled from 'styled-components';
 import { mobileBreakpoint } from '../Styles';
-import { convertToEUR } from '../currency/convert';
 
 export const markSpendingAsBooked = gql`
   mutation updateSpending($spendingId: ID!) {
     updateSpending(spendingId: $spendingId, booked: true)
   }
+`;
+
+const Nowrap = styled.span`
+  white-space: nowrap;
 `;
 
 export const SpendingsTable = styled(Table)`
@@ -41,246 +43,214 @@ export const SpendingsTable = styled(Table)`
   }
 `;
 
-// FIXME: have one main currency per account and calculate all sums for that: https://github.com/orgs/ausgaben/projects/1#card-21708767
+const sumSpendings = (account: Account) => (
+  total: { amount: number; hasConversion: boolean },
+  {
+    amountInAccountDefaultCurrency,
+    currency: { id: currencyId }
+  }: Spending & { amountInAccountDefaultCurrency: number }
+) => ({
+  amount: total.amount + amountInAccountDefaultCurrency,
+  hasConversion:
+    total.hasConversion || account.defaultCurrency.id !== currencyId
+});
+
 export const SpendingsList = ({
   spendingsByCategory,
   header,
-  accountId,
+  account,
   variables,
   onUpdateSpendings
 }: {
   spendingsByCategory: SpendingsByCategory;
   header: React.ReactElement;
-  accountId: string;
+  account: Account;
   variables: any;
-  onUpdateSpendings: (spendings: Spending[]) => void;
+  onUpdateSpendings: () => void;
 }) => {
-  const totalSpendingsByCurrency = Object.values(spendingsByCategory)
+  const totalSpendingsInAccountDefaultCurrency = Object.values(
+    spendingsByCategory
+  )
     .map(({ spendings }) => spendings)
     .flat()
     .filter(({ amount }) => amount < 0)
-    .reduce((total, { amount, currency }) => {
-      if (!total[currency.id]) {
-        total[currency.id] = amount;
-      } else {
-        total[currency.id] += amount;
-      }
-      return total;
-    }, {} as { [key: string]: number });
+    .reduce(sumSpendings(account), { amount: 0, hasConversion: false });
 
-  const totalIncomeByCurrency = Object.values(spendingsByCategory)
+  const totalIncomeInAccountDefaultCurrency = Object.values(spendingsByCategory)
     .map(({ spendings }) => spendings)
     .flat()
     .filter(({ amount }) => amount > 0)
-    .reduce((total, { amount, currency }) => {
-      if (!total[currency.id]) {
-        total[currency.id] = amount;
-      } else {
-        total[currency.id] += amount;
-      }
-      return total;
-    }, {} as { [key: string]: number });
+    .reduce(sumSpendings(account), { amount: 0, hasConversion: false });
 
-  const totalSumByCurrency = Object.values(spendingsByCategory)
+  const totalSumInAccountDefaultCurrency = Object.values(spendingsByCategory)
     .map(({ spendings }) => spendings)
     .flat()
-    .reduce((total, { amount, currency }) => {
-      if (!total[currency.id]) {
-        total[currency.id] = amount;
-      } else {
-        total[currency.id] += amount;
-      }
-      return total;
-    }, {} as { [key: string]: number });
+    .reduce(sumSpendings(account), { amount: 0, hasConversion: false });
 
   return (
-    <Card>
-      {header}
-      <SpendingsTable>
-        <thead>
-          <tr>
-            <th colSpan={3}>Total income</th>
-            {Object.entries(totalIncomeByCurrency).map(
-              ([currencyId, amount]) => (
-                <th key={currencyId} className="amount">
-                  <FormatMoney
-                    amount={amount}
-                    symbol={currenciesById[currencyId].symbol}
-                  />
-                </th>
-              )
-            )}
-          </tr>
-          <tr>
-            <th colSpan={3}>Total spendings</th>
-            {Object.entries(totalSpendingsByCurrency).map(
-              ([currencyId, amount]) => (
-                <th key={currencyId} className="amount">
-                  <FormatMoney
-                    amount={amount}
-                    symbol={currenciesById[currencyId].symbol}
-                  />
-                </th>
-              )
-            )}
-          </tr>
-          <tr>
-            <th colSpan={3}>Total</th>
-            {Object.entries(totalSumByCurrency).map(([currencyId, amount]) => (
-              <th key={currencyId} className="amount">
+    <>
+      <Card>
+        {header}
+        <SpendingsTable>
+          <tbody>
+            <tr>
+              <td colSpan={3}>
+                Total income
+                <br />
+                - Total spendings
+                <br />
+                <strong>= Total</strong>
+              </td>
+              <td className="amount">
                 <FormatMoney
-                  amount={amount}
-                  symbol={currenciesById[currencyId].symbol}
+                  approximation={
+                    totalIncomeInAccountDefaultCurrency.hasConversion
+                  }
+                  amount={totalIncomeInAccountDefaultCurrency.amount}
+                  symbol={account.defaultCurrency.symbol}
                 />
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {Object.keys(spendingsByCategory)
-            .sort()
-            .map(cat => (
-              <React.Fragment key={cat}>
-                <tr>
-                  <th colSpan={3}>{cat}</th>
-                  {Object.keys(spendingsByCategory[cat].counts)
-                    .filter(key => key !== EUR.id)
-                    .filter(key => spendingsByCategory[cat].counts[key] > 0)
-                    .map(key => (
-                      <th key={key} className="amount">
-                        <FormatMoney
-                          amount={spendingsByCategory[cat].sums[key]}
-                          symbol={currenciesById[key].symbol}
-                        />
-                      </th>
-                    ))}
-                  {Object.keys(spendingsByCategory[cat].counts)
-                    .filter(key => key !== EUR.id)
-                    .filter(key => spendingsByCategory[cat].counts[key] > 0)
-                    .length === 0 && <th />}
-                  {spendingsByCategory[cat].counts[EUR.id] > 0 && (
+                <br />
+                <FormatMoney
+                  approximation={
+                    totalSpendingsInAccountDefaultCurrency.hasConversion
+                  }
+                  amount={totalSpendingsInAccountDefaultCurrency.amount}
+                  symbol={account.defaultCurrency.symbol}
+                />
+                <br />
+                <strong>
+                  <Nowrap>
+                    =
+                    <FormatMoney
+                      approximation={
+                        totalSumInAccountDefaultCurrency.hasConversion
+                      }
+                      amount={totalSumInAccountDefaultCurrency.amount}
+                      symbol={account.defaultCurrency.symbol}
+                    />
+                  </Nowrap>
+                </strong>
+              </td>
+            </tr>
+            {Object.keys(spendingsByCategory)
+              .sort()
+              .map(cat => (
+                <React.Fragment key={cat}>
+                  <tr>
+                    <th colSpan={3}>{cat}</th>
+                    {/* FIXME: Re-implement sum by category */}
                     <th className="amount">
                       <FormatMoney
-                        amount={spendingsByCategory[cat].sums[EUR.id]}
-                        symbol={currenciesById[EUR.id].symbol}
+                        approximation={spendingsByCategory[cat].hasConversion}
+                        amount={
+                          spendingsByCategory[cat].totalInAccountDefaultCurrency
+                        }
+                        symbol={account.defaultCurrency.symbol}
                       />
                     </th>
-                  )}
-                  {spendingsByCategory[cat].counts[EUR.id] === 0 && <th />}
-                </tr>
-                {spendingsByCategory[cat].spendings.map(
-                  ({
-                    description,
-                    bookedAt,
-                    amount,
-                    booked,
-                    _meta: { id },
-                    currency: { id: currencyId, symbol: currencySymbol }
-                  }) => (
-                    <tr key={id} className="spending">
-                      {!booked && (
-                        <td>
-                          <Mutation<
-                            {
-                              updateSpending: void;
-                            },
-                            {
-                              spendingId: string;
-                            }
-                          >
-                            mutation={markSpendingAsBooked}
-                            update={cache => {
-                              const res = cache.readQuery<{
-                                spendings: {
-                                  items: Spending[];
-                                };
-                              }>({
-                                query: spendingsQuery,
-                                variables
-                              });
-                              if (res) {
-                                const {
-                                  spendings: { items: spendings }
-                                } = res;
-                                const spendingToUpdate = spendings.find(
-                                  ({ _meta: { id: u } }) => id === u
-                                );
-                                if (spendingToUpdate) {
-                                  spendings[
-                                    spendings.indexOf(spendingToUpdate)
-                                  ] = updateAggregate<Spending>({
-                                    ...spendingToUpdate,
-                                    booked: true
-                                  });
-                                  cache.writeQuery({
-                                    query: spendingsQuery,
-                                    data: {
-                                      ...res,
-                                      spendings: {
-                                        ...res.spendings,
-                                        items: spendings
-                                      }
-                                    }
-                                  });
-                                  onUpdateSpendings(spendings);
-                                }
+                  </tr>
+                  {spendingsByCategory[cat].spendings.map(
+                    ({
+                      description,
+                      bookedAt,
+                      amount,
+                      booked,
+                      _meta: { id },
+                      currency: { id: currencyId, symbol: currencySymbol }
+                    }) => (
+                      <tr key={id} className="spending">
+                        {!booked && (
+                          <td>
+                            <Mutation<
+                              {
+                                updateSpending: void;
+                              },
+                              {
+                                spendingId: string;
                               }
-                            }}
-                          >
-                            {markSpendingAsBooked => (
-                              <Button
-                                color="secondary"
-                                outline={true}
-                                onClick={() =>
-                                  markSpendingAsBooked({
-                                    variables: { spendingId: id }
-                                  })
+                            >
+                              mutation={markSpendingAsBooked}
+                              update={cache => {
+                                const res = cache.readQuery<{
+                                  spendings: {
+                                    items: Spending[];
+                                  };
+                                }>({
+                                  query: spendingsQuery,
+                                  variables
+                                });
+                                if (res) {
+                                  const {
+                                    spendings: { items: spendings }
+                                  } = res;
+                                  const spendingToUpdate = spendings.find(
+                                    ({ _meta: { id: u } }) => id === u
+                                  );
+                                  if (spendingToUpdate) {
+                                    spendings[
+                                      spendings.indexOf(spendingToUpdate)
+                                    ] = updateAggregate<Spending>({
+                                      ...spendingToUpdate,
+                                      booked: true
+                                    });
+                                    cache.writeQuery({
+                                      query: spendingsQuery,
+                                      data: {
+                                        ...res,
+                                        spendings: {
+                                          ...res.spendings,
+                                          items: spendings
+                                        }
+                                      }
+                                    });
+                                    onUpdateSpendings();
+                                  }
                                 }
-                                title="Mark as booked"
-                              >
-                                <span role="img" aria-label="checkmark">
-                                  ✓
-                                </span>
-                              </Button>
-                            )}
-                          </Mutation>
+                              }}
+                            >
+                              {markSpendingAsBooked => (
+                                <Button
+                                  color="secondary"
+                                  outline={true}
+                                  onClick={() =>
+                                    markSpendingAsBooked({
+                                      variables: { spendingId: id }
+                                    })
+                                  }
+                                  title="Mark as booked"
+                                >
+                                  <span role="img" aria-label="checkmark">
+                                    ✓
+                                  </span>
+                                </Button>
+                              )}
+                            </Mutation>
+                          </td>
+                        )}
+                        <td className="date" colSpan={booked ? 2 : 1}>
+                          <FormatDate date={bookedAt} />
                         </td>
-                      )}
-                      {booked && <td />}
-                      <td className="date">
-                        <FormatDate date={bookedAt} />
-                      </td>
-                      <td className="description">
-                        <Link to={`/account/${accountId}/spending/${id}`}>
-                          {description}
-                        </Link>
-                      </td>
-                      {currencyId !== currenciesById.EUR.id && (
+                        <td className="description">
+                          <Link
+                            to={`/account/${account._meta.id}/spending/${id}`}
+                          >
+                            {description}
+                          </Link>
+                        </td>
                         <td className="amount">
                           <FormatMoney
                             amount={amount}
                             symbol={currencySymbol}
                           />
                         </td>
-                      )}
-                      {currencyId === currenciesById.EUR.id && <td />}
-                      <td className="amount">
-                        <FormatMoney
-                          amount={convertToEUR(
-                            amount,
-                            currenciesById[currencyId],
-                            new Date(bookedAt)
-                          )}
-                          symbol={currenciesById.EUR.symbol}
-                        />
-                      </td>
-                    </tr>
-                  )
-                )}
-              </React.Fragment>
-            ))}
-        </tbody>
-      </SpendingsTable>
-    </Card>
+                      </tr>
+                    )
+                  )}
+                </React.Fragment>
+              ))}
+          </tbody>
+        </SpendingsTable>
+      </Card>
+    </>
   );
 };
