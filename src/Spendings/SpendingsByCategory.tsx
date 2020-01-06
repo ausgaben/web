@@ -163,6 +163,7 @@ export const SpendingsByCategory = ({
             onUpdateSpendings={() => {
               // FIXME: Implement refresh
             }}
+            booked={true}
           />
         ) : null}
       </SpendingsSection>
@@ -185,6 +186,7 @@ export const SpendingsByCategory = ({
             onUpdateSpendings={() => {
               // FIXME: Implement refresh
             }}
+            booked={false}
           />
         ) : null}
       </SpendingsSection>

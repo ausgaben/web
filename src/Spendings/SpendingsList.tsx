@@ -43,6 +43,13 @@ export const SpendingsTable = styled(Table)`
   }
 `;
 
+const Summary = styled.tr`
+  font-size: 90%;
+  @media (min-width: ${mobileBreakpoint}) {
+    font-size: 100%;
+  }
+`;
+
 const sumSpendings = (account: Account) => (
   total: { amount: number; hasConversion: boolean },
   {
@@ -60,13 +67,15 @@ export const SpendingsList = ({
   header,
   account,
   variables,
-  onUpdateSpendings
+  onUpdateSpendings,
+  booked
 }: {
   spendingsByCategory: SpendingsByCategory;
   header: React.ReactElement;
   account: Account;
   variables: any;
   onUpdateSpendings: () => void;
+  booked: boolean;
 }) => {
   const totalSpendingsInAccountDefaultCurrency = Object.values(
     spendingsByCategory
@@ -93,8 +102,8 @@ export const SpendingsList = ({
         {header}
         <SpendingsTable>
           <tbody>
-            <tr>
-              <td colSpan={3}>
+            <Summary>
+              <td colSpan={booked ? 2 : 3}>
                 Total income
                 <br />
                 - Total spendings
@@ -131,13 +140,13 @@ export const SpendingsList = ({
                   </Nowrap>
                 </strong>
               </td>
-            </tr>
+            </Summary>
             {Object.keys(spendingsByCategory)
               .sort()
               .map(cat => (
                 <React.Fragment key={cat}>
-                  <tr>
-                    <th colSpan={3}>{cat}</th>
+                  <Summary>
+                    <th colSpan={booked ? 2 : 3}>{cat}</th>
                     {/* FIXME: Re-implement sum by category */}
                     <th className="amount">
                       <FormatMoney
@@ -148,7 +157,7 @@ export const SpendingsList = ({
                         symbol={account.defaultCurrency.symbol}
                       />
                     </th>
-                  </tr>
+                  </Summary>
                   {spendingsByCategory[cat].spendings.map(
                     ({
                       description,
@@ -227,7 +236,7 @@ export const SpendingsList = ({
                             </Mutation>
                           </td>
                         )}
-                        <td className="date" colSpan={booked ? 2 : 1}>
+                        <td className="date">
                           <FormatDate date={bookedAt} />
                         </td>
                         <td className="description">
