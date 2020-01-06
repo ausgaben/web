@@ -101,6 +101,17 @@ export const SpendingsList = ({
       <Card>
         {header}
         <SpendingsTable>
+          <colgroup>
+            {booked && <col width="2%" />}
+            {!booked && (
+              <>
+                <col width="1%" />
+                <col width="1%" />
+              </>
+            )}
+            <col width="9%" />
+            <col width="1%" />
+          </colgroup>
           <tbody>
             <Summary>
               <td colSpan={booked ? 2 : 3}>
