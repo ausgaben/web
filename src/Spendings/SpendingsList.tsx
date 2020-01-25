@@ -11,15 +11,12 @@ import { updateAggregate } from '../es/updateAggregate';
 import { SpendingsByCategory } from './SpendingsByCategory';
 import styled from 'styled-components';
 import { mobileBreakpoint } from '../Styles';
+import { Summary, SummaryRow, AccountSummary } from './Summary';
 
 export const markSpendingAsBooked = gql`
   mutation updateSpending($spendingId: ID!) {
     updateSpending(spendingId: $spendingId, booked: true)
   }
-`;
-
-const Nowrap = styled.span`
-  white-space: nowrap;
 `;
 
 export const SpendingsTable = styled(Table)`
@@ -43,59 +40,23 @@ export const SpendingsTable = styled(Table)`
   }
 `;
 
-const Summary = styled.tr`
-  font-size: 90%;
-  @media (min-width: ${mobileBreakpoint}) {
-    font-size: 100%;
-  }
-`;
-
-const sumSpendings = (account: Account) => (
-  total: { amount: number; hasConversion: boolean },
-  {
-    amountInAccountDefaultCurrency,
-    currency: { id: currencyId }
-  }: Spending & { amountInAccountDefaultCurrency: number }
-) => ({
-  amount: total.amount + amountInAccountDefaultCurrency,
-  hasConversion:
-    total.hasConversion || account.defaultCurrency.id !== currencyId
-});
-
 export const SpendingsList = ({
   spendingsByCategory,
   header,
   account,
   variables,
   onUpdateSpendings,
-  booked
+  booked,
+  summary
 }: {
   spendingsByCategory: SpendingsByCategory;
+  summary: AccountSummary;
   header: React.ReactElement;
   account: Account;
   variables: any;
   onUpdateSpendings: () => void;
   booked: boolean;
 }) => {
-  const totalSpendingsInAccountDefaultCurrency = Object.values(
-    spendingsByCategory
-  )
-    .map(({ spendings }) => spendings)
-    .flat()
-    .filter(({ amount }) => amount < 0)
-    .reduce(sumSpendings(account), { amount: 0, hasConversion: false });
-
-  const totalIncomeInAccountDefaultCurrency = Object.values(spendingsByCategory)
-    .map(({ spendings }) => spendings)
-    .flat()
-    .filter(({ amount }) => amount > 0)
-    .reduce(sumSpendings(account), { amount: 0, hasConversion: false });
-
-  const totalSumInAccountDefaultCurrency = Object.values(spendingsByCategory)
-    .map(({ spendings }) => spendings)
-    .flat()
-    .reduce(sumSpendings(account), { amount: 0, hasConversion: false });
-
   return (
     <>
       <Card>
@@ -113,50 +74,12 @@ export const SpendingsList = ({
             <col width="1%" />
           </colgroup>
           <tbody>
-            <Summary>
-              <td colSpan={booked ? 2 : 3}>
-                Total income
-                <br />
-                - Total spendings
-                <br />
-                <strong>= Total</strong>
-              </td>
-              <td className="amount">
-                <FormatMoney
-                  approximation={
-                    totalIncomeInAccountDefaultCurrency.hasConversion
-                  }
-                  amount={totalIncomeInAccountDefaultCurrency.amount}
-                  symbol={account.defaultCurrency.symbol}
-                />
-                <br />
-                <FormatMoney
-                  approximation={
-                    totalSpendingsInAccountDefaultCurrency.hasConversion
-                  }
-                  amount={totalSpendingsInAccountDefaultCurrency.amount}
-                  symbol={account.defaultCurrency.symbol}
-                />
-                <br />
-                <strong>
-                  <Nowrap>
-                    =
-                    <FormatMoney
-                      approximation={
-                        totalSumInAccountDefaultCurrency.hasConversion
-                      }
-                      amount={totalSumInAccountDefaultCurrency.amount}
-                      symbol={account.defaultCurrency.symbol}
-                    />
-                  </Nowrap>
-                </strong>
-              </td>
-            </Summary>
+            <Summary booked={booked} account={account} summary={summary} />
             {Object.keys(spendingsByCategory)
               .sort()
               .map(cat => (
                 <React.Fragment key={cat}>
-                  <Summary>
+                  <SummaryRow>
                     <th colSpan={booked ? 2 : 3}>{cat}</th>
                     {/* FIXME: Re-implement sum by category */}
                     <th className="amount">
@@ -168,7 +91,7 @@ export const SpendingsList = ({
                         symbol={account.defaultCurrency.symbol}
                       />
                     </th>
-                  </Summary>
+                  </SummaryRow>
                   {spendingsByCategory[cat].spendings.map(
                     ({
                       description,

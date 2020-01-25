@@ -11,6 +11,7 @@ import { fetchExchangeRate } from '../ExchangeRates/fetchExchangeRate';
 import { EUR } from '../currency/currencies';
 import styled from 'styled-components';
 import { wideBreakpoint } from '../Styles';
+import { summarizeSpendings } from './Summary';
 
 const SpendingsSection = styled.section`
   & + & {
@@ -141,6 +142,16 @@ export const SpendingsByCategory = ({
     );
   }
 
+  const pendingSummary = summarizeSpendings({
+    account,
+    spendingsByCategory: categorizedSpendings.pending
+  });
+  const bookedSummary = summarizeSpendings({
+    account,
+    spendingsByCategory: categorizedSpendings.booked,
+    totalPendingInAccountDefaultCurrency:
+      pendingSummary.totalSumInAccountDefaultCurrency
+  });
   return (
     <>
       <SpendingsSection>
@@ -164,6 +175,7 @@ export const SpendingsByCategory = ({
               // FIXME: Implement refresh
             }}
             booked={true}
+            summary={bookedSummary}
           />
         ) : null}
       </SpendingsSection>
@@ -187,6 +199,7 @@ export const SpendingsByCategory = ({
               // FIXME: Implement refresh
             }}
             booked={false}
+            summary={pendingSummary}
           />
         ) : null}
       </SpendingsSection>
