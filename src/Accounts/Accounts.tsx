@@ -43,7 +43,8 @@ const totalAccountSavingsInEUR = (
   client: ApolloClient<NormalizedCacheObject>
 ) => async (account: Account): Promise<AccountTotal> => {
   const { startDate, endDate } = allTime();
-  const res = client.readQuery<{ spendings: { items: Spending[] } }>({
+  const res = await client.query<{ spendings: { items: Spending[] } }>({
+    fetchPolicy: 'cache-first',
     query: spendingsQuery,
     variables: {
       accountId: account._meta.id,
@@ -60,7 +61,7 @@ const totalAccountSavingsInEUR = (
   if (!res) return total;
 
   // Warn if multiple currencies
-  const currencies = res.spendings.items.reduce(
+  const currencies = res.data.spendings.items.reduce(
     (currencies, { currency: { id } }) => ({
       ...currencies,
       [id]: true
@@ -81,7 +82,7 @@ const totalAccountSavingsInEUR = (
     return total;
   }
 
-  const totalInAccountCurrency = res.spendings.items.reduce(
+  const totalInAccountCurrency = res.data.spendings.items.reduce(
     (total, spending) => {
       if (spending.currency.id !== EUR.id) {
         total.hasNonEUR = true;
