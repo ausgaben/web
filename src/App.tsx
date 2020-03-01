@@ -127,7 +127,7 @@ const Logo = styled.img`
 `;
 
 const App = ({ authData }: { authData: CognitoUser }) => {
-  const [identityId, setIdentityId] = useState();
+  const [identityId, setIdentityId] = useState<string>();
 
   useEffect(() => {
     Auth.currentCredentials().then(({ identityId }) => {
