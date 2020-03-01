@@ -126,19 +126,22 @@ export const SpendingsByCategory = ({
 
   if (!spendings.length) {
     return (
-      <Card>
-        <ListingHeader
-          title={'Booked'}
-          refetch={refetch}
-          next={next}
-          nextMonth={nextMonth}
-          prevMonth={prevMonth}
-          startDate={startDate}
-        />
-        <CardBody>
-          <Note>No spendings found.</Note>
-        </CardBody>
-      </Card>
+      <>
+        <Info account={account} />
+        <Card>
+          <ListingHeader
+            title={'Booked'}
+            refetch={refetch}
+            next={next}
+            nextMonth={nextMonth}
+            prevMonth={prevMonth}
+            startDate={startDate}
+          />
+          <CardBody>
+            <Note>No spendings found.</Note>
+          </CardBody>
+        </Card>
+      </>
     );
   }
 
