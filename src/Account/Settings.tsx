@@ -27,15 +27,17 @@ export const deleteAccountQuery = gql`
   }
 `;
 
-export const updateDefaultCurrencyQuery = gql`
+export const updateAccountQuery = gql`
   mutation updateAccount(
     $accountId: ID!
-    $defaultCurrencyId: ID!
+    $name: String!
+    $defaultCurrencyId: ID
     $expectedVersion: Int!
   ) {
     updateAccount(
       accountId: $accountId
       expectedVersion: $expectedVersion
+      name: $name
       defaultCurrencyId: $defaultCurrencyId
     )
   }
@@ -55,12 +57,14 @@ export const Settings = (props: { account: Account }) => {
   const [defaultCurrencyId, setDefaultCurrencyId] = useState(
     defaultCurrency.id
   );
+  const [updatedName, setName] = useState(name);
+  const [displayName, setDisplayName] = useState(name);
 
   return (
     <Card>
       <>
         <CardHeader>
-          <CardTitle>{name}</CardTitle>
+          <CardTitle>{displayName}</CardTitle>
         </CardHeader>
         <CardBody>
           <>
@@ -75,14 +79,78 @@ export const Settings = (props: { account: Account }) => {
                 {
                   accountId: string;
                   expectedVersion: number;
-                  defaultCurrencyId: string;
+                  name: string;
+                  defaultCurrencyId?: string;
                 }
               >
-                mutation={updateDefaultCurrencyQuery}
+                mutation={updateAccountQuery}
+                update={cache => {
+                  const res = cache.readQuery<{
+                    accounts: {
+                      items: Account[];
+                    };
+                  }>({ query: accountsQuery });
+                  if (res) {
+                    const {
+                      accounts: { items: accounts }
+                    } = res;
+                    cache.writeQuery({
+                      query: accountsQuery,
+                      data: {
+                        ...res,
+                        accounts: {
+                          ...res.accounts,
+                          items: [
+                            ...accounts.filter(
+                              ({ _meta: { id: aid } }) => aid !== id
+                            ),
+                            {
+                              ...accounts.find(
+                                ({ _meta: { id: aid } }) => aid === id
+                              ),
+                              name: updatedName
+                            }
+                          ]
+                        }
+                      }
+                    });
+                  }
+                }}
               >
-                {updateDefaultCurrencyQueryMutation => (
+                {updateAccountMutation => (
                   <fieldset>
                     <legend>Settings</legend>
+                    <FormGroup>
+                      <Label for="name">Name</Label>
+                      <Input
+                        type="text"
+                        name="name"
+                        id="name"
+                        value={updatedName}
+                        onBlur={e => {
+                          const oldValue = updatedName;
+                          updateAccountMutation({
+                            variables: {
+                              accountId: id,
+                              expectedVersion: version,
+                              name: e.target.value
+                            }
+                          }).then(
+                            ({ errors }: { errors?: GraphQLError[] } | any) => {
+                              if (errors) {
+                                setError(errors[0].message);
+                                setName(oldValue);
+                              } else {
+                                setDisplayName(updatedName);
+                              }
+                            }
+                          );
+                        }}
+                        onChange={e => {
+                          setName(e.target.value);
+                        }}
+                      />
+                    </FormGroup>
                     <FormGroup>
                       <Label for="defaultCurrency">Default Currency</Label>
                       <Input
@@ -93,9 +161,10 @@ export const Settings = (props: { account: Account }) => {
                         onChange={e => {
                           const oldValue = defaultCurrencyId;
                           setDefaultCurrencyId(e.target.value);
-                          updateDefaultCurrencyQueryMutation({
+                          updateAccountMutation({
                             variables: {
                               accountId: id,
+                              name: updatedName,
                               defaultCurrencyId: e.target.value,
                               expectedVersion: version
                             }
