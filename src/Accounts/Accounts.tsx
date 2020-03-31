@@ -7,7 +7,7 @@ import { Account, Spending, Currency } from '../schema';
 import {
   accountsQuery,
   Accounts as AccountsQueryResult,
-  toAccount
+  toAccount,
 } from '../graphql/queries/accountsQuery';
 import { ListingHeader } from '../ListingHeader/ListingHeader';
 import { FormatMoney } from '../util/date/FormatMoney';
@@ -44,18 +44,18 @@ const totalAccountSavingsInEUR = (
 ) => async (account: Account): Promise<AccountTotal> => {
   const { startDate, endDate } = allTime();
   const res = await client.query<{ spendings: { items: Spending[] } }>({
-    fetchPolicy: 'cache-first',
+    fetchPolicy: 'no-cache',
     query: spendingsQuery,
     variables: {
       accountId: account._meta.id,
       startDate: startDate.toISO(),
-      endDate: endDate.toISO()
-    }
+      endDate: endDate.toISO(),
+    },
   });
 
   const total: AccountTotal = {
     totalSavingsInEUR: 0,
-    hasConversion: false
+    hasConversion: false,
   };
 
   if (!res) return total;
@@ -64,7 +64,7 @@ const totalAccountSavingsInEUR = (
   const currencies = res.data.spendings.items.reduce(
     (currencies, { currency: { id } }) => ({
       ...currencies,
-      [id]: true
+      [id]: true,
     }),
     {} as { [key: string]: boolean }
   );
@@ -96,7 +96,7 @@ const totalAccountSavingsInEUR = (
   if (!totalInAccountCurrency.hasNonEUR) {
     return {
       hasConversion: false,
-      totalSavingsInEUR: totalInAccountCurrency.totalSavings
+      totalSavingsInEUR: totalInAccountCurrency.totalSavings,
     };
   }
 
@@ -109,18 +109,18 @@ const totalAccountSavingsInEUR = (
 
   return {
     hasConversion: true,
-    totalSavingsInEUR: totalInAccountCurrency.totalSavings * exchangeRate
+    totalSavingsInEUR: totalInAccountCurrency.totalSavings * exchangeRate,
   };
 };
 
 export const Accounts = () => {
   const [accounts, setAccounts] = useState<{
-    items: {
-      totalSavingsInEUR?: AccountTotal;
-      account: Account;
-    }[];
+    items: Account[];
     nextStartKey?: any;
   }>({ items: [] });
+  const [totals, setTotals] = useState<{
+    [key: string]: AccountTotal;
+  }>({});
   const [loading, setLoading] = useState<boolean>(true);
   const [nextStartKey, setNextStartKey] = useState<any>();
 
@@ -130,52 +130,38 @@ export const Accounts = () => {
     client
       .query<AccountsQueryResult>({
         query: accountsQuery,
-        fetchPolicy: 'cache-first',
+        fetchPolicy: 'no-cache',
         variables: {
-          startKey: nextStartKey
-        }
+          startKey: nextStartKey,
+        },
       })
       .then(
         async ({
           data: {
-            accounts: { items, nextStartKey }
-          }
+            accounts: { items, nextStartKey },
+          },
         }) => {
-          const savingsAccountsWithTotalsInEUR = [] as {
-            totalSavingsInEUR: AccountTotal;
-            account: Account;
-          }[];
-
-          await items
-            .filter(({ isSavingsAccount }) => isSavingsAccount)
-            .reduce(
-              (p, accountItem) =>
-                p.then(async () => {
-                  const account = toAccount(accountItem);
-                  const total = await totalAccountSavings(account);
-                  savingsAccountsWithTotalsInEUR.push({
-                    totalSavingsInEUR: total,
-                    account
-                  });
-                }),
-              Promise.resolve()
-            );
+          Promise.all(
+            items
+              .filter(({ isSavingsAccount }) => isSavingsAccount)
+              .map(toAccount)
+              .map(async (account) => {
+                const total = await totalAccountSavings(account);
+                setTotals((totals) => ({
+                  ...totals,
+                  [account._meta.id]: total,
+                }));
+              })
+          );
 
           setAccounts({
-            items: [
-              ...items
-                .filter(({ isSavingsAccount }) => !isSavingsAccount)
-                .map(accountItem => ({
-                  account: toAccount(accountItem)
-                })),
-              ...savingsAccountsWithTotalsInEUR
-            ],
-            nextStartKey
+            items: items.map(toAccount),
+            nextStartKey,
           });
           setLoading(false);
         }
       )
-      .catch(err => {
+      .catch((err) => {
         console.error(err);
         setLoading(false);
       });
@@ -204,52 +190,65 @@ export const Accounts = () => {
         <>
           <ListingHeader
             title={'Accounts'}
-            refetch={() => {
-              // FIXME: Implement
-              setNextStartKey(undefined);
-            }}
-            next={() => {
-              setNextStartKey(accounts.nextStartKey);
-            }}
+            refetch={
+              accounts.nextStartKey
+                ? () => {
+                    // FIXME: Implement
+                    setNextStartKey(undefined);
+                  }
+                : undefined
+            }
+            next={
+              accounts.nextStartKey
+                ? () => {
+                    setNextStartKey(accounts.nextStartKey);
+                  }
+                : undefined
+            }
           >
             <Link to="/new/account">Add account</Link>
           </ListingHeader>
           <AccountsTable>
             <tbody>
-              {accounts.items.map(({ account, totalSavingsInEUR }) => (
-                <tr key={account._meta.id}>
-                  <td>
-                    <Link to={`/account/${account._meta.id}`}>
-                      {account.name}
-                    </Link>
-                  </td>
-                  {account.isSavingsAccount && totalSavingsInEUR && (
-                    <td className="amount">
-                      <FormatMoney
-                        approximation={totalSavingsInEUR.hasConversion}
-                        amount={totalSavingsInEUR.totalSavingsInEUR}
-                        symbol={currenciesById.EUR.symbol}
-                      />
+              {accounts.items.map((account) => {
+                const totalSavingsInEUR = totals[account._meta.id];
+                return (
+                  <tr key={account._meta.id}>
+                    <td>
+                      <Link to={`/account/${account._meta.id}`}>
+                        {account.name}
+                      </Link>
                     </td>
-                  )}
-                  {!account.isSavingsAccount && <td className="amount">—</td>}
-                </tr>
-              ))}
+                    {account.isSavingsAccount && totalSavingsInEUR && (
+                      <td className="amount">
+                        <FormatMoney
+                          approximation={totalSavingsInEUR.hasConversion}
+                          amount={totalSavingsInEUR.totalSavingsInEUR}
+                          symbol={currenciesById.EUR.symbol}
+                        />
+                      </td>
+                    )}
+                    {(!account.isSavingsAccount || !totalSavingsInEUR) && (
+                      <td className="amount">—</td>
+                    )}
+                  </tr>
+                );
+              })}
             </tbody>
             <tfoot>
               <tr>
                 <th>Total</th>
                 <th className="amount">
                   <FormatMoney
-                    approximation={accounts.items.reduce(
-                      (hasConversion, { totalSavingsInEUR }) =>
+                    approximation={Object.values(totals).reduce(
+                      (hasConversion, totalSavingsInEUR) =>
                         hasConversion
                           ? true
                           : totalSavingsInEUR?.hasConversion ?? false,
                       false as boolean
                     )}
-                    amount={accounts.items.reduce(
-                      (sum, { totalSavingsInEUR }) =>
+                    amount={Object.values(totals).reduce(
+                      (sum, totalSavingsInEUR) =>
                         sum + (totalSavingsInEUR?.totalSavingsInEUR ?? 0),
                       0
                     )}

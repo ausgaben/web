@@ -24,10 +24,10 @@ export const ListingHeader = ({
   children,
   prevMonth,
   nextMonth,
-  startDate
+  startDate,
 }: {
   title: string;
-  refetch: () => void;
+  refetch?: () => void;
   next?: () => void;
   prevMonth?: () => void;
   nextMonth?: () => void;
@@ -48,15 +48,17 @@ export const ListingHeader = ({
         next
       </Button>
     )}
-    <Button
-      outline
-      color={'secondary'}
-      onClick={() => {
-        refetch();
-      }}
-    >
-      refresh
-    </Button>
+    {refetch && (
+      <Button
+        outline
+        color={'secondary'}
+        onClick={() => {
+          refetch();
+        }}
+      >
+        refresh
+      </Button>
+    )}
     {startDate && (prevMonth || nextMonth) && (
       <DateRangeNav>
         {prevMonth && (

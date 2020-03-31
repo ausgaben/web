@@ -8,14 +8,18 @@ import { RouteComponentProps } from 'react-router-dom';
 
 export const WithAccount = ({
   match: {
-    params: { accountId }
+    params: { accountId },
   },
-  children
+  children,
 }: {
   children: (account: Account) => React.ReactElement;
 } & RouteComponentProps<{ accountId: string }>) => {
   return (
-    <Query query={accountQuery} variables={{ accountId }}>
+    <Query
+      query={accountQuery}
+      variables={{ accountId }}
+      fetchPolicy={'no-cache'}
+    >
       {({ data, loading, error }: any) => {
         if (error) {
           return (
