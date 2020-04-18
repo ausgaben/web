@@ -27,7 +27,7 @@
     "aws-amplify": "^2.3.0",
     "aws-amplify-react": "^3.1.9",
     "aws-appsync": "^3.0.2",
-    "aws-appsync-auth-link": "^2.0.1",
+    "aws-appsync-auth-link": "^2.0.2",
     "aws-appsync-subscription-link": "^2.0.1",
     "bootstrap": "^4.4.1",
     "classnames": "^2.2.6",
