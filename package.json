@@ -58,6 +58,7 @@
     "lint-staged": "^10.1.5",
     "prettier": "^2.0.4",
     "react-scripts": "^3.4.1",
+    "tslib": "^1.11.1",
     "typescript": "^3.8.3"
   },
   "lint-staged": {
