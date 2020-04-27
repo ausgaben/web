@@ -9,13 +9,13 @@ import {
   NavItem,
   Button,
   NavbarToggler,
-  Collapse
+  Collapse,
 } from 'reactstrap';
 import {
   BrowserRouter as Router,
   Route,
   Link,
-  Redirect
+  Redirect,
 } from 'react-router-dom';
 import { AccountsPage } from './Accounts/Page';
 import { AboutPage } from './About/Page';
@@ -26,7 +26,7 @@ import { ApolloProvider } from 'react-apollo';
 import { createClient } from './Apollo/createClient';
 import {
   AddSpendingPage,
-  EditSpendingPage
+  EditSpendingPage,
 } from './Account/AccountSpendingPage';
 import { Page as SpendingPage } from './Spending/Page';
 import { Page as ExchangeRatesPage } from './ExchangeRates/Page';
@@ -37,14 +37,16 @@ import { GlobalStyle, mobileBreakpoint, wideBreakpoint } from './Styles';
 import { BootstrapStyles } from './BootstrapStyles';
 import * as Sentry from '@sentry/browser';
 
+import '@aws-amplify/ui/dist/style.css';
+
 Amplify.configure({
   Auth: {
     identityPoolId: process.env.REACT_APP_AWS_COGNITO_IDENTITYPOOL_ID,
     region: process.env.REACT_APP_AWS_REGION,
     userPoolId: process.env.REACT_APP_AWS_COGNITO_USERPOOL_ID,
     userPoolWebClientId: process.env.REACT_APP_AWS_USERPOOL_WEBCLIENT_ID,
-    mandatorySignIn: true
-  }
+    mandatorySignIn: true,
+  },
 });
 
 const sentryDsn = process.env.REACT_APP_SENTRY_DSN;
@@ -53,7 +55,7 @@ const netlifyCommitRef = process.env.COMMIT_REF;
 if (sentryDsn) {
   Sentry.init({
     dsn: sentryDsn,
-    ...(netlifyCommitRef ? { release: netlifyCommitRef } : {})
+    ...(netlifyCommitRef ? { release: netlifyCommitRef } : {}),
   });
 }
 export const client = createClient();
