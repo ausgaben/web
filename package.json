@@ -33,7 +33,7 @@
     "aws-appsync-subscription-link": "^1.0.1",
     "bootstrap": "^4.4.1",
     "classnames": "^2.2.6",
-    "graphql": "^15.0.0",
+    "graphql": "^15.2.0",
     "graphql-tag": "^2.10.3",
     "luxon": "^1.23.0",
     "react": "^16.13.1",
