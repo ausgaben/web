@@ -27,6 +27,5 @@ export type Spending = {
   amount: number;
   currency: Currency;
   booked: boolean;
-  paidWith?: string;
   _meta: EntityMeta;
 };

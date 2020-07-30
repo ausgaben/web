@@ -9,7 +9,6 @@ export const editSpendingMutation = gql`
     $description: String!
     $amount: Int!
     $currencyId: ID!
-    $paidWith: String
   ) {
     editSpending(
       spendingId: $spendingId
@@ -19,7 +18,6 @@ export const editSpendingMutation = gql`
       description: $description
       amount: $amount
       currencyId: $currencyId
-      paidWith: $paidWith
     ) {
       version
     }

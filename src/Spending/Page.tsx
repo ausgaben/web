@@ -103,8 +103,6 @@ export const Page = (props: routeProps) => {
                                 }
                               />
                             </dd>
-                            <dt>Paid with</dt>
-                            <dd>{spending.paidWith}</dd>
                             <dt>Booked?</dt>
                             <dd>{spending.booked ? 'Yes' : 'No'}</dd>
                           </dl>

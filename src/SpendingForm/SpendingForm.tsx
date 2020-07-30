@@ -42,7 +42,6 @@ type SpendingMutationVariables = {
   amount: number;
   currencyId: string;
   booked: boolean;
-  paidWith?: string;
 };
 
 export const CreateSpendingForm = (props: {
@@ -98,7 +97,6 @@ export const EditSpendingForm = (props: {
       amount: number;
       currencyId: string;
       booked: boolean;
-      paidWith?: string;
     }
   >
     mutation={editSpendingMutation}
@@ -172,9 +170,6 @@ const FormForSpending = <T extends MutationFunction>({
     spending ? spending.amount > 0 : false
   );
 
-  const [paidWith, setPaidWith] = useState(
-    spending ? `${spending.paidWith}` : ''
-  );
   const [amountWholeInput, setAmountWholeInput] = useState(
     spending ? Math.floor(Math.abs(spending.amount) / 100) : ''
   );
@@ -378,18 +373,6 @@ const FormForSpending = <T extends MutationFunction>({
                   </Button>
                 </ButtonGroup>
               </FormGroup>
-              <FormGroup className="oneLine">
-                <Label for="paidWith">paid with</Label>
-                <ValueSelector
-                  value={paidWith}
-                  values={autoCompleteStrings.paidWith}
-                  disabled={loading}
-                  onSelect={(value) => setPaidWith(value ? value : '')}
-                  onAdd={(value) => {
-                    setPaidWith(value);
-                  }}
-                />
-              </FormGroup>
             </CardBody>
             <CardFooter>
               <Link to={`/account/${account._meta.id}`}>⬅</Link>
@@ -409,7 +392,6 @@ const FormForSpending = <T extends MutationFunction>({
                       amount: isIncome ? amount : -amount,
                       currencyId: currency,
                       booked,
-                      ...(paidWith.length && { paidWith }),
                     },
                   });
                   if (res && !res.errors) {

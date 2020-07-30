@@ -9,7 +9,6 @@ export const WithAccountAutoCompleteStrings = (props: {
   children: (args: {
     autoCompleteStrings: {
       category: string[];
-      paidWith: string[];
       categories: {
         [category: string]: string[];
       };
@@ -45,12 +44,9 @@ export const WithAccountAutoCompleteStrings = (props: {
 
   const categoryStrings = strings.find(({ field }) => field === 'category');
 
-  const paidWithStrings = strings.find(({ field }) => field === 'paidWith');
-
   return children({
     autoCompleteStrings: {
       category: categoryStrings ? categoryStrings.strings : [],
-      paidWith: paidWithStrings ? paidWithStrings.strings : [],
       categories: strings.reduce((categories, cat) => {
         if (/^category:.+/.test(cat.field)) {
           const category = cat.field.split(':', 2)[1];

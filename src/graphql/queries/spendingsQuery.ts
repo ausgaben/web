@@ -27,7 +27,6 @@ export const spendingsQuery = gql`
           id
           symbol
         }
-        paidWith
       }
       nextStartKey
     }
