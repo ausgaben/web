@@ -1,7 +1,7 @@
-import { Button, CardHeader, CardTitle } from 'reactstrap';
-import React from 'react';
-import { DateTime } from 'luxon';
-import styled from 'styled-components';
+import { Button, CardHeader, CardTitle } from "reactstrap";
+import React from "react";
+import { DateTime } from "luxon";
+import styled from "styled-components";
 
 const DateRangeNav = styled.nav`
   display: flex;
@@ -40,7 +40,7 @@ export const ListingHeader = ({
     {next && (
       <Button
         outline
-        color={'secondary'}
+        color={"secondary"}
         onClick={() => {
           next();
         }}
@@ -51,7 +51,7 @@ export const ListingHeader = ({
     {refetch && (
       <Button
         outline
-        color={'secondary'}
+        color={"secondary"}
         onClick={() => {
           refetch();
         }}
@@ -64,7 +64,7 @@ export const ListingHeader = ({
         {prevMonth && (
           <DateRangeButton
             outline
-            color={'secondary'}
+            color={"secondary"}
             onClick={() => {
               prevMonth();
             }}
@@ -72,11 +72,11 @@ export const ListingHeader = ({
             &lt;
           </DateRangeButton>
         )}
-        {startDate.toFormat('LL.yyyy')}
+        {startDate.toFormat("LL.yyyy")}
         {nextMonth && (
           <DateRangeButton
             outline
-            color={'secondary'}
+            color={"secondary"}
             onClick={() => {
               nextMonth();
             }}

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState } from "react";
 import {
   Button,
   ButtonGroup,
@@ -18,21 +18,21 @@ import {
   InputGroupButtonDropdown,
   InputGroupText,
   Label,
-} from 'reactstrap';
-import { Fail, Note } from '../Note/Note';
-import { Account, Spending } from '../schema';
-import { Mutation } from '@apollo/react-components';
-import { MutationFunction } from '@apollo/react-common';
-import { ApolloError } from 'apollo-client';
-import { currencies, NOK } from '../currency/currencies';
-import { Cache } from 'aws-amplify';
-import { ValueSelector } from '../ValueSelector/ValueSelector';
-import { Link } from 'react-router-dom';
-import { createSpendingMutation } from '../graphql/mutations/createSpending';
-import { editSpendingMutation } from '../graphql/mutations/editSpending';
-import { WithAccountAutoCompleteStrings } from '../AutoComplete/WithAccountAutoCompleteStrings';
-import { Loading } from '../Loading/Loading';
-import { AutoComplete } from '../AutoComplete/AutoComplete';
+} from "reactstrap";
+import { Fail, Note } from "../Note/Note";
+import { Account, Spending } from "../schema";
+import { Mutation } from "@apollo/react-components";
+import { MutationFunction } from "@apollo/react-common";
+import { ApolloError } from "apollo-client";
+import { currencies, NOK } from "../currency/currencies";
+import { Cache } from "aws-amplify";
+import { ValueSelector } from "../ValueSelector/ValueSelector";
+import { Link } from "react-router-dom";
+import { createSpendingMutation } from "../graphql/mutations/createSpending";
+import { editSpendingMutation } from "../graphql/mutations/editSpending";
+import { WithAccountAutoCompleteStrings } from "../AutoComplete/WithAccountAutoCompleteStrings";
+import { Loading } from "../Loading/Loading";
+import { AutoComplete } from "../AutoComplete/AutoComplete";
 
 type SpendingMutationVariables = {
   accountId: string;
@@ -63,18 +63,18 @@ export const CreateSpendingForm = (props: {
         spending={props.spending}
         account={props.account}
         onSubmit={createSpendingMutation}
-        buttonLabel={'Add'}
+        buttonLabel={"Add"}
         titleLabel={({ isIncome }) => (
           <>
-            Add {isIncome ? 'income' : 'spending'} to{' '}
+            Add {isIncome ? "income" : "spending"} to{" "}
             <em>{props.account.name}</em>
           </>
         )}
         successLabel={({ isIncome }) => (
-          <>{isIncome ? 'Income' : 'Spending'} added.</>
+          <>{isIncome ? "Income" : "Spending"} added.</>
         )}
         errorLabel={({ isIncome }) => (
-          <>Adding {isIncome ? 'Income' : 'Spending'} failed.</>
+          <>Adding {isIncome ? "Income" : "Spending"} failed.</>
         )}
       />
     )}
@@ -116,18 +116,18 @@ export const EditSpendingForm = (props: {
             },
           })
         }
-        buttonLabel={'Save'}
+        buttonLabel={"Save"}
         titleLabel={({ isIncome }) => (
           <>
-            Edit {isIncome ? 'income' : 'spending'} in{' '}
+            Edit {isIncome ? "income" : "spending"} in{" "}
             <em>{props.account.name}</em>
           </>
         )}
         successLabel={({ isIncome }) => (
-          <>{isIncome ? 'Income' : 'Spending'} updated.</>
+          <>{isIncome ? "Income" : "Spending"} updated.</>
         )}
         errorLabel={({ isIncome }) => (
-          <>Updating {isIncome ? 'Income' : 'Spending'} failed.</>
+          <>Updating {isIncome ? "Income" : "Spending"} failed.</>
         )}
       />
     )}
@@ -161,9 +161,9 @@ const FormForSpending = <T extends MutationFunction>({
   const [bookedAt, setBookedAt] = useState(
     spending ? new Date(spending.bookedAt) : new Date()
   );
-  const [category, setCategory] = useState(spending ? spending.category : '');
+  const [category, setCategory] = useState(spending ? spending.category : "");
   const [description, setDescription] = useState(
-    spending ? spending.description : ''
+    spending ? spending.description : ""
   );
 
   const [isIncome, setIsIncome] = useState(
@@ -171,10 +171,10 @@ const FormForSpending = <T extends MutationFunction>({
   );
 
   const [amountWholeInput, setAmountWholeInput] = useState(
-    spending ? Math.floor(Math.abs(spending.amount) / 100) : ''
+    spending ? Math.floor(Math.abs(spending.amount) / 100) : ""
   );
   const [amountFractionInput, setAmountFractionInput] = useState(
-    spending ? Math.abs(spending.amount % 100) : ''
+    spending ? Math.abs(spending.amount % 100) : ""
   );
   const amountWhole = useRef(
     spending ? Math.floor(Math.abs(spending.amount) / 100) : 0
@@ -183,7 +183,7 @@ const FormForSpending = <T extends MutationFunction>({
   const [currency, setCurrency] = useState(
     spending
       ? spending.currency.id
-      : Cache.getItem('addSpending.currency') || NOK.id
+      : Cache.getItem("addSpending.currency") || NOK.id
   );
   const [currencyDropdownOpen, setCurrencyDropdownOpen] = useState(false);
 
@@ -192,9 +192,9 @@ const FormForSpending = <T extends MutationFunction>({
   const isValid = category.length && description.length && amount > 0;
 
   const reset = () => {
-    setDescription('');
-    setAmountWholeInput('');
-    setAmountFractionInput('');
+    setDescription("");
+    setAmountWholeInput("");
+    setAmountFractionInput("");
     amountWhole.current = 0;
     amountFraction.current = 0;
   };
@@ -301,7 +301,7 @@ const FormForSpending = <T extends MutationFunction>({
                             key={id}
                             onClick={() => {
                               setCurrency(id);
-                              Cache.setItem('addSpending.currency', id);
+                              Cache.setItem("addSpending.currency", id);
                             }}
                           >
                             {id}
@@ -320,7 +320,7 @@ const FormForSpending = <T extends MutationFunction>({
                       placeholder="e.g. '27'"
                       required
                       onChange={({ target: { value } }) => {
-                        const v = value.replace(/[^0-9]/g, '');
+                        const v = value.replace(/[^0-9]/g, "");
                         setAmountWholeInput(v);
                         amountWhole.current = Math.abs(+v);
                       }}
@@ -343,7 +343,7 @@ const FormForSpending = <T extends MutationFunction>({
                       width={2}
                       value={amountFractionInput}
                       onChange={({ target: { value } }) => {
-                        const v = value.replace(/[^0-9]/g, '');
+                        const v = value.replace(/[^0-9]/g, "");
                         setAmountFractionInput(v);
                         amountFraction.current = Math.abs(
                           +`${v}00`.slice(0, 2)

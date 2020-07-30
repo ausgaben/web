@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Button,
   Input,
@@ -6,11 +6,11 @@ import {
   InputGroupAddon,
   Label,
   FormGroup,
-} from 'reactstrap';
-import gql from 'graphql-tag';
-import { Account } from '../schema';
-import { Mutation } from 'react-apollo';
-import { MutationFunction } from '@apollo/react-common';
+} from "reactstrap";
+import gql from "graphql-tag";
+import { Account } from "../schema";
+import { Mutation } from "react-apollo";
+import { MutationFunction } from "@apollo/react-common";
 
 export const inviteUserMutation = gql`
   mutation inviteUser($accountId: ID!, $userId: ID!) {
@@ -21,7 +21,7 @@ export const inviteUserMutation = gql`
 `;
 
 export const InviteUserToAccount = (props: { account: Account }) => {
-  const [userId, setUserId] = useState('');
+  const [userId, setUserId] = useState("");
   return (
     <Mutation mutation={inviteUserMutation}>
       {(inviteUserMutation: MutationFunction) => (
@@ -41,7 +41,7 @@ export const InviteUserToAccount = (props: { account: Account }) => {
                   color="primary"
                   disabled={userId.length === 0}
                   onClick={async () => {
-                    setUserId('');
+                    setUserId("");
                     inviteUserMutation({
                       variables: {
                         accountId: props.account._meta.id,

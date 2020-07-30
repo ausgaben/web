@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Button,
   Card,
@@ -10,11 +10,11 @@ import {
   Input,
   Label,
   CardFooter,
-} from 'reactstrap';
-import gql from 'graphql-tag';
-import { Mutation } from '@apollo/react-components';
-import { accountsQuery } from '../graphql/queries/accountsQuery';
-import { Account } from '../schema';
+} from "reactstrap";
+import gql from "graphql-tag";
+import { Mutation } from "@apollo/react-components";
+import { accountsQuery } from "../graphql/queries/accountsQuery";
+import { Account } from "../schema";
 
 export const createAccountQuery = gql`
   mutation createAccount($name: String!, $isSavingsAccount: Boolean!) {
@@ -25,12 +25,12 @@ export const createAccountQuery = gql`
 `;
 
 export const CreateAccount = () => {
-  const [name, setName] = useState('');
+  const [name, setName] = useState("");
   const [isSavingsAccount, setIsSavingsAccount] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   const reset = () => {
-    setName('');
+    setName("");
     setIsSavingsAccount(false);
     setSubmitting(false);
   };
@@ -73,9 +73,9 @@ export const CreateAccount = () => {
                     isSavingsAccount,
                     _meta: {
                       id,
-                      __typename: 'EntityMeta',
+                      __typename: "EntityMeta",
                     },
-                    __typename: 'Account',
+                    __typename: "Account",
                   },
                 ],
               },
@@ -112,7 +112,7 @@ export const CreateAccount = () => {
                     type="checkbox"
                     checked={isSavingsAccount}
                     onChange={() => setIsSavingsAccount(!isSavingsAccount)}
-                  />{' '}
+                  />{" "}
                   This is a savings account
                 </Label>
               </FormGroup>
@@ -131,9 +131,9 @@ export const CreateAccount = () => {
                 }}
               >
                 {(() => {
-                  if (submitting) return 'Adding ...';
-                  if (isSavingsAccount) return 'Add savings account';
-                  return 'Add spendings account';
+                  if (submitting) return "Adding ...";
+                  if (isSavingsAccount) return "Add savings account";
+                  return "Add spendings account";
                 })()}
               </Button>
             </CardFooter>

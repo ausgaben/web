@@ -1,9 +1,9 @@
-import React from 'react';
-import { Spendings } from '../Spendings/Spendings';
-import { WithAccount } from '../Accounts/WithAccount';
-import styled from 'styled-components';
-import { wideBreakpoint } from '../Styles';
-import { Main } from '../Styles';
+import React from "react";
+import { Spendings } from "../Spendings/Spendings";
+import { WithAccount } from "../Accounts/WithAccount";
+import styled from "styled-components";
+import { wideBreakpoint } from "../Styles";
+import { Main } from "../Styles";
 
 const AccounMain = styled(Main)`
   @media (min-width: ${wideBreakpoint}) {

@@ -1,7 +1,7 @@
-import React from 'react';
-import { Card, CardHeader, CardTitle } from 'reactstrap';
-import { Link } from 'react-router-dom';
-import { Account } from '../schema';
+import React from "react";
+import { Card, CardHeader, CardTitle } from "reactstrap";
+import { Link } from "react-router-dom";
+import { Account } from "../schema";
 
 export const Info = (props: { account: Account }) => {
   const {

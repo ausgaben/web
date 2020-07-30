@@ -1,6 +1,6 @@
-import * as React from 'react';
-import { date } from './util/date';
-import styled from 'styled-components';
+import * as React from "react";
+import { date } from "./util/date";
+import styled from "styled-components";
 
 const Time = styled.time`
   white-space: nowrap;

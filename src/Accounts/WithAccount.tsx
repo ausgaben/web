@@ -1,10 +1,10 @@
-import React from 'react';
-import { Account } from '../schema';
-import { Loading } from '../Loading/Loading';
-import { Note } from '../Note/Note';
-import { Query } from 'react-apollo';
-import { accountQuery } from '../graphql/queries/accountQuery';
-import { RouteComponentProps } from 'react-router-dom';
+import React from "react";
+import { Account } from "../schema";
+import { Loading } from "../Loading/Loading";
+import { Note } from "../Note/Note";
+import { Query } from "react-apollo";
+import { accountQuery } from "../graphql/queries/accountQuery";
+import { RouteComponentProps } from "react-router-dom";
 
 export const WithAccount = ({
   match: {
@@ -18,7 +18,7 @@ export const WithAccount = ({
     <Query
       query={accountQuery}
       variables={{ accountId }}
-      fetchPolicy={'no-cache'}
+      fetchPolicy={"no-cache"}
     >
       {({ data, loading, error }: any) => {
         if (error) {
@@ -29,7 +29,7 @@ export const WithAccount = ({
             </>
           );
         }
-        if (loading || !data) return <Loading text={'Loading account ...'} />;
+        if (loading || !data) return <Loading text={"Loading account ..."} />;
         if (data.accounts.items.length) {
           const account = data.accounts.items[0] as Account;
           return children(account);

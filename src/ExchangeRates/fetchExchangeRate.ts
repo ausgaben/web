@@ -1,10 +1,10 @@
-import { Currency } from '../schema';
-import { NormalizedCacheObject } from 'apollo-cache-inmemory';
-import ApolloClient from 'apollo-client';
+import { Currency } from "../schema";
+import { NormalizedCacheObject } from "apollo-cache-inmemory";
+import ApolloClient from "apollo-client";
 import {
   exchangeRateQuery,
   ExchangeRate,
-} from '../graphql/queries/exchangeRateQuery';
+} from "../graphql/queries/exchangeRateQuery";
 
 const exchangeconversionRates: { [key: string]: Promise<number> } = {};
 export const fetchExchangeRate = (
@@ -15,7 +15,7 @@ export const fetchExchangeRate = (
     exchangeconversionRates[k] = client
       .query<ExchangeRate>({
         query: exchangeRateQuery,
-        fetchPolicy: 'cache-first',
+        fetchPolicy: "cache-first",
         variables: { currencyId: currency.id, date: date.toISOString() },
       })
       .then((res) => res.data.exchangeRate.rate);

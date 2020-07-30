@@ -1,7 +1,7 @@
-import React from 'react';
-import { Account } from '../schema';
-import { autoCompleteStringsQuery } from '../graphql/queries/autoCompleteStringsQuery';
-import { useQuery } from '@apollo/react-hooks';
+import React from "react";
+import { Account } from "../schema";
+import { autoCompleteStringsQuery } from "../graphql/queries/autoCompleteStringsQuery";
+import { useQuery } from "@apollo/react-hooks";
 
 export const WithAccountAutoCompleteStrings = (props: {
   account: Account;
@@ -42,14 +42,14 @@ export const WithAccountAutoCompleteStrings = (props: {
     autoCompleteStrings: { field: string; strings: string[] }[];
   };
 
-  const categoryStrings = strings.find(({ field }) => field === 'category');
+  const categoryStrings = strings.find(({ field }) => field === "category");
 
   return children({
     autoCompleteStrings: {
       category: categoryStrings ? categoryStrings.strings : [],
       categories: strings.reduce((categories, cat) => {
         if (/^category:.+/.test(cat.field)) {
-          const category = cat.field.split(':', 2)[1];
+          const category = cat.field.split(":", 2)[1];
           categories[category] = cat.strings;
         }
         return categories;

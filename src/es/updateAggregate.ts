@@ -1,4 +1,4 @@
-import { EntityMeta } from '../schema';
+import { EntityMeta } from "../schema";
 
 export const updateAggregate = <
   T extends {

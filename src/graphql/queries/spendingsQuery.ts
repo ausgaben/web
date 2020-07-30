@@ -1,5 +1,5 @@
-import gql from 'graphql-tag';
-import { DateTime } from 'luxon';
+import gql from "graphql-tag";
+import { DateTime } from "luxon";
 
 export const spendingsQuery = gql`
   query spendings(
@@ -34,9 +34,9 @@ export const spendingsQuery = gql`
 `;
 
 export const month = (
-  startDate: DateTime = DateTime.local().startOf('month')
+  startDate: DateTime = DateTime.local().startOf("month")
 ) => {
-  const endDate = startDate.endOf('month');
+  const endDate = startDate.endOf("month");
   return {
     startDate,
     endDate,
@@ -45,9 +45,9 @@ export const month = (
 
 export const allTime = () => {
   const startDate = DateTime.fromJSDate(
-    new Date('2000-01-01T00:00:00')
-  ).startOf('month');
-  const endDate = DateTime.fromJSDate(new Date('2100-01-01T00:00:00'));
+    new Date("2000-01-01T00:00:00")
+  ).startOf("month");
+  const endDate = DateTime.fromJSDate(new Date("2100-01-01T00:00:00"));
   return {
     startDate,
     endDate,

@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardBody } from 'reactstrap';
-import { Account, Spending } from '../schema';
-import { ListingHeader } from '../ListingHeader/ListingHeader';
-import { Note } from '../Note/Note';
-import { Info } from '../Account/Info';
-import { DateTime } from 'luxon';
-import { SpendingsList } from './SpendingsList';
-import { client } from '../App';
-import { fetchExchangeRate } from '../ExchangeRates/fetchExchangeRate';
-import { EUR } from '../currency/currencies';
-import styled from 'styled-components';
-import { wideBreakpoint } from '../Styles';
-import { summarizeSpendings } from './Summary';
+import React, { useState, useEffect } from "react";
+import { Card, CardBody } from "reactstrap";
+import { Account, Spending } from "../schema";
+import { ListingHeader } from "../ListingHeader/ListingHeader";
+import { Note } from "../Note/Note";
+import { Info } from "../Account/Info";
+import { DateTime } from "luxon";
+import { SpendingsList } from "./SpendingsList";
+import { client } from "../App";
+import { fetchExchangeRate } from "../ExchangeRates/fetchExchangeRate";
+import { EUR } from "../currency/currencies";
+import styled from "styled-components";
+import { wideBreakpoint } from "../Styles";
+import { summarizeSpendings } from "./Summary";
 
 const SpendingsSection = styled.section`
   & + & {
@@ -75,7 +75,7 @@ export const SpendingsByCategory = ({
       .reduce(
         (p, spending) =>
           p.then(async () => {
-            const t = spending.booked ? 'booked' : 'pending';
+            const t = spending.booked ? "booked" : "pending";
             if (!spendingsByCategory[t][spending.category]) {
               spendingsByCategory[t][spending.category] = {
                 spendings: [],
@@ -130,7 +130,7 @@ export const SpendingsByCategory = ({
         <Info account={account} />
         <Card>
           <ListingHeader
-            title={'Booked'}
+            title={"Booked"}
             refetch={refetch}
             next={next}
             nextMonth={nextMonth}
@@ -164,7 +164,7 @@ export const SpendingsByCategory = ({
             spendingsByCategory={categorizedSpendings.booked}
             header={
               <ListingHeader
-                title={'Booked'}
+                title={"Booked"}
                 refetch={refetch}
                 next={next}
                 nextMonth={nextMonth}
@@ -188,7 +188,7 @@ export const SpendingsByCategory = ({
             spendingsByCategory={categorizedSpendings.pending}
             header={
               <ListingHeader
-                title={'Pending'}
+                title={"Pending"}
                 refetch={refetch}
                 next={next}
                 nextMonth={nextMonth}

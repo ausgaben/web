@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
   Button,
   Card,
@@ -10,17 +10,17 @@ import {
   FormGroup,
   Input,
   Label,
-} from 'reactstrap';
-import { Account } from '../schema';
-import { Link } from 'react-router-dom';
-import { Cache } from 'aws-amplify';
-import { currenciesById } from '../currency/currencies';
-import { FormatDate } from '../util/date/FormatDate';
-import { FormatMoney } from '../util/date/FormatMoney';
-import { DateTime } from 'luxon';
-import { client } from '../App';
-import { createSpendingMutation } from '../graphql/mutations/createSpending';
-import { SpendingsTable } from '../Spendings/SpendingsList';
+} from "reactstrap";
+import { Account } from "../schema";
+import { Link } from "react-router-dom";
+import { Cache } from "aws-amplify";
+import { currenciesById } from "../currency/currencies";
+import { FormatDate } from "../util/date/FormatDate";
+import { FormatMoney } from "../util/date/FormatMoney";
+import { DateTime } from "luxon";
+import { client } from "../App";
+import { createSpendingMutation } from "../graphql/mutations/createSpending";
+import { SpendingsTable } from "../Spendings/SpendingsList";
 
 type ParsedSpending = {
   id: string;
@@ -42,14 +42,14 @@ export const Import = (props: { account: Account }) => {
 
   const [adding, setAdding] = useState(false);
   const [importData, setImportData] = useState(
-    Cache.getItem('importSpendings.importData') || ''
+    Cache.getItem("importSpendings.importData") || ""
   );
   const [imported, setImported] = useState([] as string[]);
   const [spendingsToBeImported, setSpendingsToBeImported] = useState(
     [] as ParsedSpending[]
   );
   const spendings: ParsedSpending[] = importData
-    .split('\n')
+    .split("\n")
     .map((line: string) => {
       let [
         type,
@@ -58,7 +58,7 @@ export const Import = (props: { account: Account }) => {
         currency,
         amount,
         dayOfMonth,
-      ] = line.split('\t');
+      ] = line.split("\t");
       if (
         !type ||
         !category ||
@@ -69,11 +69,11 @@ export const Import = (props: { account: Account }) => {
       ) {
         return undefined;
       }
-      amount = amount.replace(/ €$/, '');
+      amount = amount.replace(/ €$/, "");
       const fracMatch = amount.match(/,([0-9]+)$/);
-      const fraction = (fracMatch && fracMatch[1]) || '0';
+      const fraction = (fracMatch && fracMatch[1]) || "0";
       const wholeMatch = amount.match(/^(-?[0-9.]+)/);
-      const whole = (wholeMatch && wholeMatch[1].replace('.', '')) || '0';
+      const whole = (wholeMatch && wholeMatch[1].replace(".", "")) || "0";
       const f = parseInt(whole, 10) * 100;
       let a = Math.abs(f) + parseInt(fraction, 10);
       if (a === 0) {
@@ -85,7 +85,7 @@ export const Import = (props: { account: Account }) => {
         description,
         amount: f < 0 ? -a : a,
         bookedAt: DateTime.local()
-          .startOf('month')
+          .startOf("month")
           .set({ day: parseInt(dayOfMonth, 10) }),
         currencyId: currenciesById[currency]
           ? currenciesById[currency].id
@@ -161,7 +161,7 @@ Vorsorge	Versicherungen	Allianz - Lebensversicherung	EUR	-197,86	1"
               required
               onChange={({ target: { value } }) => {
                 setImportData(value);
-                Cache.setItem('importSpendings.importData', value);
+                Cache.setItem("importSpendings.importData", value);
               }}
             />
           </FormGroup>
@@ -211,7 +211,7 @@ Vorsorge	Versicherungen	Allianz - Lebensversicherung	EUR	-197,86	1"
                               symbol={currenciesById[currencyId].symbol}
                             />
                           </td>
-                          <td>{imported.includes(id) ? '✓' : '—'}</td>
+                          <td>{imported.includes(id) ? "✓" : "—"}</td>
                         </tr>
                       )
                     )}

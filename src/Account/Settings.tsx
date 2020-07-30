@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Button,
   Card,
@@ -10,16 +10,16 @@ import {
   Label,
   Input,
   Form,
-} from 'reactstrap';
-import gql from 'graphql-tag';
-import { Fail, Note } from '../Note/Note';
-import { Account } from '../schema';
-import { Mutation } from '@apollo/react-components';
-import { accountsQuery } from '../graphql/queries/accountsQuery';
-import { GraphQLError } from 'graphql';
-import { Link } from 'react-router-dom';
-import { InviteUserToAccount } from './InviteUserToAccount';
-import { EUR, NOK } from '../currency/currencies';
+} from "reactstrap";
+import gql from "graphql-tag";
+import { Fail, Note } from "../Note/Note";
+import { Account } from "../schema";
+import { Mutation } from "@apollo/react-components";
+import { accountsQuery } from "../graphql/queries/accountsQuery";
+import { GraphQLError } from "graphql";
+import { Link } from "react-router-dom";
+import { InviteUserToAccount } from "./InviteUserToAccount";
+import { EUR, NOK } from "../currency/currencies";
 
 export const deleteAccountQuery = gql`
   mutation deleteAccount($accountId: ID!) {

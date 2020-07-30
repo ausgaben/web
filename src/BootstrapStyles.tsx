@@ -1,5 +1,5 @@
-import { createGlobalStyle } from 'styled-components';
-import { mobileBreakpoint } from './Styles';
+import { createGlobalStyle } from "styled-components";
+import { mobileBreakpoint } from "./Styles";
 
 export const BootstrapStyles = createGlobalStyle`
 form {

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Button, ButtonGroup } from 'reactstrap';
+import React, { useState } from "react";
+import { Button, ButtonGroup } from "reactstrap";
 
 export const PredefinedValueButton = ({
   value,
@@ -30,7 +30,7 @@ export const PredefinedValueButton = ({
       </Button>
       <Button
         tabIndex={-1}
-        color={confirmDelete ? 'danger' : 'info'}
+        color={confirmDelete ? "danger" : "info"}
         size="sm"
         outline={!confirmDelete}
         disabled={disabled}
@@ -48,7 +48,7 @@ export const PredefinedValueButton = ({
           }
         }}
       >
-        {!confirmDelete ? '⨯' : '⁉️'}
+        {!confirmDelete ? "⨯" : "⁉️"}
       </Button>
     </ButtonGroup>
   );

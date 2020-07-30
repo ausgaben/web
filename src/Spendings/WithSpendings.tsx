@@ -1,19 +1,19 @@
-import React, { useState } from 'react';
-import { Account, Spending } from '../schema';
+import React, { useState } from "react";
+import { Account, Spending } from "../schema";
 import {
   allTime,
   month,
   spendingsQuery,
-} from '../graphql/queries/spendingsQuery';
-import { DateTime } from 'luxon';
-import { Cache } from 'aws-amplify';
-import { useQuery } from '@apollo/react-hooks';
+} from "../graphql/queries/spendingsQuery";
+import { DateTime } from "luxon";
+import { Cache } from "aws-amplify";
+import { useQuery } from "@apollo/react-hooks";
 
 const getDateSelection = (isSavingsAccount: boolean) => {
   if (isSavingsAccount) {
     return allTime();
   }
-  const cached = Cache.getItem('withSpendings.startDate');
+  const cached = Cache.getItem("withSpendings.startDate");
   return month(cached ? DateTime.fromISO(cached) : undefined);
 };
 
@@ -72,7 +72,7 @@ export const WithSpendings = (props: {
       return refetch(variables);
     }
     if (startDate) {
-      Cache.setItem('withSpendings.startDate', startDate.toISO());
+      Cache.setItem("withSpendings.startDate", startDate.toISO());
       const { endDate } = month(startDate);
       setDateRange({
         startDate,

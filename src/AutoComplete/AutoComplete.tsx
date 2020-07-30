@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { Input, ListGroup, ListGroupItem } from 'reactstrap';
-import styled from 'styled-components';
+import React, { useState } from "react";
+import { Input, ListGroup, ListGroupItem } from "reactstrap";
+import styled from "styled-components";
 
 const AutoCompleteInput = styled.div`
   width: 100%;
@@ -59,23 +59,23 @@ export const AutoComplete = ({
         }}
         autoComplete="off"
         onKeyUp={({ key }) => {
-          if (key === 'ArrowUp') {
+          if (key === "ArrowUp") {
             setHighLight(Math.max(0, highlight - 1));
           }
-          if (key === 'PageUp') {
+          if (key === "PageUp") {
             setHighLight(0);
           }
-          if (key === 'PageDown') {
+          if (key === "PageDown") {
             setHighLight(hits.length - 1);
           }
-          if (key === 'ArrowDown') {
+          if (key === "ArrowDown") {
             setHighLight(Math.min(hits.length - 1, highlight + 1));
           }
-          if (key === 'Enter') {
+          if (key === "Enter") {
             onChange(hits[highlight]);
             setAutoCompleteHidden(true);
           }
-          if (key === 'Escape') {
+          if (key === "Escape") {
             setAutoCompleteHidden(true);
           }
         }}
@@ -92,7 +92,7 @@ export const AutoComplete = ({
           {hits.map((s, i) => (
             <ListGroupItem
               key={i}
-              color={highlight === i || value === s ? 'info' : undefined}
+              color={highlight === i || value === s ? "info" : undefined}
               onMouseEnter={() => {
                 setHighLight(i);
               }}

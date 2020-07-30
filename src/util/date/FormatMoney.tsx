@@ -1,6 +1,6 @@
-import * as React from 'react';
-import styled from 'styled-components';
-import { mobileBreakpoint } from '../../Styles';
+import * as React from "react";
+import styled from "styled-components";
+import { mobileBreakpoint } from "../../Styles";
 
 const Money = styled.span`
   white-space: nowrap;
@@ -38,9 +38,9 @@ export const FormatMoney = ({
 }) => {
   let formatted = `${Math.floor(Math.abs(Math.round(amount) / 100))
     .toString()
-    .replace(/\B(?=(\d{3})+(?!\d))/g, '.')},${`0${Math.abs(
+    .replace(/\B(?=(\d{3})+(?!\d))/g, ".")},${`0${Math.abs(
     Math.round(amount) % 100
-  )}`.slice(-2)}`.replace(/,00$/, '');
+  )}`.slice(-2)}`.replace(/,00$/, "");
   let C = Money;
   if (amount > 0) C = Income;
   if (amount < 0) C = Spending;

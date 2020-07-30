@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { PredefinedValueButton } from './PredefinedValueButton';
-import { Button, Input, InputGroup, InputGroupAddon } from 'reactstrap';
+import React, { useState } from "react";
+import { PredefinedValueButton } from "./PredefinedValueButton";
+import { Button, Input, InputGroup, InputGroupAddon } from "reactstrap";
 
 export const ValueSelector = ({
   value,
@@ -18,7 +18,7 @@ export const ValueSelector = ({
   disabled?: boolean;
 }) => {
   const [toggleAdd, setToggleAdd] = useState(values.length === 0);
-  const [newValue, setNewValue] = useState('');
+  const [newValue, setNewValue] = useState("");
   return (
     <div className="valueSelector">
       <>
@@ -82,7 +82,7 @@ export const ValueSelector = ({
                 onClick={() => {
                   onAdd(newValue.trim());
                   setToggleAdd(false);
-                  setNewValue('');
+                  setNewValue("");
                 }}
               >
                 add

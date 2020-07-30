@@ -1,9 +1,9 @@
-import React from 'react';
-import { Spending, Account } from '../schema';
-import { FormatMoney } from '../util/date/FormatMoney';
-import { SpendingsByCategory } from './SpendingsByCategory';
-import styled from 'styled-components';
-import { mobileBreakpoint } from '../Styles';
+import React from "react";
+import { Spending, Account } from "../schema";
+import { FormatMoney } from "../util/date/FormatMoney";
+import { SpendingsByCategory } from "./SpendingsByCategory";
+import styled from "styled-components";
+import { mobileBreakpoint } from "../Styles";
 
 const Nowrap = styled.span`
   white-space: nowrap;

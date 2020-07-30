@@ -1,24 +1,24 @@
-import React, { useEffect, useState } from 'react';
-import { Card, CardBody, Table } from 'reactstrap';
-import { Loading } from '../Loading/Loading';
-import { Note } from '../Note/Note';
-import { Link } from 'react-router-dom';
-import { Account, Spending, Currency } from '../schema';
+import React, { useEffect, useState } from "react";
+import { Card, CardBody, Table } from "reactstrap";
+import { Loading } from "../Loading/Loading";
+import { Note } from "../Note/Note";
+import { Link } from "react-router-dom";
+import { Account, Spending, Currency } from "../schema";
 import {
   accountsQuery,
   Accounts as AccountsQueryResult,
   toAccount,
-} from '../graphql/queries/accountsQuery';
-import { ListingHeader } from '../ListingHeader/ListingHeader';
-import { FormatMoney } from '../util/date/FormatMoney';
-import { currenciesById, EUR } from '../currency/currencies';
-import { client } from '../App';
-import { allTime, spendingsQuery } from '../graphql/queries/spendingsQuery';
-import styled from 'styled-components';
-import { mobileBreakpoint } from '../Styles';
-import { NormalizedCacheObject } from 'apollo-cache-inmemory';
-import ApolloClient from 'apollo-client';
-import { fetchExchangeRate } from '../ExchangeRates/fetchExchangeRate';
+} from "../graphql/queries/accountsQuery";
+import { ListingHeader } from "../ListingHeader/ListingHeader";
+import { FormatMoney } from "../util/date/FormatMoney";
+import { currenciesById, EUR } from "../currency/currencies";
+import { client } from "../App";
+import { allTime, spendingsQuery } from "../graphql/queries/spendingsQuery";
+import styled from "styled-components";
+import { mobileBreakpoint } from "../Styles";
+import { NormalizedCacheObject } from "apollo-cache-inmemory";
+import ApolloClient from "apollo-client";
+import { fetchExchangeRate } from "../ExchangeRates/fetchExchangeRate";
 
 const AccountsTable = styled(Table)`
   .amount {
@@ -44,7 +44,7 @@ const totalAccountSavingsInEUR = (
 ) => async (account: Account): Promise<AccountTotal> => {
   const { startDate, endDate } = allTime();
   const res = await client.query<{ spendings: { items: Spending[] } }>({
-    fetchPolicy: 'no-cache',
+    fetchPolicy: "no-cache",
     query: spendingsQuery,
     variables: {
       accountId: account._meta.id,
@@ -77,7 +77,7 @@ const totalAccountSavingsInEUR = (
       }) currencies!`
     );
     console.error(
-      'This will make the total for this account inaccurate. Returning 0.'
+      "This will make the total for this account inaccurate. Returning 0."
     );
     return total;
   }
@@ -130,7 +130,7 @@ export const Accounts = () => {
     client
       .query<AccountsQueryResult>({
         query: accountsQuery,
-        fetchPolicy: 'no-cache',
+        fetchPolicy: "no-cache",
         variables: {
           startKey: nextStartKey,
         },
@@ -177,7 +177,7 @@ export const Accounts = () => {
               // FIXME: Implement
               setNextStartKey(undefined);
             }}
-            title={'Accounts'}
+            title={"Accounts"}
           >
             <Link to="/new/account">Add account</Link>
           </ListingHeader>
@@ -189,7 +189,7 @@ export const Accounts = () => {
       {!loading && accounts.items.length && (
         <>
           <ListingHeader
-            title={'Accounts'}
+            title={"Accounts"}
             refetch={
               accounts.nextStartKey
                 ? () => {

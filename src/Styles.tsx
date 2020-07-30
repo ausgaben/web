@@ -1,8 +1,8 @@
-import styled, { createGlobalStyle } from 'styled-components';
+import styled, { createGlobalStyle } from "styled-components";
 
-export const mobileBreakpoint = '600px';
+export const mobileBreakpoint = "600px";
 
-export const wideBreakpoint = '1000px';
+export const wideBreakpoint = "1000px";
 export const Main = styled.main`
   @media (min-width: ${mobileBreakpoint}) {
     max-width: ${mobileBreakpoint};

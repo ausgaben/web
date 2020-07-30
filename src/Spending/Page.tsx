@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { Spending } from '../schema';
-import { Fail, Note } from '../Note/Note';
-import { Mutation } from '@apollo/react-components';
-import { spendingsQuery } from '../graphql/queries/spendingsQuery';
+import React, { useState } from "react";
+import { Spending } from "../schema";
+import { Fail, Note } from "../Note/Note";
+import { Mutation } from "@apollo/react-components";
+import { spendingsQuery } from "../graphql/queries/spendingsQuery";
 import {
   Button,
   Card,
@@ -10,18 +10,18 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from 'reactstrap';
-import { GraphQLError } from 'graphql';
-import { Link } from 'react-router-dom';
-import gql from 'graphql-tag';
-import { currenciesById } from '../currency/currencies';
-import { FormatMoney } from '../util/date/FormatMoney';
-import { FormatDate } from '../util/date/FormatDate';
-import { WithAccount } from '../Accounts/WithAccount';
-import { WithSpendings } from '../Spendings/WithSpendings';
-import { Loading } from '../Loading/Loading';
-import { RouteComponentProps } from 'react-router-dom';
-import { Main } from '../Styles';
+} from "reactstrap";
+import { GraphQLError } from "graphql";
+import { Link } from "react-router-dom";
+import gql from "graphql-tag";
+import { currenciesById } from "../currency/currencies";
+import { FormatMoney } from "../util/date/FormatMoney";
+import { FormatDate } from "../util/date/FormatDate";
+import { WithAccount } from "../Accounts/WithAccount";
+import { WithSpendings } from "../Spendings/WithSpendings";
+import { Loading } from "../Loading/Loading";
+import { RouteComponentProps } from "react-router-dom";
+import { Main } from "../Styles";
 
 type routeProps = RouteComponentProps<{
   accountId: string;
@@ -104,7 +104,7 @@ export const Page = (props: routeProps) => {
                               />
                             </dd>
                             <dt>Booked?</dt>
-                            <dd>{spending.booked ? 'Yes' : 'No'}</dd>
+                            <dd>{spending.booked ? "Yes" : "No"}</dd>
                           </dl>
                         </CardBody>
                         <Mutation<{}, { spendingId: string }>

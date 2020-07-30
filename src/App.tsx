@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { withAuthenticator } from 'aws-amplify-react';
-import Amplify, { Auth } from 'aws-amplify';
-import { CognitoUser } from 'amazon-cognito-identity-js';
+import React, { useState, useEffect } from "react";
+import { withAuthenticator } from "aws-amplify-react";
+import Amplify, { Auth } from "aws-amplify";
+import { CognitoUser } from "amazon-cognito-identity-js";
 import {
   Navbar,
   NavbarBrand,
@@ -10,34 +10,34 @@ import {
   Button,
   NavbarToggler,
   Collapse,
-} from 'reactstrap';
+} from "reactstrap";
 import {
   BrowserRouter as Router,
   Route,
   Link,
   Redirect,
-} from 'react-router-dom';
-import { AccountsPage } from './Accounts/Page';
-import { AboutPage } from './About/Page';
-import { CreateAccountsPage } from './CreateAccount/Page';
-import { AccountPage } from './Account/Page';
-import { AccountSettingsPage } from './Account/SettingsPage';
-import { ApolloProvider } from 'react-apollo';
-import { createClient } from './Apollo/createClient';
+} from "react-router-dom";
+import { AccountsPage } from "./Accounts/Page";
+import { AboutPage } from "./About/Page";
+import { CreateAccountsPage } from "./CreateAccount/Page";
+import { AccountPage } from "./Account/Page";
+import { AccountSettingsPage } from "./Account/SettingsPage";
+import { ApolloProvider } from "react-apollo";
+import { createClient } from "./Apollo/createClient";
 import {
   AddSpendingPage,
   EditSpendingPage,
-} from './Account/AccountSpendingPage';
-import { Page as SpendingPage } from './Spending/Page';
-import { Page as ExchangeRatesPage } from './ExchangeRates/Page';
-import logo from './logo.svg';
-import { AccountImportPage } from './Account/ImportPage';
-import styled from 'styled-components';
-import { GlobalStyle, mobileBreakpoint, wideBreakpoint } from './Styles';
-import { BootstrapStyles } from './BootstrapStyles';
-import * as Sentry from '@sentry/browser';
+} from "./Account/AccountSpendingPage";
+import { Page as SpendingPage } from "./Spending/Page";
+import { Page as ExchangeRatesPage } from "./ExchangeRates/Page";
+import logo from "./logo.svg";
+import { AccountImportPage } from "./Account/ImportPage";
+import styled from "styled-components";
+import { GlobalStyle, mobileBreakpoint, wideBreakpoint } from "./Styles";
+import { BootstrapStyles } from "./BootstrapStyles";
+import * as Sentry from "@sentry/browser";
 
-import '@aws-amplify/ui/dist/style.css';
+import "@aws-amplify/ui/dist/style.css";
 
 Amplify.configure({
   Auth: {

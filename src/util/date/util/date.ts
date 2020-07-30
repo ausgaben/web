@@ -1,4 +1,4 @@
-import { DateTime } from 'luxon';
+import { DateTime } from "luxon";
 
 const dateFormat = (value: Date, opts: { locale: string; format: string }) => {
   const d = DateTime.fromJSDate(value);
@@ -8,7 +8,7 @@ const dateFormat = (value: Date, opts: { locale: string; format: string }) => {
 export const date = (date: Date, opts?: { locale?: string }) =>
   dateFormat(date, {
     ...opts,
-    locale: 'de',
+    locale: "de",
     format:
-      date.getFullYear() === new Date().getFullYear() ? 'd.L.' : 'd.L.yyyy',
+      date.getFullYear() === new Date().getFullYear() ? "d.L." : "d.L.yyyy",
   });

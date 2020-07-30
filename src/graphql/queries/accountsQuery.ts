@@ -1,5 +1,5 @@
-import gql from 'graphql-tag';
-import { Account } from '../../schema';
+import gql from "graphql-tag";
+import { Account } from "../../schema";
 
 export const accountsQuery = gql`
   query accounts($startKey: ID) {

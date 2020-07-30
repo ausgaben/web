@@ -1,17 +1,17 @@
-import React from 'react';
-import { Button, Card, Table } from 'reactstrap';
-import { Link } from 'react-router-dom';
-import { Spending, Account } from '../schema';
-import { FormatDate } from '../util/date/FormatDate';
-import { FormatMoney } from '../util/date/FormatMoney';
-import { Mutation } from '@apollo/react-components';
-import gql from 'graphql-tag';
-import { spendingsQuery } from '../graphql/queries/spendingsQuery';
-import { updateAggregate } from '../es/updateAggregate';
-import { SpendingsByCategory } from './SpendingsByCategory';
-import styled from 'styled-components';
-import { mobileBreakpoint } from '../Styles';
-import { Summary, SummaryRow, AccountSummary } from './Summary';
+import React from "react";
+import { Button, Card, Table } from "reactstrap";
+import { Link } from "react-router-dom";
+import { Spending, Account } from "../schema";
+import { FormatDate } from "../util/date/FormatDate";
+import { FormatMoney } from "../util/date/FormatMoney";
+import { Mutation } from "@apollo/react-components";
+import gql from "graphql-tag";
+import { spendingsQuery } from "../graphql/queries/spendingsQuery";
+import { updateAggregate } from "../es/updateAggregate";
+import { SpendingsByCategory } from "./SpendingsByCategory";
+import styled from "styled-components";
+import { mobileBreakpoint } from "../Styles";
+import { Summary, SummaryRow, AccountSummary } from "./Summary";
 
 export const markSpendingAsBooked = gql`
   mutation updateSpending($spendingId: ID!) {

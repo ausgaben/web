@@ -1,20 +1,20 @@
-import { ApolloClient } from 'apollo-client';
-import { InMemoryCache, NormalizedCacheObject } from 'apollo-cache-inmemory';
-import { HttpLink } from 'apollo-link-http';
-import { concat } from 'apollo-link';
-import { AuthLink, AUTH_TYPE } from 'aws-appsync-auth-link/lib/auth-link';
+import { ApolloClient } from "apollo-client";
+import { InMemoryCache, NormalizedCacheObject } from "apollo-cache-inmemory";
+import { HttpLink } from "apollo-link-http";
+import { concat } from "apollo-link";
+import { AuthLink, AUTH_TYPE } from "aws-appsync-auth-link/lib/auth-link";
 import {
   SubscriptionHandshakeLink,
   CONTROL_EVENTS_KEY,
-} from 'aws-appsync-subscription-link/lib/subscription-handshake-link';
-import { NonTerminatingLink } from 'aws-appsync-subscription-link/lib/non-terminating-link';
-import { onError } from 'apollo-link-error';
-import { split, from } from 'apollo-link';
-import { getMainDefinition } from 'apollo-utilities';
-import { OperationDefinitionNode } from 'graphql';
-import { ApolloLink, Observable } from 'apollo-link';
-import { Auth } from 'aws-amplify';
-import { persistCache } from 'apollo-cache-persist';
+} from "aws-appsync-subscription-link/lib/subscription-handshake-link";
+import { NonTerminatingLink } from "aws-appsync-subscription-link/lib/non-terminating-link";
+import { onError } from "apollo-link-error";
+import { split, from } from "apollo-link";
+import { getMainDefinition } from "apollo-utilities";
+import { OperationDefinitionNode } from "graphql";
+import { ApolloLink, Observable } from "apollo-link";
+import { Auth } from "aws-amplify";
+import { persistCache } from "apollo-cache-persist";
 
 const cache = new InMemoryCache();
 
@@ -50,14 +50,14 @@ export const createClient = () =>
   new ApolloClient<NormalizedCacheObject>({
     defaultOptions: {
       query: {
-        errorPolicy: 'all',
+        errorPolicy: "all",
       },
       watchQuery: {
-        errorPolicy: 'all',
-        fetchPolicy: 'cache-and-network',
+        errorPolicy: "all",
+        fetchPolicy: "cache-and-network",
       },
       mutate: {
-        errorPolicy: 'all',
+        errorPolicy: "all",
       },
     },
     link: split(
@@ -65,12 +65,12 @@ export const createClient = () =>
         const { kind, operation } = getMainDefinition(
           query
         ) as OperationDefinitionNode;
-        return kind === 'OperationDefinition' && operation === 'subscription';
+        return kind === "OperationDefinition" && operation === "subscription";
       },
       concat(
         appSyncAuthLink,
         from([
-          new NonTerminatingLink('controlMessages', {
+          new NonTerminatingLink("controlMessages", {
             link: new ApolloLink(
               (operation) =>
                 new Observable<any>((observer) => {
@@ -81,7 +81,7 @@ export const createClient = () =>
                     },
                   } = operation;
 
-                  if (typeof controlEvents !== 'undefined') {
+                  if (typeof controlEvents !== "undefined") {
                     operation.variables = variables;
                   }
 
@@ -91,8 +91,8 @@ export const createClient = () =>
                 })
             ),
           }),
-          new NonTerminatingLink('subsInfo', { link: httpLink }),
-          new SubscriptionHandshakeLink('subsInfo'),
+          new NonTerminatingLink("subsInfo", { link: httpLink }),
+          new SubscriptionHandshakeLink("subsInfo"),
         ])
       ),
       concat(errorLink, concat(appSyncAuthLink, httpLink))
