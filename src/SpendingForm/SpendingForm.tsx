@@ -26,7 +26,6 @@ import { MutationFunction } from "@apollo/react-common";
 import { ApolloError } from "apollo-client";
 import { currencies, NOK } from "../currency/currencies";
 import { Cache } from "aws-amplify";
-import { ValueSelector } from "../ValueSelector/ValueSelector";
 import { Link } from "react-router-dom";
 import { createSpendingMutation } from "../graphql/mutations/createSpending";
 import { editSpendingMutation } from "../graphql/mutations/editSpending";

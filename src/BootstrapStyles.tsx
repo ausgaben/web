@@ -16,13 +16,6 @@ form {
       }
     }
   }
-
-  .valueSelector {
-    .btn-group {
-      margin-right: 0.25rem;
-      margin-bottom: 0.25rem;
-    }
-  }
 }
 
 .card-header,
