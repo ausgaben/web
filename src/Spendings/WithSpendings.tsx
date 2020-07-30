@@ -3,7 +3,7 @@ import { Account, Spending } from '../schema';
 import {
   allTime,
   month,
-  spendingsQuery
+  spendingsQuery,
 } from '../graphql/queries/spendingsQuery';
 import { DateTime } from 'luxon';
 import { Cache } from 'aws-amplify';
@@ -33,9 +33,9 @@ export const WithSpendings = (props: {
   const {
     account: {
       isSavingsAccount,
-      _meta: { id: accountId }
+      _meta: { id: accountId },
     },
-    children
+    children,
   } = props;
 
   const [dateRange, setDateRange] = useState(
@@ -44,8 +44,8 @@ export const WithSpendings = (props: {
   const { startDate, endDate } = dateRange;
   const variables = {
     accountId,
-    startDate: startDate.toISO(),
-    endDate: endDate.toISO()
+    startDate: startDate.toISO() as string,
+    endDate: endDate.toISO() as string,
   };
 
   const { data, loading, error, refetch, fetchMore } = useQuery<
@@ -76,12 +76,12 @@ export const WithSpendings = (props: {
       const { endDate } = month(startDate);
       setDateRange({
         startDate,
-        endDate
+        endDate,
       });
       return refetch({
         ...variables,
-        startDate: startDate.toISO(),
-        endDate: endDate.toISO()
+        startDate: startDate.toISO() as string,
+        endDate: endDate.toISO() as string,
       });
     }
     return refetch(variables);
@@ -90,7 +90,7 @@ export const WithSpendings = (props: {
     fetchMore({
       variables: {
         ...variables,
-        startKey: data.spendings.nextStartKey
+        startKey: data.spendings.nextStartKey,
       },
       updateQuery: (prev, { fetchMoreResult }) => {
         if (!fetchMoreResult) return prev;
@@ -99,12 +99,12 @@ export const WithSpendings = (props: {
             ...prev.spendings,
             items: [
               ...prev.spendings.items,
-              ...fetchMoreResult.spendings.items
+              ...fetchMoreResult.spendings.items,
             ],
-            nextStartKey: fetchMoreResult.spendings.nextStartKey
-          }
+            nextStartKey: fetchMoreResult.spendings.nextStartKey,
+          },
         };
-      }
+      },
     });
   }
   return children({
@@ -114,7 +114,7 @@ export const WithSpendings = (props: {
     startDate,
     ...(!isSavingsAccount && {
       prevMonth: () => refetchFn(startDate.minus({ month: 1 })),
-      nextMonth: () => refetchFn(startDate.plus({ month: 1 }))
-    })
+      nextMonth: () => refetchFn(startDate.plus({ month: 1 })),
+    }),
   });
 };

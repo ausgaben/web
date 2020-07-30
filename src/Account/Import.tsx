@@ -9,7 +9,7 @@ import {
   Form,
   FormGroup,
   Input,
-  Label
+  Label,
 } from 'reactstrap';
 import { Account } from '../schema';
 import { Link } from 'react-router-dom';
@@ -36,8 +36,8 @@ export const Import = (props: { account: Account }) => {
   const {
     account: {
       name,
-      _meta: { id: accountId }
-    }
+      _meta: { id: accountId },
+    },
   } = props;
 
   const [adding, setAdding] = useState(false);
@@ -57,7 +57,7 @@ export const Import = (props: { account: Account }) => {
         description,
         currency,
         amount,
-        dayOfMonth
+        dayOfMonth,
       ] = line.split('\t');
       if (
         !type ||
@@ -89,7 +89,7 @@ export const Import = (props: { account: Account }) => {
           .set({ day: parseInt(dayOfMonth, 10) }),
         currencyId: currenciesById[currency]
           ? currenciesById[currency].id
-          : currenciesById.EUR.id
+          : currenciesById.EUR.id,
       };
     })
     .filter((l: any) => l);
@@ -129,8 +129,8 @@ export const Import = (props: { account: Account }) => {
                 description,
                 amount: amount,
                 currencyId,
-                booked: false
-              }
+                booked: false,
+              },
             });
             i.push(id);
           }),
@@ -185,7 +185,7 @@ Vorsorge	Versicherungen	Allianz - Lebensversicherung	EUR	-197,86	1"
               </tr>
             </thead>
             <tbody>
-              {Object.keys(spendingsByCategory).map(cat => (
+              {Object.keys(spendingsByCategory).map((cat) => (
                 <React.Fragment key={cat}>
                   <tr>
                     <th colSpan={4}>{cat}</th>
@@ -202,7 +202,7 @@ Vorsorge	Versicherungen	Allianz - Lebensversicherung	EUR	-197,86	1"
                       ) => (
                         <tr key={key} className="spending">
                           <td className="date">
-                            <FormatDate date={bookedAt.toISODate()} />
+                            <FormatDate date={bookedAt.toISODate() as string} />
                           </td>
                           <td className="description">{description}</td>
                           <td className="amount">
