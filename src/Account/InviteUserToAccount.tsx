@@ -5,7 +5,7 @@ import {
   InputGroup,
   InputGroupAddon,
   Label,
-  FormGroup
+  FormGroup,
 } from 'reactstrap';
 import gql from 'graphql-tag';
 import { Account } from '../schema';
@@ -45,8 +45,8 @@ export const InviteUserToAccount = (props: { account: Account }) => {
                     inviteUserMutation({
                       variables: {
                         accountId: props.account._meta.id,
-                        userId
-                      }
+                        userId,
+                      },
                     });
                   }}
                 >

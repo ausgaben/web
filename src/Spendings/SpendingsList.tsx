@@ -47,7 +47,7 @@ export const SpendingsList = ({
   variables,
   onUpdateSpendings,
   booked,
-  summary
+  summary,
 }: {
   spendingsByCategory: SpendingsByCategory;
   summary: AccountSummary;
@@ -77,7 +77,7 @@ export const SpendingsList = ({
             <Summary booked={booked} account={account} summary={summary} />
             {Object.keys(spendingsByCategory)
               .sort()
-              .map(cat => (
+              .map((cat) => (
                 <React.Fragment key={cat}>
                   <SummaryRow>
                     <th colSpan={booked ? 2 : 3}>{cat}</th>
@@ -99,7 +99,7 @@ export const SpendingsList = ({
                       amount,
                       booked,
                       _meta: { id },
-                      currency: { id: currencyId, symbol: currencySymbol }
+                      currency: { id: currencyId, symbol: currencySymbol },
                     }) => (
                       <tr key={id} className="spending">
                         {!booked && (
@@ -113,18 +113,18 @@ export const SpendingsList = ({
                               }
                             >
                               mutation={markSpendingAsBooked}
-                              update={cache => {
+                              update={(cache) => {
                                 const res = cache.readQuery<{
                                   spendings: {
                                     items: Spending[];
                                   };
                                 }>({
                                   query: spendingsQuery,
-                                  variables
+                                  variables,
                                 });
                                 if (res) {
                                   const {
-                                    spendings: { items: spendings }
+                                    spendings: { items: spendings },
                                   } = res;
                                   const spendingToUpdate = spendings.find(
                                     ({ _meta: { id: u } }) => id === u
@@ -134,7 +134,7 @@ export const SpendingsList = ({
                                       spendings.indexOf(spendingToUpdate)
                                     ] = updateAggregate<Spending>({
                                       ...spendingToUpdate,
-                                      booked: true
+                                      booked: true,
                                     });
                                     cache.writeQuery({
                                       query: spendingsQuery,
@@ -142,22 +142,22 @@ export const SpendingsList = ({
                                         ...res,
                                         spendings: {
                                           ...res.spendings,
-                                          items: spendings
-                                        }
-                                      }
+                                          items: spendings,
+                                        },
+                                      },
                                     });
                                     onUpdateSpendings();
                                   }
                                 }
                               }}
                             >
-                              {markSpendingAsBooked => (
+                              {(markSpendingAsBooked) => (
                                 <Button
                                   color="secondary"
                                   outline={true}
                                   onClick={() =>
                                     markSpendingAsBooked({
-                                      variables: { spendingId: id }
+                                      variables: { spendingId: id },
                                     })
                                   }
                                   title="Mark as booked"

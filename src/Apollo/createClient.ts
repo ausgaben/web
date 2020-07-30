@@ -5,7 +5,7 @@ import { concat } from 'apollo-link';
 import { AuthLink, AUTH_TYPE } from 'aws-appsync-auth-link/lib/auth-link';
 import {
   SubscriptionHandshakeLink,
-  CONTROL_EVENTS_KEY
+  CONTROL_EVENTS_KEY,
 } from 'aws-appsync-subscription-link/lib/subscription-handshake-link';
 import { NonTerminatingLink } from 'aws-appsync-subscription-link/lib/non-terminating-link';
 import { onError } from 'apollo-link-error';
@@ -22,7 +22,7 @@ const cache = new InMemoryCache();
 persistCache({
   cache,
   // @ts-ignore
-  storage: window.localStorage
+  storage: window.localStorage,
 });
 
 const httpLink = new HttpLink({ uri: process.env.REACT_APP_API_ENDPOINT });
@@ -32,8 +32,8 @@ const appSyncAuthLink = new AuthLink({
   region: process.env.REACT_APP_AWS_REGION,
   auth: {
     type: AUTH_TYPE.AWS_IAM,
-    credentials: Auth.currentCredentials
-  }
+    credentials: Auth.currentCredentials,
+  },
 });
 
 const errorLink = onError(({ networkError }) => {
@@ -50,15 +50,15 @@ export const createClient = () =>
   new ApolloClient<NormalizedCacheObject>({
     defaultOptions: {
       query: {
-        errorPolicy: 'all'
+        errorPolicy: 'all',
       },
       watchQuery: {
         errorPolicy: 'all',
-        fetchPolicy: 'cache-and-network'
+        fetchPolicy: 'cache-and-network',
       },
       mutate: {
-        errorPolicy: 'all'
-      }
+        errorPolicy: 'all',
+      },
     },
     link: split(
       ({ query }) => {
@@ -72,13 +72,13 @@ export const createClient = () =>
         from([
           new NonTerminatingLink('controlMessages', {
             link: new ApolloLink(
-              operation =>
-                new Observable<any>(observer => {
+              (operation) =>
+                new Observable<any>((observer) => {
                   const {
                     variables: {
                       [CONTROL_EVENTS_KEY]: controlEvents,
                       ...variables
-                    }
+                    },
                   } = operation;
 
                   if (typeof controlEvents !== 'undefined') {
@@ -89,13 +89,13 @@ export const createClient = () =>
 
                   return () => {};
                 })
-            )
+            ),
           }),
           new NonTerminatingLink('subsInfo', { link: httpLink }),
-          new SubscriptionHandshakeLink('subsInfo')
+          new SubscriptionHandshakeLink('subsInfo'),
         ])
       ),
       concat(errorLink, concat(appSyncAuthLink, httpLink))
     ),
-    cache
+    cache,
   });

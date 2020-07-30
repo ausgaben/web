@@ -3,7 +3,7 @@ import { Card, CardBody, CardHeader } from 'reactstrap';
 import {
   exchangeRateQuery,
   ExchangeRate,
-  ExchangeRateVariables
+  ExchangeRateVariables,
 } from '../graphql/queries/exchangeRateQuery';
 import { Fail } from '../Note/Note';
 import { Loading } from '../Loading/Loading';

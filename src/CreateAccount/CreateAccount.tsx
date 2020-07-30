@@ -9,7 +9,7 @@ import {
   FormGroup,
   Input,
   Label,
-  CardFooter
+  CardFooter,
 } from 'reactstrap';
 import gql from 'graphql-tag';
 import { Mutation } from '@apollo/react-components';
@@ -49,7 +49,7 @@ export const CreateAccount = () => {
       mutation={createAccountQuery}
       update={(cache, { data }) => {
         const {
-          createAccount: { id }
+          createAccount: { id },
         } = data!;
         const res = cache.readQuery<{
           accounts: {
@@ -58,7 +58,7 @@ export const CreateAccount = () => {
         }>({ query: accountsQuery });
         if (res) {
           const {
-            accounts: { items: accounts }
+            accounts: { items: accounts },
           } = res;
           cache.writeQuery({
             query: accountsQuery,
@@ -73,19 +73,19 @@ export const CreateAccount = () => {
                     isSavingsAccount,
                     _meta: {
                       id,
-                      __typename: 'EntityMeta'
+                      __typename: 'EntityMeta',
                     },
-                    __typename: 'Account'
-                  }
-                ]
-              }
-            }
+                    __typename: 'Account',
+                  },
+                ],
+              },
+            },
           });
         }
         reset();
       }}
     >
-      {createAccountMutation => (
+      {(createAccountMutation) => (
         <Form>
           <Card>
             <CardHeader>
@@ -125,8 +125,8 @@ export const CreateAccount = () => {
                   await createAccountMutation({
                     variables: {
                       name: name.trim(),
-                      isSavingsAccount
-                    }
+                      isSavingsAccount,
+                    },
                   });
                 }}
               >

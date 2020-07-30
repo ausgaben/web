@@ -18,7 +18,7 @@ const AccounMain = styled(Main)`
 export const AccountPage = (props: any) => (
   <AccounMain>
     <WithAccount {...props}>
-      {account => <Spendings account={account} />}
+      {(account) => <Spendings account={account} />}
     </WithAccount>
   </AccounMain>
 );

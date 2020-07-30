@@ -49,6 +49,6 @@ export const toAccount = (accountItem: AccountItem): Account => ({
   ...accountItem,
   _meta: {
     ...accountItem._meta,
-    createdAt: new Date(accountItem._meta.createdAt)
-  }
+    createdAt: new Date(accountItem._meta.createdAt),
+  },
 });

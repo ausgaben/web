@@ -6,7 +6,7 @@ import { Main } from '../Styles';
 export const AccountImportPage = (props: any) => (
   <Main>
     <WithAccount {...props}>
-      {account => <Import account={account} />}
+      {(account) => <Import account={account} />}
     </WithAccount>
   </Main>
 );

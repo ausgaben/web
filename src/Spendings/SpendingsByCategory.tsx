@@ -41,7 +41,7 @@ export const SpendingsByCategory = ({
   startDate,
   refetch,
   account,
-  variables
+  variables,
 }: {
   spendings: Spending[];
   account: Account;
@@ -58,7 +58,7 @@ export const SpendingsByCategory = ({
     pending: SpendingsByCategory;
   }>({
     booked: {},
-    pending: {}
+    pending: {},
   });
 
   useEffect(() => {
@@ -69,7 +69,7 @@ export const SpendingsByCategory = ({
       pending: SpendingsByCategory;
     } = {
       booked: {},
-      pending: {}
+      pending: {},
     };
     spendings
       .reduce(
@@ -80,7 +80,7 @@ export const SpendingsByCategory = ({
               spendingsByCategory[t][spending.category] = {
                 spendings: [],
                 totalInAccountDefaultCurrency: 0,
-                hasConversion: false
+                hasConversion: false,
               };
             }
             let amountInAccountDefaultCurrency = spending.amount;
@@ -102,7 +102,7 @@ export const SpendingsByCategory = ({
 
             spendingsByCategory[t][spending.category].spendings.push({
               ...spending,
-              amountInAccountDefaultCurrency
+              amountInAccountDefaultCurrency,
             });
             spendingsByCategory[t][
               spending.category
@@ -147,13 +147,13 @@ export const SpendingsByCategory = ({
 
   const pendingSummary = summarizeSpendings({
     account,
-    spendingsByCategory: categorizedSpendings.pending
+    spendingsByCategory: categorizedSpendings.pending,
   });
   const bookedSummary = summarizeSpendings({
     account,
     spendingsByCategory: categorizedSpendings.booked,
     totalPendingInAccountDefaultCurrency:
-      pendingSummary.totalSumInAccountDefaultCurrency
+      pendingSummary.totalSumInAccountDefaultCurrency,
   });
   return (
     <>

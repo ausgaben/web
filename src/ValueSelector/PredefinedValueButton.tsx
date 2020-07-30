@@ -6,7 +6,7 @@ export const PredefinedValueButton = ({
   selected,
   onSelect,
   onDelete,
-  disabled
+  disabled,
 }: {
   value: string;
   selected: boolean;

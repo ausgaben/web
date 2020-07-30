@@ -9,7 +9,7 @@ import {
   FormGroup,
   Label,
   Input,
-  Form
+  Form,
 } from 'reactstrap';
 import gql from 'graphql-tag';
 import { Fail, Note } from '../Note/Note';
@@ -48,8 +48,8 @@ export const Settings = (props: { account: Account }) => {
     account: {
       name,
       defaultCurrency,
-      _meta: { id, version }
-    }
+      _meta: { id, version },
+    },
   } = props;
   const [deleting, setDeleting] = useState(false);
   const [deleted, setDeleted] = useState(false);
@@ -84,7 +84,7 @@ export const Settings = (props: { account: Account }) => {
                 }
               >
                 mutation={updateAccountQuery}
-                update={cache => {
+                update={(cache) => {
                   const res = cache.readQuery<{
                     accounts: {
                       items: Account[];
@@ -92,7 +92,7 @@ export const Settings = (props: { account: Account }) => {
                   }>({ query: accountsQuery });
                   if (res) {
                     const {
-                      accounts: { items: accounts }
+                      accounts: { items: accounts },
                     } = res;
                     cache.writeQuery({
                       query: accountsQuery,
@@ -108,16 +108,16 @@ export const Settings = (props: { account: Account }) => {
                               ...accounts.find(
                                 ({ _meta: { id: aid } }) => aid === id
                               ),
-                              name: updatedName
-                            }
-                          ]
-                        }
-                      }
+                              name: updatedName,
+                            },
+                          ],
+                        },
+                      },
                     });
                   }
                 }}
               >
-                {updateAccountMutation => (
+                {(updateAccountMutation) => (
                   <fieldset>
                     <legend>Settings</legend>
                     <FormGroup>
@@ -127,14 +127,14 @@ export const Settings = (props: { account: Account }) => {
                         name="name"
                         id="name"
                         value={updatedName}
-                        onBlur={e => {
+                        onBlur={(e) => {
                           const oldValue = updatedName;
                           updateAccountMutation({
                             variables: {
                               accountId: id,
                               expectedVersion: version,
-                              name: e.target.value
-                            }
+                              name: e.target.value,
+                            },
                           }).then(
                             ({ errors }: { errors?: GraphQLError[] } | any) => {
                               if (errors) {
@@ -146,7 +146,7 @@ export const Settings = (props: { account: Account }) => {
                             }
                           );
                         }}
-                        onChange={e => {
+                        onChange={(e) => {
                           setName(e.target.value);
                         }}
                       />
@@ -158,7 +158,7 @@ export const Settings = (props: { account: Account }) => {
                         name="defaultCurrency"
                         id="defaultCurrency"
                         value={defaultCurrencyId}
-                        onChange={e => {
+                        onChange={(e) => {
                           const oldValue = defaultCurrencyId;
                           setDefaultCurrencyId(e.target.value);
                           updateAccountMutation({
@@ -166,8 +166,8 @@ export const Settings = (props: { account: Account }) => {
                               accountId: id,
                               name: updatedName,
                               defaultCurrencyId: e.target.value,
-                              expectedVersion: version
-                            }
+                              expectedVersion: version,
+                            },
                           }).then(
                             ({ errors }: { errors?: GraphQLError[] } | any) => {
                               if (errors) {
@@ -206,7 +206,7 @@ export const Settings = (props: { account: Account }) => {
       {!deleted && (
         <Mutation<{}, { accountId: string }>
           mutation={deleteAccountQuery}
-          update={cache => {
+          update={(cache) => {
             const res = cache.readQuery<{
               accounts: {
                 items: Account[];
@@ -214,7 +214,7 @@ export const Settings = (props: { account: Account }) => {
             }>({ query: accountsQuery });
             if (res) {
               const {
-                accounts: { items: accounts }
+                accounts: { items: accounts },
               } = res;
               const accountToDelete = accounts.find(
                 ({ _meta: { id: u } }) => id === u
@@ -227,15 +227,15 @@ export const Settings = (props: { account: Account }) => {
                     ...res,
                     accounts: {
                       ...res.accounts,
-                      items: accounts
-                    }
-                  }
+                      items: accounts,
+                    },
+                  },
                 });
               }
             }
           }}
         >
-          {deleteAccountMutation => (
+          {(deleteAccountMutation) => (
             <CardFooter>
               <Link to={`/account/${id}`}>⬅</Link>
               <Button
@@ -243,7 +243,7 @@ export const Settings = (props: { account: Account }) => {
                 onClick={async () => {
                   setDeleting(true);
                   deleteAccountMutation({
-                    variables: { accountId: id }
+                    variables: { accountId: id },
                   }).then(
                     async ({ errors }: { errors?: GraphQLError[] } | any) => {
                       if (errors) {

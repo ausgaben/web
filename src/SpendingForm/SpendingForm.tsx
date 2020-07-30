@@ -17,7 +17,7 @@ import {
   InputGroupAddon,
   InputGroupButtonDropdown,
   InputGroupText,
-  Label
+  Label,
 } from 'reactstrap';
 import { Fail, Note } from '../Note/Note';
 import { Account, Spending } from '../schema';
@@ -109,13 +109,13 @@ export const EditSpendingForm = (props: {
         error={error}
         spending={props.spending}
         account={props.account}
-        onSubmit={args =>
+        onSubmit={(args) =>
           editSpendingMutation({
             ...args,
             variables: {
               ...args!.variables!,
-              spendingId: props.spending._meta.id
-            }
+              spendingId: props.spending._meta.id,
+            },
           })
         }
         buttonLabel={'Save'}
@@ -145,7 +145,7 @@ const FormForSpending = <T extends MutationFunction>({
   buttonLabel,
   titleLabel,
   successLabel,
-  errorLabel
+  errorLabel,
 }: {
   loading: boolean;
   spending?: Spending;
@@ -270,7 +270,7 @@ const FormForSpending = <T extends MutationFunction>({
                   placeholder="e.g. 'Mat'"
                   value={category}
                   required
-                  onChange={value => setCategory(value)}
+                  onChange={(value) => setCategory(value)}
                   strings={autoCompleteStrings.category}
                 />
               </FormGroup>
@@ -284,7 +284,7 @@ const FormForSpending = <T extends MutationFunction>({
                   placeholder="e.g. 'Rema 1000'"
                   value={description}
                   required
-                  onChange={v => setDescription(v)}
+                  onChange={(v) => setDescription(v)}
                   strings={autoCompleteStrings.categories[category] || []}
                 />
               </FormGroup>
@@ -384,8 +384,8 @@ const FormForSpending = <T extends MutationFunction>({
                   value={paidWith}
                   values={autoCompleteStrings.paidWith}
                   disabled={loading}
-                  onSelect={value => setPaidWith(value ? value : '')}
-                  onAdd={value => {
+                  onSelect={(value) => setPaidWith(value ? value : '')}
+                  onAdd={(value) => {
                     setPaidWith(value);
                   }}
                 />
@@ -409,8 +409,8 @@ const FormForSpending = <T extends MutationFunction>({
                       amount: isIncome ? amount : -amount,
                       currencyId: currency,
                       booked,
-                      ...(paidWith.length && { paidWith })
-                    }
+                      ...(paidWith.length && { paidWith }),
+                    },
                   });
                   if (res && !res.errors) {
                     setAdded(true);

@@ -9,7 +9,7 @@ import {
   CardBody,
   CardFooter,
   CardHeader,
-  CardTitle
+  CardTitle,
 } from 'reactstrap';
 import { GraphQLError } from 'graphql';
 import { Link } from 'react-router-dom';
@@ -40,14 +40,14 @@ export const Page = (props: routeProps) => {
   const [error, setError] = useState(false);
   const {
     match: {
-      params: { accountId, spendingId }
-    }
+      params: { accountId, spendingId },
+    },
   } = props;
 
   return (
     <Main>
       <WithAccount {...props}>
-        {account => (
+        {(account) => (
           <WithSpendings account={account} loading={<Loading />}>
             {({ spendings, variables }) => {
               if (deleted) {
@@ -111,18 +111,18 @@ export const Page = (props: routeProps) => {
                         </CardBody>
                         <Mutation<{}, { spendingId: string }>
                           mutation={deleteSpendingQuery}
-                          update={cache => {
+                          update={(cache) => {
                             const res = cache.readQuery<{
                               spendings: {
                                 items: Spending[];
                               };
                             }>({
                               query: spendingsQuery,
-                              variables
+                              variables,
                             });
                             if (res) {
                               const {
-                                spendings: { items: spendings }
+                                spendings: { items: spendings },
                               } = res;
                               const spendingToDelete = spendings.find(
                                 ({ _meta: { id: u } }) => spendingId === u
@@ -138,16 +138,16 @@ export const Page = (props: routeProps) => {
                                     ...res,
                                     spendings: {
                                       ...res.spendings,
-                                      items: spendings
-                                    }
-                                  }
+                                      items: spendings,
+                                    },
+                                  },
                                 });
                               }
                               setDeleted(true);
                             }
                           }}
                         >
-                          {deleteSpendingMutation => (
+                          {(deleteSpendingMutation) => (
                             <CardFooter>
                               <Link to={`/account/${accountId}`}>⬅</Link>
                               <Link
@@ -166,10 +166,10 @@ export const Page = (props: routeProps) => {
                                 onClick={async () => {
                                   setDeleting(true);
                                   deleteSpendingMutation({
-                                    variables: { spendingId }
+                                    variables: { spendingId },
                                   }).then(
                                     async ({
-                                      errors
+                                      errors,
                                     }: { errors?: GraphQLError[] } | any) => {
                                       if (errors) {
                                         setError(true);

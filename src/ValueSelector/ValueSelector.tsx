@@ -8,7 +8,7 @@ export const ValueSelector = ({
   onSelect,
   onDelete,
   onAdd,
-  disabled
+  disabled,
 }: {
   value?: string;
   values: string[];
@@ -22,7 +22,7 @@ export const ValueSelector = ({
   return (
     <div className="valueSelector">
       <>
-        {values.map(method => (
+        {values.map((method) => (
           <PredefinedValueButton
             selected={value === method}
             value={method}
@@ -68,7 +68,7 @@ export const ValueSelector = ({
               id="newValue"
               placeholder="e.g. 'VISA Debit'"
               minLength={1}
-              innerRef={ref => ref && values.length && ref.focus()}
+              innerRef={(ref) => ref && values.length && ref.focus()}
               value={newValue}
               onChange={({ target: { value } }) => {
                 setNewValue(value);

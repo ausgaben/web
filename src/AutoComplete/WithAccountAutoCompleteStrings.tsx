@@ -19,15 +19,15 @@ export const WithAccountAutoCompleteStrings = (props: {
 }) => {
   const {
     account: {
-      _meta: { id: accountId }
+      _meta: { id: accountId },
     },
-    children
+    children,
   } = props;
 
   const { data, loading, error, refetch } = useQuery(autoCompleteStringsQuery, {
     variables: {
-      accountId
-    }
+      accountId,
+    },
   });
 
   if (error) {
@@ -51,17 +51,14 @@ export const WithAccountAutoCompleteStrings = (props: {
     autoCompleteStrings: {
       category: categoryStrings ? categoryStrings.strings : [],
       paidWith: paidWithStrings ? paidWithStrings.strings : [],
-      categories: strings.reduce(
-        (categories, cat) => {
-          if (/^category:.+/.test(cat.field)) {
-            const category = cat.field.split(':', 2)[1];
-            categories[category] = cat.strings;
-          }
-          return categories;
-        },
-        {} as { [category: string]: string[] }
-      )
+      categories: strings.reduce((categories, cat) => {
+        if (/^category:.+/.test(cat.field)) {
+          const category = cat.field.split(':', 2)[1];
+          categories[category] = cat.strings;
+        }
+        return categories;
+      }, {} as { [category: string]: string[] }),
     },
-    refetch
+    refetch,
   });
 };

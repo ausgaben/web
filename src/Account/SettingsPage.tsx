@@ -6,7 +6,7 @@ import { Main } from '../Styles';
 export const AccountSettingsPage = (props: any) => (
   <Main>
     <WithAccount {...props}>
-      {account => <Settings account={account} />}
+      {(account) => <Settings account={account} />}
     </WithAccount>
   </Main>
 );

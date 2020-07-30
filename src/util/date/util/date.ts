@@ -10,5 +10,5 @@ export const date = (date: Date, opts?: { locale?: string }) =>
     ...opts,
     locale: 'de',
     format:
-      date.getFullYear() === new Date().getFullYear() ? 'd.L.' : 'd.L.yyyy'
+      date.getFullYear() === new Date().getFullYear() ? 'd.L.' : 'd.L.yyyy',
   });

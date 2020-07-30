@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   CreateSpendingForm,
-  EditSpendingForm
+  EditSpendingForm,
 } from '../SpendingForm/SpendingForm';
 import { WithAccount } from '../Accounts/WithAccount';
 import { WithSpendings } from '../Spendings/WithSpendings';
@@ -17,7 +17,7 @@ type routeProps = RouteComponentProps<{
 export const AddSpendingPage = (props: routeProps) => (
   <Main>
     <WithAccount {...props}>
-      {account => {
+      {(account) => {
         const spendingId = new URLSearchParams(props.location.search).get(
           'copy'
         );
@@ -44,7 +44,7 @@ export const AddSpendingPage = (props: routeProps) => (
 export const EditSpendingPage = (props: routeProps) => (
   <Main>
     <WithAccount {...props}>
-      {account => {
+      {(account) => {
         const spendingId = props.match.params.spendingId!;
         return (
           <WithSpendings account={account} loading={<Loading />}>

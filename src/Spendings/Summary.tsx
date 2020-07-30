@@ -20,12 +20,12 @@ const sumSpendings = (account: Account) => (
   total: { amount: number; hasConversion: boolean },
   {
     amountInAccountDefaultCurrency,
-    currency: { id: currencyId }
+    currency: { id: currencyId },
   }: Spending & { amountInAccountDefaultCurrency: number }
 ) => ({
   amount: total.amount + amountInAccountDefaultCurrency,
   hasConversion:
-    total.hasConversion || account.defaultCurrency.id !== currencyId
+    total.hasConversion || account.defaultCurrency.id !== currencyId,
 });
 
 export type SummaryInfo = { amount: number; hasConversion: boolean };
@@ -39,7 +39,7 @@ export type AccountSummary = {
 export const summarizeSpendings = ({
   spendingsByCategory,
   account,
-  totalPendingInAccountDefaultCurrency
+  totalPendingInAccountDefaultCurrency,
 }: {
   spendingsByCategory: SpendingsByCategory;
   account: Account;
@@ -71,7 +71,7 @@ export const summarizeSpendings = ({
         totalPendingInAccountDefaultCurrency.hasConversion,
       amount:
         totalSumInAccountDefaultCurrency.amount +
-        totalPendingInAccountDefaultCurrency.amount
+        totalPendingInAccountDefaultCurrency.amount,
     };
   }
 
@@ -79,14 +79,14 @@ export const summarizeSpendings = ({
     totalSpendingsInAccountDefaultCurrency,
     totalIncomeInAccountDefaultCurrency,
     totalPendingInAccountDefaultCurrency,
-    totalSumInAccountDefaultCurrency
+    totalSumInAccountDefaultCurrency,
   };
 };
 
 export const Summary = ({
   booked,
   summary,
-  account
+  account,
 }: {
   booked: boolean;
   summary: AccountSummary;
@@ -96,7 +96,7 @@ export const Summary = ({
     totalPendingInAccountDefaultCurrency,
     totalIncomeInAccountDefaultCurrency,
     totalSpendingsInAccountDefaultCurrency,
-    totalSumInAccountDefaultCurrency
+    totalSumInAccountDefaultCurrency,
   } = summary;
   return (
     <SummaryRow>

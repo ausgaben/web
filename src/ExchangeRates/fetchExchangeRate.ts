@@ -3,7 +3,7 @@ import { NormalizedCacheObject } from 'apollo-cache-inmemory';
 import ApolloClient from 'apollo-client';
 import {
   exchangeRateQuery,
-  ExchangeRate
+  ExchangeRate,
 } from '../graphql/queries/exchangeRateQuery';
 
 const exchangeconversionRates: { [key: string]: Promise<number> } = {};
@@ -16,9 +16,9 @@ export const fetchExchangeRate = (
       .query<ExchangeRate>({
         query: exchangeRateQuery,
         fetchPolicy: 'cache-first',
-        variables: { currencyId: currency.id, date: date.toISOString() }
+        variables: { currencyId: currency.id, date: date.toISOString() },
       })
-      .then(res => res.data.exchangeRate.rate);
+      .then((res) => res.data.exchangeRate.rate);
   }
   return exchangeconversionRates[k];
 };

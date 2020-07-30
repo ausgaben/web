@@ -13,7 +13,7 @@ export const Spendings = (props: { account: Account }) => (
       next,
       nextMonth,
       prevMonth,
-      startDate
+      startDate,
     }) => (
       <SpendingsByCategory
         spendings={spendings}

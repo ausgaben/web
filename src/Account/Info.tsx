@@ -7,8 +7,8 @@ export const Info = (props: { account: Account }) => {
   const {
     account: {
       name,
-      _meta: { id }
-    }
+      _meta: { id },
+    },
   } = props;
   return (
     <Card>

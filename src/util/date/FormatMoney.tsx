@@ -30,7 +30,7 @@ const Approximation = styled(Currency)``;
 export const FormatMoney = ({
   amount,
   symbol,
-  approximation
+  approximation,
 }: {
   amount: number;
   symbol: string;

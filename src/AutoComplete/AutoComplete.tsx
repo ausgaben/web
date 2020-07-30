@@ -21,7 +21,7 @@ export const AutoComplete = ({
   placeholder,
   onChange,
   value,
-  required
+  required,
 }: {
   strings: string[];
   disabled: boolean;
@@ -38,7 +38,7 @@ export const AutoComplete = ({
   const hits =
     value.length > 0
       ? strings
-          .filter(s => s.toLowerCase().indexOf(value.toLowerCase()) >= 0)
+          .filter((s) => s.toLowerCase().indexOf(value.toLowerCase()) >= 0)
           .slice(0, 9)
       : [];
   return (

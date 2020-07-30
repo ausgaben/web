@@ -40,7 +40,7 @@ export const month = (
   const endDate = startDate.endOf('month');
   return {
     startDate,
-    endDate
+    endDate,
   };
 };
 
@@ -51,6 +51,6 @@ export const allTime = () => {
   const endDate = DateTime.fromJSDate(new Date('2100-01-01T00:00:00'));
   return {
     startDate,
-    endDate
+    endDate,
   };
 };

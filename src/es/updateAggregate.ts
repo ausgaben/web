@@ -12,6 +12,6 @@ export const updateAggregate = <
   _meta: {
     ...aggregate._meta,
     version: aggregate._meta.version + 1,
-    updatedAt: Date()
-  }
+    updatedAt: Date(),
+  },
 });
