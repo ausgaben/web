@@ -86,21 +86,25 @@ export const WithSpendings = (props: {
     }
     return refetch(variables);
   };
-  if (data.spendings.nextStartKey) {
+  const k = data.spendings.nextStartKey;
+  if (k) {
     fetchMore({
       variables: {
         ...variables,
-        startKey: data.spendings.nextStartKey,
+        startKey: k,
       },
       updateQuery: (prev, { fetchMoreResult }) => {
         if (!fetchMoreResult) return prev;
+        const existingIds = prev.spendings.items.map(
+          (spending) => spending._meta.id
+        );
+        const newSpendings = fetchMoreResult.spendings.items.filter(
+          (spending) => !existingIds.includes(spending._meta.id)
+        );
         return {
           spendings: {
             ...prev.spendings,
-            items: [
-              ...prev.spendings.items,
-              ...fetchMoreResult.spendings.items,
-            ],
+            items: [...prev.spendings.items, ...newSpendings],
             nextStartKey: fetchMoreResult.spendings.nextStartKey,
           },
         };
