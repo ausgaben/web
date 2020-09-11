@@ -5,10 +5,10 @@ pull_request_rules:
       - "#approved-reviews-by>=1"
       - status-success=tests
     actions:
-      merge:
-        method: rebase
-        rebase_fallback: squash
-        bot_account: coderbyheart
+#      merge:
+#        method: rebase
+#        rebase_fallback: squash
+#        bot_account: coderbyheart
       label:
         add:
           - mergify
