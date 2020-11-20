@@ -41,7 +41,7 @@
     "react-dom": "^16.13.1",
     "react-router-dom": "^5.1.2",
     "reactstrap": "^8.6.0",
-    "styled-components": "5.2.0"
+    "styled-components": "5.2.1"
   },
   "devDependencies": {
     "@commitlint/cli": "9.1.2",
