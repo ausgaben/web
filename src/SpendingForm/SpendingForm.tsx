@@ -133,7 +133,7 @@ export const EditSpendingForm = (props: {
   </Mutation>
 );
 
-const FormForSpending = <T extends MutationFunction>({
+const FormForSpending = ({
   loading,
   spending,
   account,

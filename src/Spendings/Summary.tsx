@@ -1,7 +1,7 @@
 import React from "react";
 import { Spending, Account } from "../schema";
 import { FormatMoney } from "../util/date/FormatMoney";
-import { SpendingsByCategory } from "./SpendingsByCategory";
+import { SpendingsByCategoryType } from "./SpendingsByCategory";
 import styled from "styled-components";
 import { mobileBreakpoint } from "../Styles";
 
@@ -41,7 +41,7 @@ export const summarizeSpendings = ({
   account,
   totalPendingInAccountDefaultCurrency,
 }: {
-  spendingsByCategory: SpendingsByCategory;
+  spendingsByCategory: SpendingsByCategoryType;
   account: Account;
   totalPendingInAccountDefaultCurrency?: SummaryInfo;
 }): AccountSummary => {

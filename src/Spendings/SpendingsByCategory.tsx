@@ -21,7 +21,7 @@ const SpendingsSection = styled.section`
   }
 `;
 
-export type SpendingCategory = {
+export type SpendingCategoryType = {
   spendings: (Spending & {
     amountInAccountDefaultCurrency: number;
   })[];
@@ -29,8 +29,8 @@ export type SpendingCategory = {
   hasConversion: boolean;
 };
 
-export type SpendingsByCategory = {
-  [key: string]: SpendingCategory;
+export type SpendingsByCategoryType = {
+  [key: string]: SpendingCategoryType;
 };
 
 export const SpendingsByCategory = ({
@@ -54,8 +54,8 @@ export const SpendingsByCategory = ({
   variables: any;
 }) => {
   const [categorizedSpendings, updateCategorizedSpendings] = useState<{
-    booked: SpendingsByCategory;
-    pending: SpendingsByCategory;
+    booked: SpendingsByCategoryType;
+    pending: SpendingsByCategoryType;
   }>({
     booked: {},
     pending: {},
@@ -65,8 +65,8 @@ export const SpendingsByCategory = ({
     let isMounted = true;
     const er = fetchExchangeRate(client);
     const spendingsByCategory: {
-      booked: SpendingsByCategory;
-      pending: SpendingsByCategory;
+      booked: SpendingsByCategoryType;
+      pending: SpendingsByCategoryType;
     } = {
       booked: {},
       pending: {},

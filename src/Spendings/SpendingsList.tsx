@@ -8,7 +8,7 @@ import { Mutation } from "@apollo/react-components";
 import gql from "graphql-tag";
 import { spendingsQuery } from "../graphql/queries/spendingsQuery";
 import { updateAggregate } from "../es/updateAggregate";
-import { SpendingsByCategory } from "./SpendingsByCategory";
+import { SpendingsByCategoryType } from "./SpendingsByCategory";
 import styled from "styled-components";
 import { mobileBreakpoint } from "../Styles";
 import { Summary, SummaryRow, AccountSummary } from "./Summary";
@@ -49,7 +49,7 @@ export const SpendingsList = ({
   booked,
   summary,
 }: {
-  spendingsByCategory: SpendingsByCategory;
+  spendingsByCategory: SpendingsByCategoryType;
   summary: AccountSummary;
   header: React.ReactElement;
   account: Account;
