@@ -1,7 +1,7 @@
 import React from "react";
 import {
   CreateSpendingForm,
-  EditSpendingForm,
+  UpdateSpendingForm,
 } from "../SpendingForm/SpendingForm";
 import { WithAccount } from "../Accounts/WithAccount";
 import { WithSpendings } from "../Spendings/WithSpendings";
@@ -41,7 +41,7 @@ export const AddSpendingPage = (props: routeProps) => (
   </Main>
 );
 
-export const EditSpendingPage = (props: routeProps) => (
+export const UpdatedSpendingPage = (props: routeProps) => (
   <Main>
     <WithAccount {...props}>
       {(account) => {
@@ -49,7 +49,7 @@ export const EditSpendingPage = (props: routeProps) => (
         return (
           <WithSpendings account={account} loading={<Loading />}>
             {({ spendings }) => (
-              <EditSpendingForm
+              <UpdateSpendingForm
                 account={account}
                 spending={
                   spendings.find(({ _meta: { id } }) => id === spendingId)!

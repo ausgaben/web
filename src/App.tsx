@@ -26,7 +26,7 @@ import { ApolloProvider } from "react-apollo";
 import { createClient } from "./Apollo/createClient";
 import {
   AddSpendingPage,
-  EditSpendingPage,
+  UpdatedSpendingPage,
 } from "./Account/AccountSpendingPage";
 import { Page as SpendingPage } from "./Spending/Page";
 import { Page as ExchangeRatesPage } from "./ExchangeRates/Page";
@@ -201,7 +201,7 @@ const App = ({ authData }: { authData: CognitoUser }) => {
           <Route
             exact
             path="/account/:accountId/spending/:spendingId/edit"
-            component={EditSpendingPage}
+            component={UpdatedSpendingPage}
           />
           <Route
             exact

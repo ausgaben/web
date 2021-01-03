@@ -1,7 +1,7 @@
 import gql from "graphql-tag";
 
-export const editSpendingMutation = gql`
-  mutation editSpending(
+export const updatedSpendingMutation = gql`
+  mutation updateSpending(
     $spendingId: ID!
     $bookedAt: String!
     $booked: Boolean
@@ -10,7 +10,7 @@ export const editSpendingMutation = gql`
     $amount: Int!
     $currencyId: ID!
   ) {
-    editSpending(
+    updateSpending(
       spendingId: $spendingId
       bookedAt: $bookedAt
       booked: $booked
@@ -18,8 +18,6 @@ export const editSpendingMutation = gql`
       description: $description
       amount: $amount
       currencyId: $currencyId
-    ) {
-      version
-    }
+    )
   }
 `;

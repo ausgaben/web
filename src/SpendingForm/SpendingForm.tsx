@@ -28,7 +28,7 @@ import { currencies, NOK } from "../currency/currencies";
 import { Cache } from "aws-amplify";
 import { Link } from "react-router-dom";
 import { createSpendingMutation } from "../graphql/mutations/createSpending";
-import { editSpendingMutation } from "../graphql/mutations/editSpending";
+import { updatedSpendingMutation } from "../graphql/mutations/updateSpending";
 import { WithAccountAutoCompleteStrings } from "../AutoComplete/WithAccountAutoCompleteStrings";
 import { Loading } from "../Loading/Loading";
 import { AutoComplete } from "../AutoComplete/AutoComplete";
@@ -80,13 +80,13 @@ export const CreateSpendingForm = (props: {
   </Mutation>
 );
 
-export const EditSpendingForm = (props: {
+export const UpdateSpendingForm = (props: {
   account: Account;
   spending: Spending;
 }) => (
   <Mutation<
     {
-      editSpending: { id: string };
+      updateSpending: { id: string };
     },
     {
       spendingId: string;
@@ -98,16 +98,16 @@ export const EditSpendingForm = (props: {
       booked: boolean;
     }
   >
-    mutation={editSpendingMutation}
+    mutation={updatedSpendingMutation}
   >
-    {(editSpendingMutation, { loading, error }) => (
+    {(updateSpendingMutation, { loading, error }) => (
       <FormForSpending
         loading={loading}
         error={error}
         spending={props.spending}
         account={props.account}
         onSubmit={(args) =>
-          editSpendingMutation({
+          updateSpendingMutation({
             ...args,
             variables: {
               ...args!.variables!,
@@ -115,7 +115,8 @@ export const EditSpendingForm = (props: {
             },
           })
         }
-        buttonLabel={"Save"}
+        resetOnSave={false}
+        buttonLabel={"Update"}
         titleLabel={({ isIncome }) => (
           <>
             Edit {isIncome ? "income" : "spending"} in{" "}
@@ -143,6 +144,7 @@ const FormForSpending = ({
   titleLabel,
   successLabel,
   errorLabel,
+  resetOnSave,
 }: {
   loading: boolean;
   spending?: Spending;
@@ -153,6 +155,7 @@ const FormForSpending = ({
   errorLabel: (args: { isIncome: boolean }) => React.ReactElement;
   onSubmit: MutationFunction<any, SpendingMutationVariables>;
   error?: ApolloError;
+  resetOnSave?: boolean;
 }) => {
   const [added, setAdded] = useState(false);
 
@@ -191,6 +194,7 @@ const FormForSpending = ({
   const isValid = category.length && description.length && amount > 0;
 
   const reset = () => {
+    if (!(resetOnSave ?? true)) return;
     setDescription("");
     setAmountWholeInput("");
     setAmountFractionInput("");
