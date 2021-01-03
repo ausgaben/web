@@ -40,7 +40,7 @@
     "react-apollo": "^3.1.5",
     "react-dom": "17.0.1",
     "react-router-dom": "^5.1.2",
-    "reactstrap": "8.8.0",
+    "reactstrap": "8.8.1",
     "styled-components": "5.2.1"
   },
   "devDependencies": {
@@ -50,10 +50,10 @@
     "@types/graphql": "^14.5.0",
     "@types/jest": "26.0.19",
     "@types/luxon": "1.25.0",
-    "@types/node": "14.14.16",
+    "@types/node": "14.14.19",
     "@types/react": "17.0.0",
     "@types/react-dom": "17.0.0",
-    "@types/react-router-dom": "5.1.6",
+    "@types/react-router-dom": "5.1.7",
     "@types/reactstrap": "8.7.2",
     "@types/styled-components": "5.1.7",
     "husky": "4.3.6",
