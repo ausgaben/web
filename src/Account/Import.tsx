@@ -32,6 +32,8 @@ type ParsedSpending = {
   bookedAt: DateTime;
 };
 
+const trim = (s: string) => s.trim();
+
 export const Import = (props: { account: Account }) => {
   const {
     account: {
@@ -50,6 +52,7 @@ export const Import = (props: { account: Account }) => {
   );
   const spendings: ParsedSpending[] = importData
     .split("\n")
+    .map(trim)
     .map((line: string) => {
       let [
         type,
@@ -58,7 +61,7 @@ export const Import = (props: { account: Account }) => {
         currency,
         amount,
         dayOfMonth,
-      ] = line.split("\t");
+      ] = line.split("\t").map(trim);
       if (
         !type ||
         !category ||
