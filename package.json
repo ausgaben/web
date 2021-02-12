@@ -28,7 +28,7 @@
     "apollo-link-http": "^1.5.17",
     "aws-amplify": "3.3.13",
     "aws-amplify-react": "4.2.17",
-    "aws-appsync": "^3.0.4",
+    "aws-appsync": "^4.0.3",
     "aws-appsync-auth-link": "^2.0.3",
     "aws-appsync-subscription-link": "^1.0.1",
     "bootstrap": "4.5.3",
