@@ -1,6 +1,5 @@
 import { Currency } from "../schema";
-import { NormalizedCacheObject } from "apollo-cache-inmemory";
-import ApolloClient from "apollo-client";
+import { ApolloClient, NormalizedCacheObject } from "@apollo/client";
 import {
   exchangeRateQuery,
   ExchangeRate,

@@ -16,9 +16,9 @@ import { client } from "../App";
 import { allTime, spendingsQuery } from "../graphql/queries/spendingsQuery";
 import styled from "styled-components";
 import { mobileBreakpoint } from "../Styles";
-import { NormalizedCacheObject } from "apollo-cache-inmemory";
-import ApolloClient from "apollo-client";
+import { NormalizedCacheObject } from "@apollo/client";
 import { fetchExchangeRate } from "../ExchangeRates/fetchExchangeRate";
+import { ApolloClient } from "@apollo/client";
 
 const AccountsTable = styled(Table)`
   .amount {

@@ -21,9 +21,9 @@ import {
 } from "reactstrap";
 import { Fail, Note } from "../Note/Note";
 import { Account, Spending } from "../schema";
-import { Mutation } from "@apollo/react-components";
-import { MutationFunction } from "@apollo/react-common";
-import { ApolloError } from "apollo-client";
+import { Mutation } from "@apollo/client/react/components";
+import { MutationFunction } from "@apollo/client";
+import { ApolloError } from "@apollo/client";
 import { currencies, NOK } from "../currency/currencies";
 import { Cache } from "aws-amplify";
 import { Link } from "react-router-dom";

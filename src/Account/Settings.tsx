@@ -14,7 +14,7 @@ import {
 import gql from "graphql-tag";
 import { Fail, Note } from "../Note/Note";
 import { Account } from "../schema";
-import { Mutation } from "@apollo/react-components";
+import { Mutation } from "@apollo/client/react/components";
 import { accountsQuery } from "../graphql/queries/accountsQuery";
 import { GraphQLError } from "graphql";
 import { Link } from "react-router-dom";

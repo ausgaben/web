@@ -7,7 +7,7 @@ import {
 } from "../graphql/queries/spendingsQuery";
 import { DateTime } from "luxon";
 import { Cache } from "aws-amplify";
-import { useQuery } from "@apollo/react-hooks";
+import { useQuery } from "@apollo/client";
 
 const getDateSelection = (isSavingsAccount: boolean) => {
   if (isSavingsAccount) {

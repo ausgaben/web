@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Spending } from "../schema";
 import { Fail, Note } from "../Note/Note";
-import { Mutation } from "@apollo/react-components";
+import { Mutation } from "@apollo/client/react/components";
 import { spendingsQuery } from "../graphql/queries/spendingsQuery";
 import {
   Button,

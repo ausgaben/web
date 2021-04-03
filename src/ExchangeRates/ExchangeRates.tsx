@@ -8,7 +8,7 @@ import {
 import { Fail } from "../Note/Note";
 import { Loading } from "../Loading/Loading";
 import { NOK } from "../currency/currencies";
-import { Query } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
 
 const today = () =>
   new Date().toISOString().substring(0, 10) + "T00:00:00.000Z";

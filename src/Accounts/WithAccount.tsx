@@ -2,7 +2,7 @@ import React from "react";
 import { Account } from "../schema";
 import { Loading } from "../Loading/Loading";
 import { Note } from "../Note/Note";
-import { Query } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
 import { accountQuery } from "../graphql/queries/accountQuery";
 import { RouteComponentProps } from "react-router-dom";
 

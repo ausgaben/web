@@ -1,28 +1,27 @@
-import { ApolloClient } from "apollo-client";
-import { InMemoryCache, NormalizedCacheObject } from "apollo-cache-inmemory";
-import { HttpLink } from "apollo-link-http";
-import { concat } from "apollo-link";
+import { ApolloClient } from "@apollo/client";
+import { NormalizedCacheObject } from "@apollo/client";
+import { HttpLink } from "@apollo/client";
+import { concat } from "@apollo/client";
 import { AuthLink, AUTH_TYPE } from "aws-appsync-auth-link/lib/auth-link";
 import {
   SubscriptionHandshakeLink,
   CONTROL_EVENTS_KEY,
 } from "aws-appsync-subscription-link/lib/subscription-handshake-link";
 import { NonTerminatingLink } from "aws-appsync-subscription-link/lib/non-terminating-link";
-import { onError } from "apollo-link-error";
-import { split, from } from "apollo-link";
+import { onError } from "@apollo/client/link/error";
+import { split, from } from "@apollo/client";
 import { getMainDefinition } from "apollo-utilities";
 import { OperationDefinitionNode } from "graphql";
-import { ApolloLink, Observable } from "apollo-link";
+import { ApolloLink, Observable } from "@apollo/client";
 import { Auth } from "aws-amplify";
-import { persistCache } from "apollo-cache-persist";
+import { InMemoryCache } from "@apollo/client/core";
+import { persistCache, LocalStorageWrapper } from "apollo3-cache-persist";
 
 const cache = new InMemoryCache();
 
-// @ts-ignore
 persistCache({
   cache,
-  // @ts-ignore
-  storage: window.localStorage,
+  storage: new LocalStorageWrapper(window.localStorage),
 });
 
 const httpLink = new HttpLink({ uri: process.env.REACT_APP_API_ENDPOINT });

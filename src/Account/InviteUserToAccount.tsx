@@ -9,8 +9,8 @@ import {
 } from "reactstrap";
 import gql from "graphql-tag";
 import { Account } from "../schema";
-import { Mutation } from "react-apollo";
-import { MutationFunction } from "@apollo/react-common";
+import { Mutation } from "@apollo/client/react/components";
+import { MutationFunction } from "@apollo/client";
 
 export const inviteUserMutation = gql`
   mutation inviteUser($accountId: ID!, $userId: ID!) {

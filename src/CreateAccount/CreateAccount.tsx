@@ -12,7 +12,7 @@ import {
   CardFooter,
 } from "reactstrap";
 import gql from "graphql-tag";
-import { Mutation } from "@apollo/react-components";
+import { Mutation } from "@apollo/client/react/components";
 import { accountsQuery } from "../graphql/queries/accountsQuery";
 import { Account } from "../schema";
 

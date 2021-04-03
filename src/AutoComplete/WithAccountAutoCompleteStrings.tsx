@@ -1,7 +1,7 @@
 import React from "react";
 import { Account } from "../schema";
 import { autoCompleteStringsQuery } from "../graphql/queries/autoCompleteStringsQuery";
-import { useQuery } from "@apollo/react-hooks";
+import { useQuery } from "@apollo/client";
 
 export const WithAccountAutoCompleteStrings = (props: {
   account: Account;

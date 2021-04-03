@@ -22,7 +22,7 @@ import { AboutPage } from "./About/Page";
 import { CreateAccountsPage } from "./CreateAccount/Page";
 import { AccountPage } from "./Account/Page";
 import { AccountSettingsPage } from "./Account/SettingsPage";
-import { ApolloProvider } from "react-apollo";
+import { ApolloProvider } from "@apollo/client";
 import { createClient } from "./Apollo/createClient";
 import {
   AddSpendingPage,

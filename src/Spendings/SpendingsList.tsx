@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { Spending, Account } from "../schema";
 import { FormatDate } from "../util/date/FormatDate";
 import { FormatMoney } from "../util/date/FormatMoney";
-import { Mutation } from "@apollo/react-components";
+import { Mutation } from "@apollo/client/react/components";
 import gql from "graphql-tag";
 import { spendingsQuery } from "../graphql/queries/spendingsQuery";
 import { updateAggregate } from "../es/updateAggregate";
