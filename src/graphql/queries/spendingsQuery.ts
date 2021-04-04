@@ -27,6 +27,18 @@ export const spendingsQuery = gql`
           id
           symbol
         }
+        account {
+          _meta {
+            id
+          }
+          name
+        }
+        savingForAccount {
+          _meta {
+            id
+          }
+          name
+        }
       }
       nextStartKey
     }

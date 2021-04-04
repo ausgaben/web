@@ -8,6 +8,7 @@ import { WithSpendings } from "../Spendings/WithSpendings";
 import { Loading } from "../Loading/Loading";
 import { RouteComponentProps } from "react-router-dom";
 import { Main } from "../Styles";
+import { WithSavingsAccounts } from "../Accounts/WithSavingsAccounts";
 
 type routeProps = RouteComponentProps<{
   accountId: string;
@@ -23,19 +24,33 @@ export const AddSpendingPage = (props: routeProps) => (
         );
         if (spendingId) {
           return (
-            <WithSpendings account={account} loading={<Loading />}>
-              {({ spendings }) => (
-                <CreateSpendingForm
-                  account={account}
-                  spending={spendings.find(
-                    ({ _meta: { id } }) => id === spendingId
+            <WithSavingsAccounts loading={<Loading />}>
+              {(savingsAccounts) => (
+                <WithSpendings account={account} loading={<Loading />}>
+                  {({ spendings }) => (
+                    <CreateSpendingForm
+                      account={account}
+                      spending={spendings.find(
+                        ({ _meta: { id } }) => id === spendingId
+                      )}
+                      savingsAccounts={savingsAccounts}
+                    />
                   )}
-                />
+                </WithSpendings>
               )}
-            </WithSpendings>
+            </WithSavingsAccounts>
           );
         }
-        return <CreateSpendingForm account={account} />;
+        return (
+          <WithSavingsAccounts loading={<Loading />}>
+            {(savingsAccounts) => (
+              <CreateSpendingForm
+                account={account}
+                savingsAccounts={savingsAccounts}
+              />
+            )}
+          </WithSavingsAccounts>
+        );
       }}
     </WithAccount>
   </Main>
@@ -47,16 +62,21 @@ export const UpdatedSpendingPage = (props: routeProps) => (
       {(account) => {
         const spendingId = props.match.params.spendingId!;
         return (
-          <WithSpendings account={account} loading={<Loading />}>
-            {({ spendings }) => (
-              <UpdateSpendingForm
-                account={account}
-                spending={
-                  spendings.find(({ _meta: { id } }) => id === spendingId)!
-                }
-              />
+          <WithSavingsAccounts loading={<Loading />}>
+            {(savingsAccounts) => (
+              <WithSpendings account={account} loading={<Loading />}>
+                {({ spendings }) => (
+                  <UpdateSpendingForm
+                    account={account}
+                    spending={
+                      spendings.find(({ _meta: { id } }) => id === spendingId)!
+                    }
+                    savingsAccounts={savingsAccounts}
+                  />
+                )}
+              </WithSpendings>
             )}
-          </WithSpendings>
+          </WithSavingsAccounts>
         );
       }}
     </WithAccount>

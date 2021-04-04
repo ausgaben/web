@@ -220,14 +220,17 @@ export const Settings = (props: { account: Account }) => {
                 ({ _meta: { id: u } }) => id === u
               );
               if (accountToDelete) {
-                accounts.splice(accounts.indexOf(accountToDelete), 1);
+                const i = accounts.indexOf(accountToDelete);
                 cache.writeQuery({
                   query: accountsQuery,
                   data: {
                     ...res,
                     accounts: {
                       ...res.accounts,
-                      items: accounts,
+                      items: [
+                        ...accounts.slice(0, i),
+                        ...accounts.slice(i + 1),
+                      ],
                     },
                   },
                 });

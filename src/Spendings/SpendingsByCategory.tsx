@@ -84,6 +84,7 @@ export const SpendingsByCategory = ({
               };
             }
             let amountInAccountDefaultCurrency = spending.amount;
+
             if (spending.currency.id === account.defaultCurrency.id) {
               // Spending is in account currency => no conversion
               // pass
@@ -98,6 +99,13 @@ export const SpendingsByCategory = ({
               amountInAccountDefaultCurrency =
                 spending.amount *
                 (await er(spending.currency, new Date(spending.bookedAt)));
+            }
+
+            // Saving from another account
+            const isSavingIncome =
+              spending.savingForAccount?._meta.id === account._meta.id;
+            if (isSavingIncome) {
+              amountInAccountDefaultCurrency *= -1;
             }
 
             spendingsByCategory[t][spending.category].spendings.push({

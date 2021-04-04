@@ -41,10 +41,12 @@ type SpendingMutationVariables = {
   amount: number;
   currencyId: string;
   booked: boolean;
+  savingForAccountId?: string;
 };
 
 export const CreateSpendingForm = (props: {
   account: Account;
+  savingsAccounts: Account[];
   spending?: Spending;
 }) => (
   <Mutation<
@@ -75,6 +77,7 @@ export const CreateSpendingForm = (props: {
         errorLabel={({ isIncome }) => (
           <>Adding {isIncome ? "Income" : "Spending"} failed.</>
         )}
+        savingsAccounts={props.savingsAccounts}
       />
     )}
   </Mutation>
@@ -82,6 +85,7 @@ export const CreateSpendingForm = (props: {
 
 export const UpdateSpendingForm = (props: {
   account: Account;
+  savingsAccounts: Account[];
   spending: Spending;
 }) => (
   <Mutation<
@@ -96,6 +100,7 @@ export const UpdateSpendingForm = (props: {
       amount: number;
       currencyId: string;
       booked: boolean;
+      savingForAccountId?: string;
     }
   >
     mutation={updatedSpendingMutation}
@@ -129,6 +134,7 @@ export const UpdateSpendingForm = (props: {
         errorLabel={({ isIncome }) => (
           <>Updating {isIncome ? "Income" : "Spending"} failed.</>
         )}
+        savingsAccounts={props.savingsAccounts}
       />
     )}
   </Mutation>
@@ -145,6 +151,7 @@ const FormForSpending = ({
   successLabel,
   errorLabel,
   resetOnSave,
+  savingsAccounts,
 }: {
   loading: boolean;
   spending?: Spending;
@@ -156,6 +163,7 @@ const FormForSpending = ({
   onSubmit: MutationFunction<any, SpendingMutationVariables>;
   error?: ApolloError;
   resetOnSave?: boolean;
+  savingsAccounts: Account[];
 }) => {
   const [added, setAdded] = useState(false);
 
@@ -168,9 +176,15 @@ const FormForSpending = ({
     spending ? spending.description : ""
   );
 
+  const [savingForAccountId, setSavingForAccountId] = useState(
+    spending?.savingForAccount?._meta.id ?? ""
+  );
+
   const [isIncome, setIsIncome] = useState(
     spending ? spending.amount > 0 : false
   );
+
+  const isSaving = !isIncome && savingForAccountId.length;
 
   const [amountWholeInput, setAmountWholeInput] = useState(
     spending ? Math.floor(Math.abs(spending.amount) / 100) : ""
@@ -361,11 +375,11 @@ const FormForSpending = ({
                 <Label>Type</Label>
                 <ButtonGroup>
                   <Button
-                    color="danger"
+                    color={isSaving ? "warning" : "danger"}
                     outline={isIncome}
                     onClick={() => setIsIncome(false)}
                   >
-                    Spending
+                    {isSaving ? "Saving" : "Spending"}
                   </Button>
                   <Button
                     color="success"
@@ -376,6 +390,29 @@ const FormForSpending = ({
                   </Button>
                 </ButtonGroup>
               </FormGroup>
+              {!account.isSavingsAccount && (
+                <FormGroup className="oneLine">
+                  <Label for="saving">Saving towards</Label>
+                  <Input
+                    type="select"
+                    name="saving"
+                    id="saving"
+                    disabled={loading || isIncome}
+                    onChange={({ target: { value } }) =>
+                      setSavingForAccountId(value)
+                    }
+                    value={savingForAccountId}
+                  >
+                    <option value="">None</option>
+                    {!isIncome &&
+                      savingsAccounts.map((account) => (
+                        <option value={account._meta.id} key={account._meta.id}>
+                          {account.name}
+                        </option>
+                      ))}
+                  </Input>
+                </FormGroup>
+              )}
             </CardBody>
             <CardFooter>
               <Link to={`/account/${account._meta.id}`}>⬅</Link>
@@ -395,6 +432,9 @@ const FormForSpending = ({
                       amount: isIncome ? amount : -amount,
                       currencyId: currency,
                       booked,
+                      savingForAccountId: isSaving
+                        ? savingForAccountId
+                        : undefined,
                     },
                   });
                   if (res && !res.errors) {

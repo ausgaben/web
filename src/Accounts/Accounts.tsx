@@ -87,7 +87,14 @@ const totalAccountSavingsInEUR = (
       if (spending.currency.id !== EUR.id) {
         total.hasNonEUR = true;
       }
-      total.totalSavings += spending.amount;
+      let amount = spending.amount;
+      // Saving from another account
+      const isSavingIncome =
+        spending.savingForAccount?._meta.id === account._meta.id;
+      if (isSavingIncome) {
+        amount *= -1;
+      }
+      total.totalSavings += amount;
       return total;
     },
     { totalSavings: 0, hasNonEUR: false }

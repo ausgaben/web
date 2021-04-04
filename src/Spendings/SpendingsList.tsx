@@ -13,6 +13,10 @@ import styled from "styled-components";
 import { mobileBreakpoint } from "../Styles";
 import { Summary, SummaryRow, AccountSummary } from "./Summary";
 
+const SavingInfo = styled.small`
+  padding-left: 0.5rem;
+`;
+
 export const markSpendingAsBooked = gql`
   mutation updateSpending($spendingId: ID!) {
     updateSpending(spendingId: $spendingId, booked: true)
@@ -98,96 +102,129 @@ export const SpendingsList = ({
                       bookedAt,
                       amount,
                       booked,
+                      savingForAccount,
+                      account: spendingAccount,
                       _meta: { id },
                       currency: { id: currencyId, symbol: currencySymbol },
-                    }) => (
-                      <tr key={id} className="spending">
-                        {!booked && (
-                          <td>
-                            <Mutation<
-                              {
-                                updateSpending: void;
-                              },
-                              {
-                                spendingId: string;
-                              }
-                            >
-                              mutation={markSpendingAsBooked}
-                              update={(cache) => {
-                                const res = cache.readQuery<{
-                                  spendings: {
-                                    items: Spending[];
-                                  };
-                                }>({
-                                  query: spendingsQuery,
-                                  variables,
-                                });
-                                if (res) {
-                                  const {
-                                    spendings: { items: spendings },
-                                  } = res;
-                                  const spendingToUpdate = spendings.find(
-                                    ({ _meta: { id: u } }) => id === u
-                                  );
-                                  if (spendingToUpdate) {
-                                    spendings[
-                                      spendings.indexOf(spendingToUpdate)
-                                    ] = updateAggregate<Spending>({
-                                      ...spendingToUpdate,
-                                      booked: true,
-                                    });
-                                    cache.writeQuery({
-                                      query: spendingsQuery,
-                                      data: {
-                                        ...res,
-                                        spendings: {
-                                          ...res.spendings,
-                                          items: spendings,
-                                        },
-                                      },
-                                    });
-                                    onUpdateSpendings();
-                                  }
+                    }) => {
+                      const isSavingIncome =
+                        savingForAccount?._meta.id === account._meta.id;
+                      return (
+                        <tr key={id} className="spending">
+                          {!booked && (
+                            <td>
+                              <Mutation<
+                                {
+                                  updateSpending: void;
+                                },
+                                {
+                                  spendingId: string;
                                 }
-                              }}
-                            >
-                              {(markSpendingAsBooked) => (
-                                <Button
-                                  color="secondary"
-                                  outline={true}
-                                  onClick={() =>
-                                    markSpendingAsBooked({
-                                      variables: { spendingId: id },
-                                    })
+                              >
+                                mutation={markSpendingAsBooked}
+                                update={(cache) => {
+                                  const res = cache.readQuery<{
+                                    spendings: {
+                                      items: Spending[];
+                                    };
+                                  }>({
+                                    query: spendingsQuery,
+                                    variables,
+                                  });
+                                  if (res) {
+                                    const {
+                                      spendings: { items: spendings },
+                                    } = res;
+                                    const spendingToUpdate = spendings.find(
+                                      ({ _meta: { id: u } }) => id === u
+                                    );
+                                    if (spendingToUpdate) {
+                                      spendings[
+                                        spendings.indexOf(spendingToUpdate)
+                                      ] = updateAggregate<Spending>({
+                                        ...spendingToUpdate,
+                                        booked: true,
+                                      });
+                                      cache.writeQuery({
+                                        query: spendingsQuery,
+                                        data: {
+                                          ...res,
+                                          spendings: {
+                                            ...res.spendings,
+                                            items: spendings,
+                                          },
+                                        },
+                                      });
+                                      onUpdateSpendings();
+                                    }
                                   }
-                                  title="Mark as booked"
-                                >
-                                  <span role="img" aria-label="checkmark">
-                                    ✓
-                                  </span>
-                                </Button>
-                              )}
-                            </Mutation>
+                                }}
+                              >
+                                {(markSpendingAsBooked) => (
+                                  <Button
+                                    color="secondary"
+                                    outline={true}
+                                    onClick={() =>
+                                      markSpendingAsBooked({
+                                        variables: { spendingId: id },
+                                      })
+                                    }
+                                    title="Mark as booked"
+                                  >
+                                    <span role="img" aria-label="checkmark">
+                                      ✓
+                                    </span>
+                                  </Button>
+                                )}
+                              </Mutation>
+                            </td>
+                          )}
+                          <td className="date">
+                            <FormatDate date={bookedAt} />
                           </td>
-                        )}
-                        <td className="date">
-                          <FormatDate date={bookedAt} />
-                        </td>
-                        <td className="description">
-                          <Link
-                            to={`/account/${account._meta.id}/spending/${id}`}
-                          >
-                            {description}
-                          </Link>
-                        </td>
-                        <td className="amount">
-                          <FormatMoney
-                            amount={amount}
-                            symbol={currencySymbol}
-                          />
-                        </td>
-                      </tr>
-                    )
+                          <td className="description">
+                            <Link
+                              to={`/account/${spendingAccount._meta.id}/spending/${id}`}
+                            >
+                              {description}
+                            </Link>
+                            {savingForAccount && (
+                              <>
+                                <br />
+                                <SavingInfo>
+                                  {isSavingIncome && (
+                                    <>
+                                      ⮤{" "}
+                                      <Link
+                                        to={`/account/${spendingAccount._meta.id}`}
+                                      >
+                                        {spendingAccount.name}
+                                      </Link>
+                                    </>
+                                  )}
+                                  {!isSavingIncome && (
+                                    <>
+                                      ⮡{" "}
+                                      <Link
+                                        to={`/account/${savingForAccount._meta.id}`}
+                                      >
+                                        {savingForAccount.name}
+                                      </Link>
+                                    </>
+                                  )}
+                                </SavingInfo>
+                              </>
+                            )}
+                          </td>
+                          <td className="amount">
+                            <FormatMoney
+                              amount={isSavingIncome ? amount * -1 : amount}
+                              symbol={currencySymbol}
+                            />
+                          </td>
+                        </tr>
+                      );
+                    }
                   )}
                 </React.Fragment>
               ))}

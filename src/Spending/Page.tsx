@@ -72,17 +72,23 @@ export const Page = (props: routeProps) => {
                 ({ _meta: { id } }) => id === spendingId
               );
               if (spending) {
+                const isSaving =
+                  spending.amount < 0 &&
+                  spending.savingForAccount !== undefined &&
+                  spending.savingForAccount !== null;
+                const kind = isSaving ? "Saving" : "Spending";
+
                 return (
                   <Card>
                     {error && (
                       <CardBody>
-                        <Fail>Spending deletion failed.</Fail>
+                        <Fail>{kind} deletion failed.</Fail>
                       </CardBody>
                     )}
                     {!deleted && (
                       <>
                         <CardHeader>
-                          <CardTitle>Spending</CardTitle>
+                          <CardTitle>{kind}</CardTitle>
                         </CardHeader>
                         <CardBody>
                           <dl>
@@ -105,6 +111,23 @@ export const Page = (props: routeProps) => {
                             </dd>
                             <dt>Booked?</dt>
                             <dd>{spending.booked ? "Yes" : "No"}</dd>
+                            {spending.savingForAccount !== undefined &&
+                              spending.savingForAccount !== null && (
+                                <>
+                                  <dt>Saving</dt>
+                                  <dd>
+                                    <Link to={`/account/${account._meta.id}`}>
+                                      {account.name}
+                                    </Link>
+                                    {" ⭢ "}
+                                    <Link
+                                      to={`/account/${spending.savingForAccount._meta.id}`}
+                                    >
+                                      {spending.savingForAccount.name}
+                                    </Link>
+                                  </dd>
+                                </>
+                              )}
                           </dl>
                         </CardBody>
                         <Mutation<{}, { spendingId: string }>
@@ -126,17 +149,17 @@ export const Page = (props: routeProps) => {
                                 ({ _meta: { id: u } }) => spendingId === u
                               );
                               if (spendingToDelete) {
-                                spendings.splice(
-                                  spendings.indexOf(spendingToDelete),
-                                  1
-                                );
+                                const i = spendings.indexOf(spendingToDelete);
                                 cache.writeQuery({
                                   query: spendingsQuery,
                                   data: {
                                     ...res,
                                     spendings: {
                                       ...res.spendings,
-                                      items: spendings,
+                                      items: [
+                                        ...spendings.slice(0, i),
+                                        ...spendings.slice(i + 1),
+                                      ],
                                     },
                                   },
                                 });
