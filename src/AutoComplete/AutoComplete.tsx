@@ -35,12 +35,14 @@ export const AutoComplete = ({
 }) => {
   const [highlight, setHighLight] = useState(-1);
   const [autoCompleteHidden, setAutoCompleteHidden] = useState(true);
-  const hits =
-    value.length > 0
-      ? strings
-          .filter((s) => s.toLowerCase().indexOf(value.toLowerCase()) >= 0)
-          .slice(0, 9)
-      : [];
+  const [showAll, setShowAll] = useState(false);
+  const hits = showAll
+    ? strings
+    : value.length > 0
+    ? strings
+        .filter((s) => s.toLowerCase().indexOf(value.toLowerCase()) >= 0)
+        .slice(0, 9)
+    : [];
   return (
     <AutoCompleteInput>
       <Input
@@ -56,9 +58,10 @@ export const AutoComplete = ({
           onChange(value);
           setAutoCompleteHidden(false);
           setHighLight(-1);
+          setShowAll(false);
         }}
         autoComplete="off"
-        onKeyUp={({ key }) => {
+        onKeyUp={({ key, ctrlKey }) => {
           if (key === "ArrowUp") {
             setHighLight(Math.max(0, highlight - 1));
           }
@@ -77,6 +80,12 @@ export const AutoComplete = ({
           }
           if (key === "Escape") {
             setAutoCompleteHidden(true);
+          }
+          if (key === " " && ctrlKey) {
+            // Ctrl+Space was pressed, show all values
+            setAutoCompleteHidden(false);
+            setHighLight(-1);
+            setShowAll(true);
           }
         }}
         onBlur={() => {
