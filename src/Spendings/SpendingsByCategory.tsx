@@ -101,10 +101,10 @@ export const SpendingsByCategory = ({
                 (await er(spending.currency, new Date(spending.bookedAt)));
             }
 
-            // Saving from another account
-            const isSavingIncome =
-              spending.savingForAccount?._meta.id === account._meta.id;
-            if (isSavingIncome) {
+            // Transfer from another account
+            const isTransfer =
+              spending.transferToAccount?._meta.id === account._meta.id;
+            if (isTransfer) {
               amountInAccountDefaultCurrency *= -1;
             }
 

@@ -1,11 +1,12 @@
 import React from "react";
 import { Spendings } from "../Spendings/Spendings";
-import { WithAccount } from "../Accounts/WithAccount";
 import styled from "styled-components";
 import { wideBreakpoint } from "../Styles";
 import { Main } from "../Styles";
+import { RouteComponentProps } from "react-router";
+import { WithAccount } from "../Accounts/WithAccounts";
 
-const AccounMain = styled(Main)`
+const AccountMain = styled(Main)`
   @media (min-width: ${wideBreakpoint}) {
     max-width: ${wideBreakpoint};
     display: grid;
@@ -15,10 +16,14 @@ const AccounMain = styled(Main)`
   }
 `;
 
-export const AccountPage = (props: any) => (
-  <AccounMain>
-    <WithAccount {...props}>
+export const AccountPage = (
+  props: RouteComponentProps<{
+    accountId: string;
+  }>
+) => (
+  <AccountMain>
+    <WithAccount accountId={props.match.params.accountId}>
       {(account) => <Spendings account={account} />}
     </WithAccount>
-  </AccounMain>
+  </AccountMain>
 );

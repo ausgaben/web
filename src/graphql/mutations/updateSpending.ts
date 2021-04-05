@@ -9,7 +9,7 @@ export const updatedSpendingMutation = gql`
     $description: String!
     $amount: Int!
     $currencyId: ID!
-    $savingForAccountId: ID
+    $transferToAccountId: ID
   ) {
     updateSpending(
       spendingId: $spendingId
@@ -19,7 +19,7 @@ export const updatedSpendingMutation = gql`
       description: $description
       amount: $amount
       currencyId: $currencyId
-      savingForAccountId: $savingForAccountId
+      transferToAccountId: $transferToAccountId
     )
   }
 `;
@@ -32,7 +32,7 @@ export type updatedSpendingMutationVariables = {
   description: string;
   amount: number;
   currencyId: string;
-  savingForAccountId?: string;
+  transferToAccountId?: string;
 };
 
 export type updatedSpendingMutationResult = {

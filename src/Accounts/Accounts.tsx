@@ -88,10 +88,10 @@ const totalAccountSavingsInEUR = (
         total.hasNonEUR = true;
       }
       let amount = spending.amount;
-      // Saving from another account
-      const isSavingIncome =
-        spending.savingForAccount?._meta.id === account._meta.id;
-      if (isSavingIncome) {
+      // Transfer from another account
+      const isTransfer =
+        spending.transferToAccount?._meta.id === account._meta.id;
+      if (isTransfer) {
         amount *= -1;
       }
       total.totalSavings += amount;

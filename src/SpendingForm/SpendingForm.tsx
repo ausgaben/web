@@ -43,8 +43,8 @@ import { AutoComplete } from "../AutoComplete/AutoComplete";
 
 export const CreateSpendingForm = (props: {
   account: Account;
-  savingsAccounts: Account[];
   spending?: Spending;
+  otherAccounts: Account[];
 }) => (
   <Mutation<createSpendingMutationResult, createSpendingMutationVariables>
     mutation={createSpendingMutation}
@@ -77,7 +77,7 @@ export const CreateSpendingForm = (props: {
         errorLabel={({ isIncome }) => (
           <>Adding {isIncome ? "Income" : "Spending"} failed.</>
         )}
-        savingsAccounts={props.savingsAccounts}
+        otherAccounts={props.otherAccounts}
       />
     )}
   </Mutation>
@@ -85,8 +85,8 @@ export const CreateSpendingForm = (props: {
 
 export const UpdateSpendingForm = (props: {
   account: Account;
-  savingsAccounts: Account[];
   spending: Spending;
+  otherAccounts: Account[];
 }) => (
   <Mutation<updatedSpendingMutationResult, updatedSpendingMutationVariables>
     mutation={updatedSpendingMutation}
@@ -120,7 +120,7 @@ export const UpdateSpendingForm = (props: {
         errorLabel={({ isIncome }) => (
           <>Updating {isIncome ? "Income" : "Spending"} failed.</>
         )}
-        savingsAccounts={props.savingsAccounts}
+        otherAccounts={props.otherAccounts}
       />
     )}
   </Mutation>
@@ -137,7 +137,7 @@ const FormForSpending = ({
   successLabel,
   errorLabel,
   resetOnSave,
-  savingsAccounts,
+  otherAccounts,
 }: {
   loading: boolean;
   spending?: Spending;
@@ -153,11 +153,11 @@ const FormForSpending = ({
     amount: number;
     currencyId: string;
     booked: boolean;
-    savingForAccountId?: string;
+    transferToAccountId?: string;
   }) => Promise<FetchResult<unknown>>;
   error?: ApolloError;
   resetOnSave?: boolean;
-  savingsAccounts: Account[];
+  otherAccounts: Account[];
 }) => {
   const [added, setAdded] = useState(false);
 
@@ -170,15 +170,15 @@ const FormForSpending = ({
     spending ? spending.description : ""
   );
 
-  const [savingForAccountId, setSavingForAccountId] = useState(
-    spending?.savingForAccount?._meta.id ?? ""
+  const [transferToAccountId, setTransferToAccountId] = useState(
+    spending?.transferToAccount?._meta.id ?? ""
   );
 
   const [isIncome, setIsIncome] = useState(
     spending ? spending.amount > 0 : false
   );
 
-  const isSaving = !isIncome && savingForAccountId.length;
+  const isTransfer = !isIncome && transferToAccountId.length;
 
   const [amountWholeInput, setAmountWholeInput] = useState(
     spending ? Math.floor(Math.abs(spending.amount) / 100) : ""
@@ -209,6 +209,13 @@ const FormForSpending = ({
     amountWhole.current = 0;
     amountFraction.current = 0;
   };
+
+  const otherSavingsAccounts = otherAccounts
+    .filter(({ isSavingsAccount }) => isSavingsAccount === true)
+    .sort((a, b) => a.name.localeCompare(b.name));
+  const otherCheckingsAccounts = otherAccounts
+    .filter(({ isSavingsAccount }) => isSavingsAccount !== true)
+    .sort((a, b) => a.name.localeCompare(b.name));
 
   let tabIndex = 0;
   return (
@@ -369,11 +376,11 @@ const FormForSpending = ({
                 <Label>Type</Label>
                 <ButtonGroup>
                   <Button
-                    color={isSaving ? "warning" : "danger"}
+                    color="danger"
                     outline={isIncome}
                     onClick={() => setIsIncome(false)}
                   >
-                    {isSaving ? "Saving" : "Spending"}
+                    Saving
                   </Button>
                   <Button
                     color="success"
@@ -384,29 +391,33 @@ const FormForSpending = ({
                   </Button>
                 </ButtonGroup>
               </FormGroup>
-              {!account.isSavingsAccount && (
-                <FormGroup className="oneLine">
-                  <Label for="saving">Saving towards</Label>
-                  <Input
-                    type="select"
-                    name="saving"
-                    id="saving"
-                    disabled={loading || isIncome}
-                    onChange={({ target: { value } }) =>
-                      setSavingForAccountId(value)
-                    }
-                    value={savingForAccountId}
-                  >
-                    <option value="">None</option>
-                    {!isIncome &&
-                      savingsAccounts.map((account) => (
-                        <option value={account._meta.id} key={account._meta.id}>
-                          {account.name}
-                        </option>
-                      ))}
-                  </Input>
-                </FormGroup>
-              )}
+              <FormGroup className="oneLine">
+                <Label for="transfer">Transfer to</Label>
+                <Input
+                  type="select"
+                  name="transfer"
+                  id="transfer"
+                  disabled={loading || isIncome}
+                  onChange={({ target: { value } }) =>
+                    setTransferToAccountId(value)
+                  }
+                  value={transferToAccountId}
+                >
+                  <option value="">&mdash; (None)</option>
+                  {!isIncome && (
+                    <>
+                      <AccountSelection
+                        label="Savings accounts"
+                        accounts={otherSavingsAccounts}
+                      />
+                      <AccountSelection
+                        label="Checkings accounts"
+                        accounts={otherCheckingsAccounts}
+                      />
+                    </>
+                  )}
+                </Input>
+              </FormGroup>
             </CardBody>
             <CardFooter>
               <Link to={`/account/${account._meta.id}`}>⬅</Link>
@@ -424,8 +435,8 @@ const FormForSpending = ({
                     amount: isIncome ? amount : -amount,
                     currencyId: currency,
                     booked,
-                    savingForAccountId: isSaving
-                      ? savingForAccountId
+                    transferToAccountId: isTransfer
+                      ? transferToAccountId
                       : undefined,
                   });
                   if (res && !res.errors) {
@@ -442,5 +453,24 @@ const FormForSpending = ({
         </Form>
       )}
     </WithAccountAutoCompleteStrings>
+  );
+};
+
+const AccountSelection = ({
+  label,
+  accounts,
+}: {
+  label: string;
+  accounts: Account[];
+}) => {
+  if (accounts.length === 0) return null;
+  return (
+    <optgroup label={label}>
+      {accounts.map((account) => (
+        <option value={account._meta.id} key={account._meta.id}>
+          {account.name}
+        </option>
+      ))}
+    </optgroup>
   );
 };

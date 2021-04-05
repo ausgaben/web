@@ -33,7 +33,7 @@ export const spendingsQuery = gql`
           }
           name
         }
-        savingForAccount {
+        transferToAccount {
           _meta {
             id
           }

@@ -28,5 +28,5 @@ export type Spending = {
   currency: Currency;
   booked: boolean;
   _meta: EntityMeta;
-  savingForAccount?: Account;
+  transferToAccount?: Account;
 };

@@ -17,16 +17,11 @@ import gql from "graphql-tag";
 import { currenciesById } from "../currency/currencies";
 import { FormatMoney } from "../util/date/FormatMoney";
 import { FormatDate } from "../util/date/FormatDate";
-import { WithAccount } from "../Accounts/WithAccount";
+import { WithAccount } from "../Accounts/WithAccounts";
 import { WithSpendings } from "../Spendings/WithSpendings";
 import { Loading } from "../Loading/Loading";
 import { RouteComponentProps } from "react-router-dom";
 import { Main } from "../Styles";
-
-type routeProps = RouteComponentProps<{
-  accountId: string;
-  spendingId: string;
-}>;
 
 export const deleteSpendingQuery = gql`
   mutation deleteSpending($spendingId: ID!) {
@@ -34,7 +29,12 @@ export const deleteSpendingQuery = gql`
   }
 `;
 
-export const Page = (props: routeProps) => {
+export const Page = (
+  props: RouteComponentProps<{
+    accountId: string;
+    spendingId: string;
+  }>
+) => {
   const [deleting, setDeleting] = useState(false);
   const [deleted, setDeleted] = useState(false);
   const [error, setError] = useState(false);
@@ -46,7 +46,7 @@ export const Page = (props: routeProps) => {
 
   return (
     <Main>
-      <WithAccount {...props}>
+      <WithAccount accountId={props.match.params.accountId}>
         {(account) => (
           <WithSpendings account={account} loading={<Loading />}>
             {({ spendings, variables }) => {
@@ -72,23 +72,17 @@ export const Page = (props: routeProps) => {
                 ({ _meta: { id } }) => id === spendingId
               );
               if (spending) {
-                const isSaving =
-                  spending.amount < 0 &&
-                  spending.savingForAccount !== undefined &&
-                  spending.savingForAccount !== null;
-                const kind = isSaving ? "Saving" : "Spending";
-
                 return (
                   <Card>
                     {error && (
                       <CardBody>
-                        <Fail>{kind} deletion failed.</Fail>
+                        <Fail>Spending deletion failed.</Fail>
                       </CardBody>
                     )}
                     {!deleted && (
                       <>
                         <CardHeader>
-                          <CardTitle>{kind}</CardTitle>
+                          <CardTitle>Spending</CardTitle>
                         </CardHeader>
                         <CardBody>
                           <dl>
@@ -111,19 +105,19 @@ export const Page = (props: routeProps) => {
                             </dd>
                             <dt>Booked?</dt>
                             <dd>{spending.booked ? "Yes" : "No"}</dd>
-                            {spending.savingForAccount !== undefined &&
-                              spending.savingForAccount !== null && (
+                            {spending.transferToAccount !== undefined &&
+                              spending.transferToAccount !== null && (
                                 <>
-                                  <dt>Saving</dt>
+                                  <dt>Transfer</dt>
                                   <dd>
                                     <Link to={`/account/${account._meta.id}`}>
                                       {account.name}
                                     </Link>
                                     {" ⭢ "}
                                     <Link
-                                      to={`/account/${spending.savingForAccount._meta.id}`}
+                                      to={`/account/${spending.transferToAccount._meta.id}`}
                                     >
-                                      {spending.savingForAccount.name}
+                                      {spending.transferToAccount.name}
                                     </Link>
                                   </dd>
                                 </>

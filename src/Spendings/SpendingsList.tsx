@@ -102,13 +102,13 @@ export const SpendingsList = ({
                       bookedAt,
                       amount,
                       booked,
-                      savingForAccount,
+                      transferToAccount,
                       account: spendingAccount,
                       _meta: { id },
                       currency: { id: currencyId, symbol: currencySymbol },
                     }) => {
-                      const isSavingIncome =
-                        savingForAccount?._meta.id === account._meta.id;
+                      const isTransfer =
+                        transferToAccount?._meta.id === account._meta.id;
                       return (
                         <tr key={id} className="spending">
                           {!booked && (
@@ -188,11 +188,11 @@ export const SpendingsList = ({
                             >
                               {description}
                             </Link>
-                            {savingForAccount && (
+                            {transferToAccount && (
                               <>
                                 <br />
                                 <SavingInfo>
-                                  {isSavingIncome && (
+                                  {isTransfer && (
                                     <>
                                       ⮤{" "}
                                       <Link
@@ -202,13 +202,13 @@ export const SpendingsList = ({
                                       </Link>
                                     </>
                                   )}
-                                  {!isSavingIncome && (
+                                  {!isTransfer && (
                                     <>
                                       ⮡{" "}
                                       <Link
-                                        to={`/account/${savingForAccount._meta.id}`}
+                                        to={`/account/${transferToAccount._meta.id}`}
                                       >
-                                        {savingForAccount.name}
+                                        {transferToAccount.name}
                                       </Link>
                                     </>
                                   )}
@@ -218,7 +218,7 @@ export const SpendingsList = ({
                           </td>
                           <td className="amount">
                             <FormatMoney
-                              amount={isSavingIncome ? amount * -1 : amount}
+                              amount={isTransfer ? amount * -1 : amount}
                               symbol={currencySymbol}
                             />
                           </td>
