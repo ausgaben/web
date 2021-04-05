@@ -23,3 +23,18 @@ export const updatedSpendingMutation = gql`
     )
   }
 `;
+
+export type updatedSpendingMutationVariables = {
+  spendingId: string;
+  bookedAt: string;
+  booked: boolean;
+  category: string;
+  description: string;
+  amount: number;
+  currencyId: string;
+  savingForAccountId?: string;
+};
+
+export type updatedSpendingMutationResult = {
+  updateSpending: { id: string };
+};

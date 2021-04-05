@@ -25,3 +25,18 @@ export const createSpendingMutation = gql`
     }
   }
 `;
+
+export type createSpendingMutationVariables = {
+  accountId: string;
+  bookedAt: string;
+  booked: boolean;
+  category: string;
+  description: string;
+  amount: number;
+  currencyId: string;
+  savingForAccountId?: string;
+};
+
+export type createSpendingMutationResult = {
+  createSpending: { id: string };
+};

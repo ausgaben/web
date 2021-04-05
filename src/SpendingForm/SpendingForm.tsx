@@ -22,39 +22,31 @@ import {
 import { Fail, Note } from "../Note/Note";
 import { Account, Spending } from "../schema";
 import { Mutation } from "@apollo/client/react/components";
-import { MutationFunction } from "@apollo/client";
+import { FetchResult } from "@apollo/client";
 import { ApolloError } from "@apollo/client";
 import { currencies, NOK } from "../currency/currencies";
 import { Cache } from "aws-amplify";
 import { Link } from "react-router-dom";
-import { createSpendingMutation } from "../graphql/mutations/createSpending";
-import { updatedSpendingMutation } from "../graphql/mutations/updateSpending";
+import {
+  createSpendingMutation,
+  createSpendingMutationResult,
+  createSpendingMutationVariables,
+} from "../graphql/mutations/createSpending";
+import {
+  updatedSpendingMutation,
+  updatedSpendingMutationResult,
+  updatedSpendingMutationVariables,
+} from "../graphql/mutations/updateSpending";
 import { WithAccountAutoCompleteStrings } from "../AutoComplete/WithAccountAutoCompleteStrings";
 import { Loading } from "../Loading/Loading";
 import { AutoComplete } from "../AutoComplete/AutoComplete";
-
-type SpendingMutationVariables = {
-  accountId: string;
-  bookedAt: string;
-  category: string;
-  description: string;
-  amount: number;
-  currencyId: string;
-  booked: boolean;
-  savingForAccountId?: string;
-};
 
 export const CreateSpendingForm = (props: {
   account: Account;
   savingsAccounts: Account[];
   spending?: Spending;
 }) => (
-  <Mutation<
-    {
-      createSpending: { id: string };
-    },
-    SpendingMutationVariables
-  >
+  <Mutation<createSpendingMutationResult, createSpendingMutationVariables>
     mutation={createSpendingMutation}
   >
     {(createSpendingMutation, { loading, error }) => (
@@ -63,7 +55,15 @@ export const CreateSpendingForm = (props: {
         error={error}
         spending={props.spending}
         account={props.account}
-        onSubmit={createSpendingMutation}
+        onSubmit={({ bookedAt, ...rest }) =>
+          createSpendingMutation({
+            variables: {
+              ...rest,
+              accountId: props.account._meta.id,
+              bookedAt: bookedAt.toISOString(),
+            },
+          })
+        }
         buttonLabel={"Add"}
         titleLabel={({ isIncome }) => (
           <>
@@ -88,21 +88,7 @@ export const UpdateSpendingForm = (props: {
   savingsAccounts: Account[];
   spending: Spending;
 }) => (
-  <Mutation<
-    {
-      updateSpending: { id: string };
-    },
-    {
-      spendingId: string;
-      bookedAt: string;
-      category: string;
-      description: string;
-      amount: number;
-      currencyId: string;
-      booked: boolean;
-      savingForAccountId?: string;
-    }
-  >
+  <Mutation<updatedSpendingMutationResult, updatedSpendingMutationVariables>
     mutation={updatedSpendingMutation}
   >
     {(updateSpendingMutation, { loading, error }) => (
@@ -111,11 +97,11 @@ export const UpdateSpendingForm = (props: {
         error={error}
         spending={props.spending}
         account={props.account}
-        onSubmit={(args) =>
+        onSubmit={({ bookedAt, ...rest }) =>
           updateSpendingMutation({
-            ...args,
             variables: {
-              ...args!.variables!,
+              ...rest,
+              bookedAt: bookedAt.toISOString(),
               spendingId: props.spending._meta.id,
             },
           })
@@ -160,7 +146,15 @@ const FormForSpending = ({
   titleLabel: (args: { isIncome: boolean }) => React.ReactElement;
   successLabel: (args: { isIncome: boolean }) => React.ReactElement;
   errorLabel: (args: { isIncome: boolean }) => React.ReactElement;
-  onSubmit: MutationFunction<any, SpendingMutationVariables>;
+  onSubmit: (args: {
+    bookedAt: Date;
+    category: string;
+    description: string;
+    amount: number;
+    currencyId: string;
+    booked: boolean;
+    savingForAccountId?: string;
+  }) => Promise<FetchResult<unknown>>;
   error?: ApolloError;
   resetOnSave?: boolean;
   savingsAccounts: Account[];
@@ -424,18 +418,15 @@ const FormForSpending = ({
                 onClick={async () => {
                   setAdded(false);
                   const res = await onSubmit({
-                    variables: {
-                      accountId: account._meta.id,
-                      bookedAt: bookedAt.toISOString(),
-                      category: category.trim(),
-                      description: description.trim(),
-                      amount: isIncome ? amount : -amount,
-                      currencyId: currency,
-                      booked,
-                      savingForAccountId: isSaving
-                        ? savingForAccountId
-                        : undefined,
-                    },
+                    bookedAt: bookedAt,
+                    category: category.trim(),
+                    description: description.trim(),
+                    amount: isIncome ? amount : -amount,
+                    currencyId: currency,
+                    booked,
+                    savingForAccountId: isSaving
+                      ? savingForAccountId
+                      : undefined,
                   });
                   if (res && !res.errors) {
                     setAdded(true);
