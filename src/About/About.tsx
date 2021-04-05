@@ -14,6 +14,22 @@ export const About = () => (
             {({ identityId }) => identityId}
           </AuthDataContext.Consumer>
         </dd>
+        {process.env.REACT_APP_SPAREBANK1_API_CLIENT_ID !== undefined && (
+          <>
+            <dt>Sparebank1 Integration</dt>
+            <dd>
+              <a
+                href={`https://api.sparebank1.no/oauth/authorize?client_id=${
+                  process.env.REACT_APP_SPAREBANK1_API_CLIENT_ID
+                }&state=AUTHENTICATE&redirect_uri=${encodeURIComponent(
+                  new URL(document.location.href).origin
+                )}&response_type=code`}
+              >
+                Authenticate with Sparebank1
+              </a>
+            </dd>
+          </>
+        )}
       </dl>
       <hr />
       <p>

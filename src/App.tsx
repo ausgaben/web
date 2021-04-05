@@ -36,6 +36,10 @@ import styled from "styled-components";
 import { GlobalStyle, mobileBreakpoint, wideBreakpoint } from "./Styles";
 import { BootstrapStyles } from "./BootstrapStyles";
 import * as Sentry from "@sentry/browser";
+import {
+  memorizeSparebank1OAuthCode,
+  sparebank1OAuthCallback,
+} from "./Sparebank1/handleSparebank1OAuth";
 
 import "@aws-amplify/ui/dist/style.css";
 
@@ -59,6 +63,8 @@ if (sentryDsn) {
   });
 }
 export const client = createClient();
+
+memorizeSparebank1OAuthCode();
 
 export const AuthDataContext = React.createContext<{ identityId?: string }>({});
 
@@ -132,10 +138,11 @@ const App = ({ authData }: { authData: CognitoUser }) => {
   const [identityId, setIdentityId] = useState<string>();
 
   useEffect(() => {
-    Auth.currentCredentials().then(({ identityId }) => {
+    Auth.currentCredentials().then(async ({ identityId }) => {
       setIdentityId(identityId);
+      await sparebank1OAuthCallback(client);
     });
-  });
+  }, []);
 
   const [navigationVisible, setNavigationVisible] = useState(false);
 
