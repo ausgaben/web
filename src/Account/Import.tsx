@@ -10,12 +10,12 @@ import {
   Input,
   Label,
 } from "reactstrap";
-import { Account, Spending } from "../schema";
+import { Account } from "../schema";
 import { Link } from "react-router-dom";
 import { Cache } from "aws-amplify";
-import { Sparebank1Import } from "../Sparebank1/Sparebank1Import";
+import { Accounts as Sparebank1Accounts } from "../Sparebank1/Accounts";
 import { ImportStubs } from "./ImportStubs";
-import { ImportSpendings } from "./ImportSpendings";
+import { useHistory } from "react-router-dom";
 
 export const Import = (props: { account: Account }) => {
   const {
@@ -29,7 +29,7 @@ export const Import = (props: { account: Account }) => {
     Cache.getItem("importSpendings.importData") || ""
   );
 
-  const [importSpendings, setImportSpendings] = useState<Spending[]>([]);
+  const history = useHistory();
 
   return (
     <Form>
@@ -55,9 +55,12 @@ Vorsorge	Versicherungen	Allianz - Lebensversicherung	EUR	-197,86	1"
             />
           </FormGroup>
           {process.env.REACT_APP_SPAREBANK1_API_CLIENT_ID !== undefined && (
-            <Sparebank1Import
-              onTransactions={(transactions) => {
-                setImportSpendings(transactions.slice(0, 10));
+            <Sparebank1Accounts
+              onSelect={(account) => {
+                console.log(account);
+                history.push(
+                  `/account/${accountId}?sparebank1import=${account._meta.id}`
+                );
               }}
             />
           )}
@@ -68,9 +71,6 @@ Vorsorge	Versicherungen	Allianz - Lebensversicherung	EUR	-197,86	1"
       </Card>
       {importData.length > 0 && (
         <ImportStubs account={props.account} importData={importData} />
-      )}
-      {importSpendings.length > 0 && (
-        <ImportSpendings account={props.account} spendings={importSpendings} />
       )}
     </Form>
   );

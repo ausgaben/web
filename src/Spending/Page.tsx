@@ -22,6 +22,7 @@ import { WithSpendings } from "../Spendings/WithSpendings";
 import { Loading } from "../Loading/Loading";
 import { RouteComponentProps } from "react-router-dom";
 import { Main } from "../Styles";
+import { remove } from "../util/remove";
 
 export const deleteSpendingQuery = gql`
   mutation deleteSpending($spendingId: ID!) {
@@ -143,17 +144,16 @@ export const Page = (
                                 ({ _meta: { id: u } }) => spendingId === u
                               );
                               if (spendingToDelete) {
-                                const i = spendings.indexOf(spendingToDelete);
                                 cache.writeQuery({
                                   query: spendingsQuery,
                                   data: {
                                     ...res,
                                     spendings: {
                                       ...res.spendings,
-                                      items: [
-                                        ...spendings.slice(0, i),
-                                        ...spendings.slice(i + 1),
-                                      ],
+                                      items: remove(
+                                        spendings,
+                                        spendingToDelete
+                                      ),
                                     },
                                   },
                                 });

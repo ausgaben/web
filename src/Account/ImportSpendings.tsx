@@ -1,12 +1,5 @@
 import React, { useState } from "react";
-import {
-  Button,
-  Card,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-  Input,
-} from "reactstrap";
+import { Button, Card, CardHeader, CardTitle, Input } from "reactstrap";
 import { Account, Spending } from "../schema";
 import { FormatDate } from "../util/date/FormatDate";
 import { FormatMoney } from "../util/date/FormatMoney";
@@ -14,6 +7,7 @@ import { SpendingsTable } from "../Spendings/SpendingsList";
 import { WithAccountAutoCompleteStrings } from "../AutoComplete/WithAccountAutoCompleteStrings";
 import { Note } from "../Note/Note";
 import styled from "styled-components";
+import { remove } from "../util/remove";
 
 const SpendingsTableWithAction = styled(SpendingsTable)`
   td.description {
@@ -21,6 +15,10 @@ const SpendingsTableWithAction = styled(SpendingsTable)`
   }
 `;
 const Action = styled.td``;
+
+const CloseButton = styled(Button)`
+  padding: 0;
+`;
 
 const Table = ({
   spendings,
@@ -95,40 +93,20 @@ const Table = ({
 
 export const ImportSpendings = ({
   account,
-  spendings,
+  spendings: s,
+  onClose,
+  onSelect,
 }: {
   account: Account;
   spendings: Spending[];
+  onClose?: () => unknown;
+  onSelect?: (spending: Spending) => unknown;
 }) => {
-  const [adding, setAdding] = useState(false);
-  const [importedSpendings, setImportedSpendings] = useState(spendings);
-  const [spendingsToBeImported, setSpendingsToBeImported] = useState<
-    Spending[]
-  >([]);
+  const [spendings, setSpendings] = useState<Spending[]>(s);
 
   return (
     <>
-      {spendingsToBeImported.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Preview</CardTitle>
-          </CardHeader>
-          <Table spendings={spendingsToBeImported} />
-          <CardFooter>
-            <Button
-              disabled={adding}
-              onClick={async () => {
-                setAdding(true);
-                setSpendingsToBeImported(spendings);
-              }}
-              color="primary"
-            >
-              Import
-            </Button>
-          </CardFooter>
-        </Card>
-      )}
-      {importedSpendings.length > 0 && (
+      {spendings.length > 0 && (
         <WithAccountAutoCompleteStrings
           account={account}
           loading={<Note>Loading...</Note>}
@@ -137,26 +115,19 @@ export const ImportSpendings = ({
             <Card>
               <CardHeader>
                 <CardTitle>Imported</CardTitle>
+                <CloseButton color="link" onClick={onClose}>
+                  ✕
+                </CloseButton>
               </CardHeader>
               <Table
-                spendings={importedSpendings}
+                spendings={spendings}
                 action={(spending) => (
                   <Input
                     type="select"
                     value={spending.category}
                     onChange={({ target: { value } }) => {
-                      const pos = importedSpendings.indexOf(spending);
-                      setImportedSpendings([
-                        ...importedSpendings.slice(0, pos),
-                        ...importedSpendings.slice(pos + 1),
-                      ]);
-                      setSpendingsToBeImported((s) => [
-                        ...s,
-                        {
-                          ...spending,
-                          category: value,
-                        },
-                      ]);
+                      setSpendings(remove(spendings, spending));
+                      onSelect?.({ ...spending, category: value });
                     }}
                   >
                     <option>&mdash; (None)</option>

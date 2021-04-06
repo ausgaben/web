@@ -20,6 +20,7 @@ import { GraphQLError } from "graphql";
 import { Link } from "react-router-dom";
 import { InviteUserToAccount } from "./InviteUserToAccount";
 import { EUR, NOK } from "../currency/currencies";
+import { remove } from "../util/remove";
 
 export const deleteAccountQuery = gql`
   mutation deleteAccount($accountId: ID!) {
@@ -220,17 +221,13 @@ export const Settings = (props: { account: Account }) => {
                 ({ _meta: { id: u } }) => id === u
               );
               if (accountToDelete) {
-                const i = accounts.indexOf(accountToDelete);
                 cache.writeQuery({
                   query: accountsQuery,
                   data: {
                     ...res,
                     accounts: {
                       ...res.accounts,
-                      items: [
-                        ...accounts.slice(0, i),
-                        ...accounts.slice(i + 1),
-                      ],
+                      items: remove(accounts, accountToDelete),
                     },
                   },
                 });
