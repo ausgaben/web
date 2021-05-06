@@ -20,7 +20,7 @@
     "@material-ui/icons": "4.11.2",
     "@sentry/browser": "6.3.5",
     "apollo3-cache-persist": "0.9.1",
-    "aws-amplify": "3.3.27",
+    "aws-amplify": "3.4.0",
     "aws-amplify-react": "4.2.32",
     "aws-appsync-auth-link": "3.0.4",
     "aws-appsync-subscription-link": "3.0.6",
