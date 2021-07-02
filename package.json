@@ -21,7 +21,7 @@
     "@sentry/browser": "6.5.1",
     "apollo3-cache-persist": "0.9.1",
     "aws-amplify": "4.0.3",
-    "aws-amplify-react": "5.0.1",
+    "aws-amplify-react": "5.0.2",
     "aws-appsync-auth-link": "3.0.4",
     "aws-appsync-subscription-link": "3.0.6",
     "bootstrap": "5.0.1",
